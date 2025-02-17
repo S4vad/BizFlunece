@@ -1,20 +1,17 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-const Layout = ({children}) => {
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Layout = ({ children }) => {
   return (
     <div>
-      <div>
-        {children}
-      </div>
-      <div className='flex'>
-      <Link to='/'>Home</Link>
-      <Link to='/about'>AboutUs</Link>
-      <Link to='/contact'>Contact</Link>
-      <Link to='/ourWorks'>OurWorks</Link>
+      <nav className='flex items-center justify-center gap-4 p-4 bg-gray-100'>
+        <Link to='/'>Home</Link>
+        <Link to='/signup'>Sign Up</Link>
+        <Link to='/dashboard'>Dashboard</Link>
+      </nav>
+      <div className="p-4">{children}</div>
     </div>
-    </div>
+  );
+};
 
-  )
-}
-
-export default Layout
+export default Layout;

@@ -1,23 +1,20 @@
-import React from 'react'
-import UserLogin from './components/Auth/UserLogin'
-import {Routes,Route} from "react-router-dom"
-import Home from "./pages/Home"
-import About from './pages/About'
-import Contact from './pages/Contact'
-import Ourworks from './pages/Ourworks'
+import { Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import SignupPage from './pages/SignupLogin';
+import Dashboard from './pages/Dashboard';
+import Layout from './components/Layout'; 
+import UserLogin from './pages/UserLogin';
 
-
-const App = () => {
+export default function App() {
   return (
-    <>
+    <Layout>
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} /> 
-        <Route path='/ourWorks' element={<Ourworks />} /> 
-      </Routes>
-    </>
-  )
-}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<UserLogin />} />
 
-export default App;
+      </Routes>
+    </Layout>
+  );
+}
