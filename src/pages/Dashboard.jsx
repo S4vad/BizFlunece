@@ -1,14 +1,22 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function Dashboard() {
+  const navigate = useNavigate();
+
   const influencers = [
     { name: 'John Doe', followers: '120K', engagement: '4.8%', niche: 'Fashion' },
     { name: 'Sarah Smith', followers: '85K', engagement: '6.2%', niche: 'Tech' },
+    { name: 'Savad', followers: '2.5M', engagement: '48%', niche: 'Tech' },
+    { name: 'Sunoos', followers: '5.5M', engagement: '48%', niche: 'Gamer' },
+
+
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="text-xl font-bold text-indigo-600">Dashboard</div>
+          <div onClick={() =>navigate('/')} className="text-xl font-bold text-indigo-600">Dashboard</div>
           <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
             New Campaign
           </button>
