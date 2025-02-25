@@ -51,10 +51,10 @@ export default function LandingPage() {
             AI-powered platform for seamless brand-influencer collaborations
           </p>
           <div className="space-x-4">
-            <button className="rounded-lg bg-white px-8 py-3 font-semibold text-indigo-600 hover:bg-gray-100">
+            <button className="transform-transition rounded-lg bg-white px-8 py-3 font-semibold text-indigo-600 duration-500 hover:scale-105 hover:bg-gray-100">
               Im a Business
             </button>
-            <button className="rounded-lg bg-indigo-500 px-8 py-3 font-semibold text-white hover:bg-indigo-400">
+            <button className="transform-transition rounded-lg bg-indigo-500 px-8 py-3 font-semibold text-white duration-500 hover:scale-105 hover:bg-indigo-400">
               Im an Influencer
             </button>
           </div>
@@ -63,7 +63,7 @@ export default function LandingPage() {
 
       <Section />
 
-      <div className="mt-20 text-center font-sans text-5xl font-semibold text-black">
+      <div className="mt-36 text-center  font-sans text-5xl font-semibold text-black">
         <CountUp start={1} end={500} duration={4} separator="," />
         K+ Influencers Across India
       </div>
@@ -71,7 +71,7 @@ export default function LandingPage() {
       <Influencers />
 
       {/* Features Section */}
-      <div className="mx-auto max-w-7xl px-4 py-16">
+      <div className="mx-auto mt-36 max-w-7xl px-4 py-16">
         <h2 className="mb-12 text-center text-3xl font-bold">Why Choose Us?</h2>
         <div className="grid gap-8 md:grid-cols-3">
           {["AI Matching", "Real Analytics", "Secure Payments"].map(

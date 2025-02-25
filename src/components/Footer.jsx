@@ -7,8 +7,8 @@ import { FaFacebookSquare } from "react-icons/fa";
 import { BsInstagram } from "react-icons/bs";
 const Footer = () => {
   return (
-    <div className="min-h-[450px] w-full overflow-hidden rounded-t-[3rem] bg-[#151515]">
-      <div className="flex gap-16 px-36 pt-16">
+    <div className="mt-30 min-h-[450px] w-full overflow-hidden rounded-t-[3rem] bg-[#151515]">
+      <div className="flex-row md:flex space-y-16 md:space-y-0 md:gap-16 md:px-36 pt-16">
         <div>
           <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
           <p className="mt-5 w-80 text-[#FFFFFF91]">
@@ -55,12 +55,12 @@ const Footer = () => {
         <div>
           <h2 className="text-lg font-bold text-white">Marketing Solutions</h2>
           <ul className="mt-2 space-y-2">
-            <li className="text-[#FFFFFF91]">YouTube Marketing</li>
-            <li className="text-[#FFFFFF91]">Instagram Marketing</li>
-            <li className="text-[#FFFFFF91]">Celebrity Marketing</li>
-            <li className="text-[#FFFFFF91]">Meme Marketing</li>
-            <li className="text-[#FFFFFF91]">Regional Influencer Marketing</li>
-            <li className="text-[#FFFFFF91]">Talent Representation</li>
+            <li className="text-[#FFFFFF91] transform-transition duration-500 hover:scale-105">YouTube Marketing</li>
+            <li className="text-[#FFFFFF91] transform-transition duration-500 hover:scale-105">Instagram Marketing</li>
+            <li className="text-[#FFFFFF91] transform-transition duration-500 hover:scale-105">Celebrity Marketing</li>
+            <li className="text-[#FFFFFF91] transform-transition duration-500 hover:scale-105">Meme Marketing</li>
+            <li className="text-[#FFFFFF91] transform-transition duration-500 hover:scale-105">Regional Influencer Marketing</li>
+            <li className="text-[#FFFFFF91] transform-transition duration-500 hover:scale-105">Talent Representation</li>
           </ul>
         </div>
 

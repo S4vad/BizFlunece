@@ -11,11 +11,11 @@ function SectionItem({ item, index }) {
   return (
     <div 
       ref={ref}
-      className={`flex items-center justify-center gap-14 ${
+      className={` md:flex flex-col md:flex-row md:items-center md:space-y-0 space-y-7 justify-center gap-14 ${
         index % 2 === 0 ? "" : "md:flex-row-reverse"
       }`}
     >
-      <div className="w-1/2">
+      <div className="md:w-1/2">
         <div className="text-3xl font-semibold text-indigo-600">
           {item.title}
         </div>
