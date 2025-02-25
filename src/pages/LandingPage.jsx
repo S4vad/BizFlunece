@@ -1,24 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import Section from "../components/Section";
-
+import CountUp from "react-countup";
+import Influencers from "../components/Influencers";
+import Footer from "../components/Footer";
 
 export default function LandingPage() {
-  const influencerNiche = [
-    "Fashion & Lifestyle",
-    "Banking & Finance",
-    "Education",
-    "Food & Beverages",
-    "Health",
-    "B2B & SaaS",
-  ];
   const navigate = useNavigate();
-  const [selectedNiche, setSelectedNiche] = useState(null);
 
-
-  function nicheClick(niche) {
-    setSelectedNiche(niche === selectedNiche ? null : niche);
-  }
   return (
     <div className="mt-8 min-h-screen bg-gray-50">
       {/* Navbar */}
@@ -75,22 +63,12 @@ export default function LandingPage() {
 
       <Section />
 
-     
-      <div className="text-center font-sans text-4xl font-bold text-black">
-        500 K+ Influencers Across India
+      <div className="mt-20 text-center font-sans text-5xl font-semibold text-black">
+        <CountUp start={1} end={500} duration={4} separator="," />
+        K+ Influencers Across India
       </div>
 
-      <div className="flex items-center justify-center space-x-10 py-20">
-        {influencerNiche.map((niche, index) => (
-          <div
-            onClick={() => nicheClick(niche)}
-            className={`cursor-pointer rounded-full border border-indigo-600 px-4 py-4 text-lg text-indigo-600 transition-all duration-300 hover:bg-indigo-600 hover:text-white ${selectedNiche === niche ? "bg-indigo-600 text-white" : "text-indigo-600 hover:text-white"}`}
-            key={index}
-          >
-            {niche}
-          </div>
-        ))}
-      </div>
+      <Influencers />
 
       {/* Features Section */}
       <div className="mx-auto max-w-7xl px-4 py-16">
@@ -111,6 +89,8 @@ export default function LandingPage() {
           )}
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

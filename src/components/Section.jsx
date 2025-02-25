@@ -1,10 +1,9 @@
-import { data } from "../data";
+import { data } from "../data/data";
 import { motion } from "framer-motion";
 import { useRef } from "react";
 import PropTypes from 'prop-types';
 import { useInView } from "framer-motion";
 
-// Create a separate component for each section item
 function SectionItem({ item, index }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
