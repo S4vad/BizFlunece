@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { data } from "../data";
+import Section from "../components/Section";
+
 
 export default function LandingPage() {
   const influencerNiche = [
@@ -13,6 +14,7 @@ export default function LandingPage() {
   ];
   const navigate = useNavigate();
   const [selectedNiche, setSelectedNiche] = useState(null);
+
 
   function nicheClick(niche) {
     setSelectedNiche(niche === selectedNiche ? null : niche);
@@ -71,32 +73,9 @@ export default function LandingPage() {
         </div>
       </div>
 
-      <div className="mx-auto space-y-40 px-6 py-16">
-        {data.map((item, index) => (
-          <div
-            className={`flex items-center justify-center gap-14 ${
-              index % 2 == 0
-                ? ""
-                : "md:flex-row-reverse"
-            }`}
-            key={index}
-          >
-            <div className="w-1/2">
-              <div className="text-3xl font-semibold text-indigo-600">
-                {item.title}
-              </div>
-              <div className="text-md mt-10">{item.content}</div>
-            </div>
-            <div>
-              <img
-                className="size-80 rounded-3xl"
-                src={`images/${item.image}`}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+      <Section />
 
+     
       <div className="text-center font-sans text-4xl font-bold text-black">
         500 K+ Influencers Across India
       </div>
