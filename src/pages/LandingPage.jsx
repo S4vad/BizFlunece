@@ -3,6 +3,7 @@ import Section from "../components/Section";
 import CountUp from "react-countup";
 import Influencers from "../components/Influencers";
 import Footer from "../components/Footer";
+import FeatureCard from "../components/FeatureCard";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -60,6 +61,7 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
+      <FeatureCard />
 
       <Section />
 
