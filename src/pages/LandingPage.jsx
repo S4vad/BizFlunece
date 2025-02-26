@@ -63,7 +63,7 @@ export default function LandingPage() {
 
       <Section />
 
-      <div className="mt-36 text-center  font-sans text-5xl font-semibold text-black">
+      <div className="mt-36 text-center  font-[certia,sans-serif] text-5xl font-medium text-black">
         <CountUp start={1} end={500} duration={4} separator="," />
         K+ Influencers Across India
       </div>
