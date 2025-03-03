@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import axios from "axios";
+import { Navigate } from 'react-router-dom';
 
 export default function SignupPage() {
+  const navigate= Navigate()
   const [isBusiness, setIsBusiness] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password:'',
     socialMediaHandle: '',
   });
 
@@ -15,11 +19,22 @@ export default function SignupPage() {
   };
 
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     console.log('Form data:', formData);
-    // Add API call or further processing here
-    setFormData({ name: '', email: '', socialMediaHandle: '' }); 
+    try{
+      const response = await axios.post('http://localhost:5000/signup',{
+        ...formData,
+        isBusiness
+      });     
+      setFormData({name:"",email:"",socialMediaHandle:"",password:""})
+      navigate('/')
+    }catch(error){
+      console.log('Error submitting form:',error);
+      alert(error.response?.data?.error 
+        || 'failed to submit form. Try again later.'
+      )
+    }
   };
 
   return (
@@ -63,6 +78,17 @@ export default function SignupPage() {
               type="email"
               name="email"
               value={formData.email}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 mb-2">password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
               onChange={handleInputChange}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               required

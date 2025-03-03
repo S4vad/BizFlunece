@@ -4,6 +4,7 @@ import CountUp from "react-countup";
 import Influencers from "../components/Influencers";
 import Footer from "../components/Footer";
 import FeatureCard from "../components/FeatureCard";
+import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -32,12 +33,12 @@ export default function LandingPage() {
             <button className="text-gray-600 hover:text-indigo-600">
               Login
             </button>
-            <button
+            <Button
               onClick={() => navigate("/signup")}
               className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
             >
               Sign Up
-            </button>
+            </Button>
           </div>
         </div>
       </nav>
