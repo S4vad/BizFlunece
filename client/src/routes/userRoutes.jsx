@@ -1,14 +1,14 @@
 import {Routes,Route} from 'react-router-dom'
-import InfluencerCampaign from '@/pages/influencer/Campaign';
-import ProfilePage from '@/pages/influencer/Profile';
+import InfluencerProfile from '@/pages/influencer/InfluencerProfile/InfluencerProfile'
+import InflencerDashboard from '@/pages/influencer/InfluencerDashboard/InfluencerDashboard'
 
 
 
 export default function userRoutes() {
   return (
     <Routes>
-      <Route path="Campaign" element={<InfluencerCampaign />} />
-      <Route path="profile" element={<ProfilePage/>} />
+      <Route path="Dashboard" element={<InflencerDashboard />} />
+      <Route path="profile" element={<InfluencerProfile/>} />
     </Routes>
   )
 }

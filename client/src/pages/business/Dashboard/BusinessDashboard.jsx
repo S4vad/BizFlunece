@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PropTypes from "prop-types";
 
-export default function Dashboard() {
+export default function BusinessDashboard() {
   const navigate = useNavigate();
 
   const influencers = [
