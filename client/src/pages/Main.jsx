@@ -4,10 +4,11 @@ import CountUp from "react-countup";
 import Influencers from "../components/Influencers";
 import Footer from "../components/Footer";
 import FeatureCard from "../components/FeatureCard";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [hoverButton, setHoverButton] = useState('signup');
 
   return (
     <div className="mt-8 min-h-screen bg-gray-50">
@@ -30,15 +31,29 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-indigo-600">
+            <button
+              onMouseEnter={() => setHoverButton("login")}
+              onMouseLeave={() => setHoverButton('signup')}
+              className={`rounded-lg px-4 py-2 transition duration-300 ${
+                hoverButton === "login"
+                  ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                  : "text-gray-600 hover:text-indigo-600"
+              }`}
+            >
               Login
             </button>
-            <Button
+            <button
               onClick={() => navigate("/signup")}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+              onMouseEnter={() => setHoverButton("signup")}
+              onMouseLeave={() => setHoverButton('signup')}
+              className={`rounded-lg px-4 py-2 transition duration-300 ${
+                hoverButton === "signup"
+                  ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                  : "text-gray-600 hover:text-indigo-600"
+              }`}
             >
               Sign Up
-            </Button>
+            </button>
           </div>
         </div>
       </nav>
@@ -66,7 +81,7 @@ export default function LandingPage() {
 
       <Section />
 
-      <div className="mt-36 text-center  font-[certia,sans-serif] text-5xl font-medium text-black">
+      <div className="mt-36 text-center font-[certia,sans-serif] text-5xl font-medium text-black">
         <CountUp start={1} end={500} duration={4} separator="," />
         K+ Influencers Across India
       </div>

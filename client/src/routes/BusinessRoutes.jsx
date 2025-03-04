@@ -1,13 +1,13 @@
 import {Routes,Route} from "react-router-dom"
-import BusinessDashboard from "../pages/business/BusinessDashboard";
-import CampaignCreator from "../pages/business/CampaignCreator"
+import BusinessDashboard from "@/pages/business/Dashboard/BusinessDashboard";
+import InfluencerList from "@/pages/business/InfluencerList/InfluencerList";
 
 
-export default BusinessRoutes(){
+export default function BusinessRoutes(){
   return (
     <Routes>
-      <Route path='dashboard' element={<BusinessDashboard/>} />
-      <Route path='create-campaign' element={<CampaignCreator/>} />
+      <Route path='business-dashboard' element={<BusinessDashboard/>} />
+      <Route path='influencer-list' element={<InfluencerList/>} />
     </Routes>
   )
 }
