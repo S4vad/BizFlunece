@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import influencers from '@/data/influencersData';
 
 export default function SignupPage() {
   const navigate= useNavigate()
+  const {login} =useAuth();
   const [isBusiness, setIsBusiness] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password:'',
-    socialMediaHandle: '',
-  },{ withCredentials: true });
+    socialMediaHandle: '' ,
+  });
+  
 
   
   const handleInputChange = (e) => {
@@ -26,9 +30,14 @@ export default function SignupPage() {
       const response = await axios.post('http://localhost:5000/signup',{
         ...formData,
         isBusiness
-      });     
+      }, { withCredentials: true });     
       setFormData({name:"",email:"",socialMediaHandle:"",password:""})
-      navigate('/')
+
+      const api= isBusiness?'Business':'influencer' ;
+      
+      alert("Signup successful!");
+      login(response.data.user); // Store user in context
+      navigate(`/${api}/dashboard`); // Redirect after signup
     }catch(error){
       console.log('Error submitting form:',error);
       alert(error.response?.data?.error 
@@ -84,7 +93,7 @@ export default function SignupPage() {
             />
           </div>
           <div>
-            <label className="block text-gray-700 mb-2">password</label>
+            <label className="block text-gray-700 mb-2">Password</label>
             <input
               type="password"
               name="password"

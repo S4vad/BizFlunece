@@ -16,7 +16,7 @@ const userSchema = mongoose.Schema(
     },
     socialMediaHandle: {
       type: String,
-      required: true,
+      default:null
     },
     isBusiness: {
       type: Boolean,

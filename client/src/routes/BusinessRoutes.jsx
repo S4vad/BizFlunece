@@ -6,7 +6,7 @@ import InfluencerList from "@/pages/business/InfluencerList/InfluencerList";
 export default function BusinessRoutes(){
   return (
     <Routes>
-      <Route path='business-dashboard' element={<BusinessDashboard/>} />
+      <Route path='dashboard' element={<BusinessDashboard/>} />
       <Route path='influencer-list' element={<InfluencerList/>} />
     </Routes>
   )

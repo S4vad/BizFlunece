@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import {
   getUserFromStrorage,
-  setUserToStorag,
+  setUserToStorage,
   removeUserFromStorage,
 } from "../utils/LocalStorage";
 
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
-    setUserToStorag(userData);
+    setUserToStorage(userData);
   };
 
   const logout = () => {
@@ -28,5 +28,5 @@ export const AuthProvider = ({ children }) => {
 };
 
 
-export const UseAuth =() =>useContext(AuthContext);
+export const useAuth =() =>useContext(AuthContext);
 //custom hook for using AuthContext
