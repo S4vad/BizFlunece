@@ -5,7 +5,8 @@ import UserLogin from "./components/UserLogin";
 import Campaign from "./pages/Business/Campaign";
 import Profile from "./pages/influencer/Profile";
 import { AuthProvider } from "./context/AuthContext";
-import userRoutes from "./routes/userRoutes";
+import ProtectedRoute from "./components/protectedRoute";
+import UserRoutes from "./routes/userRoutes";
 import BusinessRoutes from "./routes/BusinessRoutes";
 
 export default function App() {
@@ -21,9 +22,9 @@ export default function App() {
         <Route
           path="/influencer/*"
           element={
-            <protectedRoute role="influencer">
-              <userRoutes />
-            </protectedRoute>
+            <ProtectedRoute role="influencer">
+              <UserRoutes />
+            </ProtectedRoute>
           }
         />
 
@@ -33,9 +34,9 @@ export default function App() {
         <Route
           path="/business/*"
           element={
-            <protectedRoute role="business">
+            <ProtectedRoute role="business">
               <BusinessRoutes />
-            </protectedRoute>
+            </ProtectedRoute>
           }
         />
       </Routes>

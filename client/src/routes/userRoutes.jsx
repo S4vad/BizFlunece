@@ -4,10 +4,10 @@ import InflencerDashboard from '@/pages/influencer/InfluencerDashboard/Influence
 
 
 
-export default function userRoutes() {
+export default function UserRoutes() {
   return (
     <Routes>
-      <Route path="Dashboard" element={<InflencerDashboard />} />
+      <Route path="dashboard" element={<InflencerDashboard />} />
       <Route path="profile" element={<InfluencerProfile/>} />
     </Routes>
   )

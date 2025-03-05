@@ -6,7 +6,7 @@ export const getUserFromStrorage=() =>{
 }
 
 
-export const setUserToStorag=(user)=>{
+export const setUserToStorage=(user)=>{
   localStorage.setItem(USER_KEY,JSON.stringify(user))
 }
 
