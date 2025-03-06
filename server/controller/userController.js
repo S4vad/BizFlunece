@@ -9,8 +9,6 @@ export async function userSignup(req, res) {
   const { name, email, password, isBusiness } = req.body;
   const socialMediaHandle = isBusiness ? null : req.body.socialMediaHandle; // Only set for influencers
 
-  console.log("the body is ", req.body,socialMediaHandle);
-
   try {
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
