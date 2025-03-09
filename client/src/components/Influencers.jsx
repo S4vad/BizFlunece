@@ -35,11 +35,11 @@ const Influencers = () => {
             href={item.link}
             rel="noopener noreferrer"
             target="_blank"
-            className="block transform overflow-hidden transition-transform hover:scale-105"
+            className="block transform overflow-hidden transition-transform "
           >
-            <div className="md:h-72 md:w-72 w-36 h-36 overflow-hidden rounded-xl ">
+            <div className="md:h-64 md:w-64 w-34 h-34 overflow-hidden rounded-xl ">
               <img
-                className="h-full w-full object-cover transition-transform duration-500 ease-in-out hover:scale-110 "
+                className="h-full w-full object-cover transition-transform duration-700 ease-in-out hover:scale-105 "
                 src={item.image}
                 alt={item.name}
               />

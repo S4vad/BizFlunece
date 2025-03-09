@@ -2,6 +2,8 @@ import userModel from "../models/userShema.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { OAuth2Client } from "google-auth-library";
+import googleuser from "../models/googleuser.js";
 
 dotenv.config();
 
@@ -24,7 +26,6 @@ export async function userSignup(req, res) {
     });
 
     const role = isBusiness ? "business" : "influencer";
-    console.log(role);
 
     const token = jwt.sign(
       { userId: newUser._id },
@@ -51,5 +52,60 @@ export async function userSignup(req, res) {
     });
   } catch (error) {
     res.status(500).json({ error: "server error!" });
+  }
+}
+
+export async function googleAuth(req, res) {
+  const client = new OAuth2Client(process.env.VITE_CLIENT_ID);
+  try {
+    const { token, user } = req.body;
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.VITE_CLIENT_ID,
+    });
+
+    const { name, email, sub: googleId } = ticket.getPayload();
+
+    let userExist = await googleuser.findOne({ email });
+    if (userExist) {
+      return res.status(400).json({ error: "Email already in use!" });
+    }
+
+    const role = user.isBusiness ? "business" : "influencer";
+
+    const newUser = new googleuser({
+      name,
+      email,
+      googleId,
+      isBusiness: user.isBusiness,
+      role: role,
+    });
+    await newUser.save();
+
+    const jwtToken = jwt.sign(
+      { id: newUser._id, email: newUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "5d" }
+    );
+
+    res.cookie("token", jwtToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    });
+
+    res.status(201).json({
+      message: "User signed up successfully!",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        isBusiness: newUser.isBusiness,
+        role: role,
+      },
+      token: jwtToken,
+    });
+  } catch (error) {
+    res.status(400).json({ error: "Google login failed!" });
   }
 }

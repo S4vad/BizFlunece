@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, Instagram, Youtube, Twitter, Globe } from "lucide-react";
+import { getUserFromStorage } from "@/utils/LocalStorage";
 
 export default function InfluencerProfile() {
   const [following, setFollowing] = useState(false);
@@ -28,11 +29,13 @@ export default function InfluencerProfile() {
     ],
   };
 
+  const  user  = getUserFromStorage();
+
   return (
     <div className="mx-auto max-w-4xl p-6">
       <Card className="rounded-2xl bg-white p-6 shadow-lg">
         <Card className="p-6">
-          <div className="sm:flex items-center  space-y-8 sm:space-x-6">
+          <div className="items-center space-y-8 sm:flex sm:space-x-6">
             <img
               src="/img/PEDRI.jpeg"
               alt="Influencer"
@@ -158,21 +161,22 @@ export default function InfluencerProfile() {
             <Globe size={24} />
           </a>
         </div>
-
-        <div className="mx-auto mt-8 max-w-4xl">
-          <div className="rounded-xl bg-indigo-600 p-6 text-center">
-            <h3 className="text-2xl font-bold text-white">
-              Let's Collaborate!
-            </h3>
-            <p className="mt-2 text-indigo-100">
-              Interested in working together? Reach out to discuss partnership
-              opportunities.
-            </p>
-            <button className="mt-4 animate-bounce rounded-lg bg-white px-6 py-2 font-semibold text-indigo-600 transition-colors hover:bg-indigo-50">
-              Contact Me
-            </button>
+        {user && user.isBusiness === false && (
+          <div className="mx-auto mt-8 max-w-4xl">
+            <div className="rounded-xl bg-indigo-600 p-6 text-center">
+              <h3 className="text-2xl font-bold text-white">
+                Let's Collaborate!
+              </h3>
+              <p className="mt-2 text-indigo-100">
+                Interested in working together? Reach out to discuss partnership
+                opportunities.
+              </p>
+              <button className="mt-4 animate-bounce rounded-lg bg-white px-6 py-2 font-semibold text-indigo-600 transition-colors hover:bg-indigo-50">
+                Contact Me
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </Card>
     </div>
   );

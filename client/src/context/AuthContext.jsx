@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import {
-  getUserFromStrorage,
+  getUserFromStorage,
   setUserToStorage,
   removeUserFromStorage,
 } from "../utils/LocalStorage";
@@ -8,7 +8,7 @@ import {
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(getUserFromStrorage());
+  const [user, setUser] = useState(getUserFromStorage());
 
   const login = (userData) => {
     setUser(userData);

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner"; // Import toast from sonner
 import { Toaster } from "@/components/ui/sonner";
+import GoogleLoginButton from "@/utils/GoogleAuth"; 
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -40,13 +41,13 @@ export default function SignupPage() {
 
       toast.success("Signup successful!", {
         style: { backgroundColor: "green", color: "white" },
-        duration:2000
+        duration: 2000,
       });
 
       setTimeout(() => {
-        login(response.data.user); 
-        navigate(`/${api}/dashboard`); 
-      }, 1000); 
+        login(response.data.user);
+        navigate(`/${api}/dashboard`);
+      }, 1000);
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
@@ -83,8 +84,7 @@ export default function SignupPage() {
             Influencer
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mb-4">
           <div>
             <label className="mb-2 block text-gray-700">Name</label>
             <input
@@ -143,6 +143,8 @@ export default function SignupPage() {
             Create Account
           </button>
         </form>
+        <GoogleLoginButton isBusiness={isBusiness}/>
+        
       </div>
       <Toaster position="top-center" />
     </div>
