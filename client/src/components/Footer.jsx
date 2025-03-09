@@ -7,8 +7,8 @@ import { FaFacebookSquare } from "react-icons/fa";
 import { BsInstagram } from "react-icons/bs";
 const Footer = () => {
   return (
-    <div className="mt-30 min-h-[450px] w-full overflow-hidden rounded-t-[3rem] bg-[#151515]">
-      <div className="flex-row md:flex space-y-16 md:space-y-0 md:gap-16 md:px-36 pt-16">
+    <div className="mt-30 min-h-[350px] w-full overflow-hidden rounded-t-[3rem] bg-[#151515]">
+      <div className="flex-row md:flex space-y-16 md:space-y-0 md:gap-16 md:px-16 pt-16">
         <div>
           <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
           <p className="mt-5 w-80 text-[#FFFFFF91]">
@@ -79,7 +79,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="mt-10 w-full border-t-[0.5px] border-white"></div>
-      <div className= "mt-8 text-[#FFFFFF91] text-center">@ 2025, All Rights Reserved</div>
+      <div className= "mt-8 mb-10 text-[#FFFFFF91] text-center">@ 2025, All Rights Reserved</div>
     </div>
   );
 };

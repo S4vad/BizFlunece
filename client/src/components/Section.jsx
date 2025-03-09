@@ -24,7 +24,7 @@ function SectionItem({ item, index }) {
       <motion.div
         initial={{ opacity: 0, y: 200, filter: "blur(5px)" }}
         animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-        transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
+        transition={{ duration: 1.2, ease: "easeOut", delay: 0.6 }}
       >
         <img className="size-80 rounded-3xl" src={`images/${item.image}`} />
       </motion.div>

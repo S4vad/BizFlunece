@@ -1,6 +1,6 @@
 const USER_KEY = 'getUser';
 
-export const getUserFromStrorage=() =>{
+export const getUserFromStorage=() =>{
   const user =localStorage.getItem(USER_KEY);
   return user ? JSON.parse(user) :null;
 }

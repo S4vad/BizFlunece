@@ -3,7 +3,6 @@ import LandingPage from "./pages/Main";
 import SignupPage from "./components/SignUP";
 import UserLogin from "./components/UserLogin";
 import Campaign from "./pages/Business/Campaign";
-import Profile from "./pages/influencer/Profile";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/protectedRoute";
 import UserRoutes from "./routes/userRoutes";
@@ -17,7 +16,6 @@ export default function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/campaign" element={<Campaign />} />
-        <Route path="/profile" element={<Profile />} />
 
         <Route
           path="/influencer/*"
