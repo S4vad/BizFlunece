@@ -1,5 +1,6 @@
 import influencers from "../data/influencersData";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Influencers = () => {
   const influencerNiche = [
@@ -10,42 +11,69 @@ const Influencers = () => {
     "Health",
     "B2B & SaaS",
   ];
-  const [selectedNiche, setSelectedNiche] = useState(null);
+
+  // Set default state to "Education"
+  const [selectedNiche, setSelectedNiche] = useState("Education");
+
   function nicheClick(niche) {
-    setSelectedNiche(niche === selectedNiche ? null : niche);
+    setSelectedNiche(niche);
   }
+
+  // Filter influencers based on selected niche
+  const filteredInfluencers = influencers.filter(
+    (item) => item.influencerNiche === selectedNiche,
+  );
+
   return (
     <>
-      <div className="md:flex grid grid-cols-3 items-center md:justify-center space-x-2 space-y-2 md:space-x-10 py-10 pt-20">
+      {/* Niche selection buttons */}
+      <div className="grid grid-cols-3 items-center space-x-2 space-y-2 py-10 pt-20 md:flex md:justify-center md:space-x-10">
         {influencerNiche.map((niche, index) => (
           <div
-            onClick={() => nicheClick(niche)}
-            className={`cursor-pointer rounded-full border border-indigo-600 text-center px-1 py-1 md:px-3 md:py-2 text-sm md:text-lg text-indigo-600 transition-all duration-300 hover:bg-indigo-600 hover:text-white ${selectedNiche === niche ? "bg-indigo-600 text-white" : "text-indigo-600 hover:text-white"}`}
             key={index}
+            onClick={() => nicheClick(niche)}
+            className={`cursor-pointer rounded-full border border-indigo-600 px-1 py-1 text-center text-sm text-indigo-600 transition-all duration-300 hover:bg-indigo-600 hover:text-white md:px-3 md:py-2 md:text-lg ${
+              selectedNiche === niche
+                ? "bg-indigo-600 text-white"
+                : "text-indigo-600 hover:text-white"
+            }`}
           >
             {niche}
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 md:grid-cols-4  gap-6 sm:px-16 md:px-36">
-        {influencers.map((item, index) => (
-          <a
-            key={index}
-            href={item.link}
-            rel="noopener noreferrer"
-            target="_blank"
-            className="block transform overflow-hidden transition-transform "
-          >
-            <div className="md:h-64 md:w-64 w-34 h-34 overflow-hidden rounded-xl ">
-              <img
-                className="h-full w-full object-cover transition-transform duration-700 ease-in-out hover:scale-105 "
-                src={item.image}
-                alt={item.name}
-              />
-            </div>
-          </a>
-        ))}
+      {/* Display selected niche influencers */}
+      <div className="grid grid-cols-3 gap-6 sm:px-16 md:grid-cols-4 md:px-36">
+        <AnimatePresence mode="wait">
+          {filteredInfluencers.length > 0 ? (
+            filteredInfluencers.map((item, index) => (
+              <motion.a
+                key={item.name + index}
+                href={item.link}
+                rel="noopener noreferrer"
+                target="_blank"
+                initial={{ opacity: 0, scale: 0.3, x: -50, y: -50 }}
+                animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                exit={{ opacity: 0, scale: 0.5, x: 50, y: 50 }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+                className="block transform overflow-hidden transition-transform"
+              >
+                <div className="w-34 h-34 overflow-hidden rounded-xl md:h-64 md:w-64">
+                  <img
+                    className="h-full w-full object-cover transition-transform duration-700 ease-in-out hover:scale-105"
+                    src={item.image}
+                    alt={item.name}
+                  />
+                </div>
+              </motion.a>
+            ))
+          ) : (
+            <p className="col-span-3 text-center text-gray-500 md:col-span-4">
+              No influencers found.
+            </p>
+          )}
+        </AnimatePresence>
       </div>
     </>
   );

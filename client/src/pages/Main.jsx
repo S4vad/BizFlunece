@@ -7,13 +7,15 @@ import FeatureCard from "../components/FeatureCard";
 import { useState } from "react";
 import Hero from "@/components/Hero";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
+import { getUserFromStorage } from "@/utils/LocalStorage";
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const [hoverButton, setHoverButton] = useState("signup");
+  const user = getUserFromStorage();
 
   return (
-    <div className=" min-h-screen bg-gray-50 dark:bg-night">
+    <div className="min-h-screen bg-gray-50 dark:bg-night">
       {/* Navbar */}
       <nav className="bg-white shadow-sm dark:bg-night-50">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
@@ -21,7 +23,7 @@ export default function LandingPage() {
           <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
             <div
               onClick={() => navigate("/Dashboard")}
-              className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark"
+              className="dark cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white"
             >
               Dashboard
             </div>
@@ -34,40 +36,44 @@ export default function LandingPage() {
           </div>
           <ModeToggle />
           <div className="flex items-center space-x-4">
-            <button
-              onMouseEnter={() => setHoverButton("login")}
-              onMouseLeave={() => setHoverButton("signup")}
-              className={`rounded-lg px-4 py-2 transition duration-300 ${
-                hoverButton === "login"
-                  ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                  : "text-gray-600 hover:text-indigo-600"
-              }`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => navigate("/signup")}
-              onMouseEnter={() => setHoverButton("signup")}
-              onMouseLeave={() => setHoverButton("signup")}
-              className={`rounded-lg px-4 py-2 transition duration-300 ${
-                hoverButton === "signup"
-                  ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                  : "text-gray-600 hover:text-indigo-600"
-              }`}
-            >
-              Sign Up
-            </button>
+            {!user && (
+              <div>
+                <button
+                  onMouseEnter={() => setHoverButton("login")}
+                  onMouseLeave={() => setHoverButton("signup")}
+                  className={`rounded-lg px-4 py-2 transition duration-300 ${
+                    hoverButton === "login"
+                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                      : "text-gray-600 hover:text-indigo-600"
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate("/signup")}
+                  onMouseEnter={() => setHoverButton("signup")}
+                  onMouseLeave={() => setHoverButton("signup")}
+                  className={`rounded-lg px-4 py-2 transition duration-300 ${
+                    hoverButton === "signup"
+                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                      : "text-gray-600 hover:text-indigo-600"
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="ml-20 flex  h-[calc(100vh-64px)]   text-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 text-left mt-20 ">
+      <div className="ml-20 flex h-[calc(100vh-64px)] text-white">
+        <div className="mx-auto mt-20 max-w-7xl px-4 py-10 text-left">
           <h1 className="mb-6 text-5xl font-bold dark:text-white">
             Connect with Perfect Influencers
           </h1>
-          <p className="mb-8 text-2xl md:w-[40rem] dark:text-white">
+          <p className="mb-8 text-2xl dark:text-white md:w-[40rem]">
             AI-powered platform for seamless brand-influencer collaborations
           </p>
           <div className="space-x-4">
