@@ -92,7 +92,8 @@ export default function SignupPage() {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full rounded-lg border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-lg border px-4 py-2 focus:border bg-white focus:ring-2 focus:ring-indigo-500"
+              placeholder="Name"
               required
             />
           </div>
@@ -104,7 +105,8 @@ export default function SignupPage() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full rounded-lg border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+              placeholder="Email"
+              className="w-full rounded-lg border px-4 py-2 bg-white focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
@@ -113,9 +115,10 @@ export default function SignupPage() {
             <input
               type="password"
               name="password"
+              placeholder="Password"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full rounded-lg border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-lg border px-4 py-2 bg-white focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
@@ -128,9 +131,10 @@ export default function SignupPage() {
               <input
                 type="text"
                 name="socialMediaHandle"
+                placeholder="Social Media Handle"
                 value={formData.socialMediaHandle}
                 onChange={handleInputChange}
-                className="w-full rounded-lg border px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border px-4 py-2 bg-white focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 required={!isBusiness}
               />
             </div>

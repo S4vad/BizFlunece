@@ -23,14 +23,14 @@ export default function LandingPage() {
           <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
             <div
               onClick={() => navigate("/Dashboard")}
-              className="dark cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white"
+              className="dark cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500"
             >
               Dashboard
             </div>
             <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">
               About Us
             </div>
-            <div className="cursor-pointer transition duration-300 hover:text-indigo-600">
+            <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">
               Our Works
             </div>
           </div>
@@ -70,10 +70,10 @@ export default function LandingPage() {
       {/* Hero Section */}
       <div className="ml-20 flex h-[calc(100vh-64px)] text-white">
         <div className="mx-auto mt-20 max-w-7xl px-4 py-10 text-left">
-          <h1 className="mb-6 text-5xl font-bold dark:text-white">
+          <h1 className="mb-6 text-5xl font-bold text-black dark:text-white">
             Connect with Perfect Influencers
           </h1>
-          <p className="mb-8 text-2xl dark:text-white md:w-[40rem]">
+          <p className="mb-8 text-2xl text-black dark:text-white md:w-[40rem]">
             AI-powered platform for seamless brand-influencer collaborations
           </p>
           <div className="space-x-4">
