@@ -25,10 +25,10 @@ const FeatureCard = () => {
       ].map((feature, index) => (
         <div
           key={index}
-          className="flex-1 space-y-5 rounded-2xl border border-solid border-gray-300 px-8 py-10 shadow-gray-500 transition-all duration-500 ease-in-out hover:-translate-y-2 hover:shadow-[0px_15px_30px_rgba(0,0,0,0.3)] min-h-[400px] flex flex-col justify-between"
+          className="flex-1 space-y-5 e rounded-2xl border border-solid border-gray-300 px-8 py-10 shadow-gray-500 transition-all duration-500 ease-in-out hover:-translate-y-2 hover:shadow-[0px_15px_30px_rgba(0,0,0,0.3)] min-h-[400px] flex flex-col justify-between"
         >
-          <h1 className="text-xl ">{feature.title}</h1>
-          <p className="flex-grow">{feature.content}</p>
+          <h1 className="text-xl dark:text-white ">{feature.title}</h1>
+          <p className="flex-grow dark:text-white">{feature.content}</p>
         </div>
       ))}
     </div>
