@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 *{
   color: #090404;
 }
@@ -9,6 +10,9 @@
 body{
   background-color: #fff;
 }
+
+
+
 
 
 

@@ -5,7 +5,6 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import ThemeProvider from "./components/darkmode/ThemeProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { configDotenv } from "dotenv";
 
 const clientId = import.meta.env.VITE_CLIENT_ID;
 console.log("Google Client ID from env:", clientId);
