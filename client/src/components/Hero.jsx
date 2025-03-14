@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 
 export default function Hero() {
@@ -22,7 +21,7 @@ export default function Hero() {
             duration: 5,
             ease: "linear",
             repeatDelay: 3,
-            delay:1
+            delay: 1,
           }}
         >
           <p className="text-sm font-bold text-white">Active Influencers</p>
@@ -56,11 +55,15 @@ export default function Hero() {
       <div className="-mt-10 flex gap-8">
         <motion.div
           className="animate-rotate-x0 relative flex h-40 w-40 flex-col items-center justify-center rounded-r-full rounded-t-full bg-green-300"
-          animate={{ rotateY: [0,180,180, 360] }}
-          transition={{ repeat: Infinity, duration: 5, repeatDelay: 2, ease: "linear", delay: 3 }}
-          
+          animate={{ rotateY: [0, 180, 180, 360] }}
+          transition={{
+            repeat: Infinity,
+            duration: 5,
+            repeatDelay: 2,
+            ease: "linear",
+            delay: 3,
+          }}
         >
-        
           <p className="text-sm font-bold text-black">Active Campaigns</p>
           <p className="text-sm font-extrabold text-black">582</p>
         </motion.div>
@@ -68,12 +71,40 @@ export default function Hero() {
         <div className="h-24 w-24 rounded-full bg-red-400"></div>
 
         {/* Decorative Elements */}
-        <img
-          src="/images/jixL4My6T.jpg"
-          className="absolute left-1/2 top-1/2 size-28 -translate-x-1/2 -translate-y-1/2"
-        ></img>
-        <div className="absolute left-48 top-16 h-6 w-6 rounded-full border-4 border-black"></div>
-        <div className="border- absolute bottom-24 right-56 h-6 w-6 rotate-45 border-4 border-solid border-black"></div>
+
+        <div className="absolute left-48 top-16 h-6 w-6 rounded-full border-4 border-black dark:border-white"></div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 200 200"
+          width="110"
+          height="110"
+          className="absolute bottom-60 right-56  "
+        >
+          <polygon
+            points="
+    100,0 
+    115,70 
+    150,50 
+    120,100 
+    200,100 
+    120,115 
+    150,150 
+    115,130 
+    100,200 
+    85,130 
+    50,150 
+    80,115 
+    0,100 
+    80,100 
+    50,50 
+    85,70"
+             className="stroke-black dark:stroke-white"
+            fill="none"
+            strokeWidth="5"
+          />
+        </svg>
+
+        <div className="border- absolute bottom-24 right-56 h-6 w-6 rotate-45 border-4 border-solid border-black dark:border-white"></div>
       </div>
     </div>
   );

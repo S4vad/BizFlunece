@@ -32,10 +32,10 @@ const Influencers = () => {
           <div
             key={index}
             onClick={() => nicheClick(niche)}
-            className={`cursor-pointer rounded-full border border-indigo-600 px-1 py-1 text-center text-sm text-indigo-600 transition-all duration-300 hover:bg-indigo-600 hover:text-white md:px-3 md:py-2 md:text-lg ${
+            className={`cursor-pointer rounded-full border dark:text-white dark:hover:border-none dark:border-white border-indigo-600 px-1 py-1 text-center text-sm text-indigo-600 transition-all duration-300 hover:bg-indigo-600 hover:text-white md:px-3 md:py-2 md:text-lg ${
               selectedNiche === niche
-                ? "bg-indigo-600 text-white"
-                : "text-indigo-600 hover:text-white"
+                ? "bg-indigo-600 text-white dark:border-indigo-800"
+                : "text-indigo-600 hover:text-white darK:border"
             }`}
           >
             {niche}

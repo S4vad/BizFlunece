@@ -16,10 +16,10 @@ function SectionItem({ item, index }) {
       }`}
     >
       <div className="md:w-1/2">
-        <div className=" text-[32px] font-semibold  text-[#2652E9] font-[certia,sans-serif]">
+        <div className=" text-[32px] font-semibold  text-[#2652E9] font-[certia,sans-serif] ">
           {item.title}
         </div>
-        <div className="w-[600px]  text-[15.55px] font-[540] tracking-wider font-sans leading-[1.7rem] mt-10  text-gray-900">{item.content}</div>
+        <div className="w-[600px]  text-[15.55px] font-[540] tracking-wider font-sans leading-[1.7rem] mt-10 dark:text-white text-gray-900">{item.content}</div>
       </div>
       <motion.div
         initial={{ opacity: 0, y: 200, filter: "blur(5px)" }}
