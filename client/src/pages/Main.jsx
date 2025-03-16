@@ -21,12 +21,6 @@ export default function LandingPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
           <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
-            <div
-              onClick={() => navigate("/Dashboard")}
-              className="dark cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500"
-            >
-              Dashboard
-            </div>
             <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">
               About Us
             </div>
@@ -34,7 +28,6 @@ export default function LandingPage() {
               Our Works
             </div>
           </div>
-          <ModeToggle />
           <div className="flex items-center space-x-4">
             {!user && (
               <div>
@@ -63,12 +56,15 @@ export default function LandingPage() {
                 </button>
               </div>
             )}
+            <div>
+              <ModeToggle />
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="ml-20 flex h-[calc(100vh-64px)] text-white">
+      <div className="ml-20 flex h-[calc(100vh-64px)] flex-col text-white md:flex-row">
         <div className="mx-auto mt-20 max-w-7xl px-4 py-10 text-left">
           <h1 className="mb-6 text-5xl font-bold text-black dark:text-white">
             Connect with Perfect Influencers
@@ -93,8 +89,14 @@ export default function LandingPage() {
 
       <Section />
 
-      <div className="mt-36 text-center  dark:text-white font-[certia,sans-serif] text-5xl font-medium text-black">
-        <CountUp className="dark:text-white" start={1} end={500} duration={4} separator="," />
+      <div className="mt-36 text-center font-[certia,sans-serif] text-5xl font-medium text-black dark:text-white">
+        <CountUp
+          className="dark:text-white"
+          start={1}
+          end={500}
+          duration={4}
+          separator=","
+        />
         K+ Influencers Across India
       </div>
 
