@@ -4,7 +4,7 @@ export default function Hero() {
   return (
     <div className="relative flex flex-col items-center justify-center px-10 py-16">
       {/* Top Row */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
         <div className="relative">
           <img
             className="h-36 w-36 rounded-full object-cover"

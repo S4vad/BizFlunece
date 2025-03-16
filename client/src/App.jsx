@@ -7,6 +7,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/protectedRoute";
 import UserRoutes from "./routes/userRoutes";
 import BusinessRoutes from "./routes/BusinessRoutes";
+import InfluencerLayout from "./pages/influencer/InfluencerLayout";
+import BusinessLayout from "./pages/business/BusinessLayout";
 
 export default function App() {
   return (
@@ -21,7 +23,7 @@ export default function App() {
           path="/influencer/*"
           element={
             <ProtectedRoute role="influencer">
-              <UserRoutes />
+              <InfluencerLayout />
             </ProtectedRoute>
           }
         />
@@ -33,7 +35,7 @@ export default function App() {
           path="/business/*"
           element={
             <ProtectedRoute role="business">
-              <BusinessRoutes />
+              <BusinessLayout />
             </ProtectedRoute>
           }
         />

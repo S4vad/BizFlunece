@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner"; // Import toast from sonner
+import { toast } from "sonner"; 
 import { Toaster } from "@/components/ui/sonner";
 import GoogleLoginButton from "@/utils/GoogleAuth"; 
 
@@ -27,7 +27,7 @@ export default function SignupPage() {
     console.log("Form data:", formData);
     try {
       const response = await axios.post(
-        "http://localhost:5000/signup",
+        "/signup",
         {
           ...formData,
           isBusiness,
@@ -37,7 +37,7 @@ export default function SignupPage() {
 
       setFormData({ name: "", email: "", socialMediaHandle: "", password: "" });
 
-      const api = isBusiness ? "Business" : "influencer";
+      const api = isBusiness ? "business" : "influencer";
 
       toast.success("Signup successful!", {
         style: { backgroundColor: "green", color: "white" },
@@ -46,7 +46,7 @@ export default function SignupPage() {
 
       setTimeout(() => {
         login(response.data.user);
-        navigate(`/${api}/dashboard`);
+        navigate(`/${api}`);
       }, 1000);
     } catch (error) {
       toast.error(

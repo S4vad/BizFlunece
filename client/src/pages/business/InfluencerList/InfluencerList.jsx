@@ -26,30 +26,23 @@ export default function InfluencerList() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <div
-            onClick={() => navigate("/")}
-            className="text-xl font-bold text-indigo-600"
-          >
-            Dashboard
-          </div>
+
+
+      <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-end px-4 py-3">
           <button className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
             New Campaign
           </button>
         </div>
-      </nav>
-
-      <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-8 rounded-xl bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-2xl font-semibold">Find Influencers</h2>
           <div className="mb-4 flex gap-4">
             <input
               type="text"
               placeholder="Search by niche or name..."
-              className="flex-1 rounded-lg border px-4 py-2"
+              className="flex-1 rounded-lg border px-4 py-2 bg-white"
             />
-            <select className="rounded-lg border px-4 py-2">
+            <select className="rounded-lg border px-4 py-2 bg-white">
               <option>All Platforms</option>
               <option>Instagram</option>
               <option>YouTube</option>
