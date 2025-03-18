@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner"; 
-import { Toaster } from "@/components/ui/sonner";
 import GoogleLoginButton from "@/utils/GoogleAuth"; 
 
 export default function SignupPage() {
@@ -39,10 +38,7 @@ export default function SignupPage() {
 
       const api = isBusiness ? "business" : "influencer";
 
-      toast.success("Signup successful!", {
-        style: { backgroundColor: "green", color: "white" },
-        duration: 2000,
-      });
+      toast.success("Signup successful!");
 
       setTimeout(() => {
         login(response.data.user);
@@ -51,10 +47,7 @@ export default function SignupPage() {
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
-          "Failed to submit form. Try again later.",
-        {
-          style: { backgroundColor: "red", color: "white" },
-        },
+          "Failed to submit form. Try again later."
       );
     }
   };
@@ -150,7 +143,6 @@ export default function SignupPage() {
         <GoogleLoginButton isBusiness={isBusiness}/>
         
       </div>
-      <Toaster position="top-center" />
     </div>
   );
 }
