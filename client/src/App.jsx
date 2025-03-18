@@ -5,8 +5,6 @@ import UserLogin from "./components/UserLogin";
 import Campaign from "./pages/Business/Campaign";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/protectedRoute";
-import UserRoutes from "./routes/userRoutes";
-import BusinessRoutes from "./routes/BusinessRoutes";
 import InfluencerLayout from "./pages/influencer/InfluencerLayout";
 import BusinessLayout from "./pages/business/BusinessLayout";
 

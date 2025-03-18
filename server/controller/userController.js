@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import googleuser from "../models/googleuser.js";
 
+
 dotenv.config();
 
 export async function userSignup(req, res) {
@@ -25,7 +26,8 @@ export async function userSignup(req, res) {
       socialMediaHandle: socialMediaHandle,
     });
 
-    const role = isBusiness ? "business" : "influencer";
+    const role = isBusiness ? "business" : "influencer";  
+
 
     const token = jwt.sign(
       { userId: newUser._id },
@@ -94,6 +96,8 @@ export async function googleAuth(req, res) {
       sameSite: "Lax",
     });
 
+    
+
     res.status(201).json({
       message: "User signed up successfully!",
       user: {
@@ -107,5 +111,48 @@ export async function googleAuth(req, res) {
     });
   } catch (error) {
     res.status(400).json({ error: "Google login failed!" });
+  }
+}
+
+export async function userLogin(req, res) {
+  const { email, password } = req.body;
+
+  try {
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    const user = await userModel.findOne({email});
+
+
+
+    if (!user) {
+      return res.status(400).json({error:"Email is not registered"});
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({error:"Password is not correct"});
+    }
+
+    const role = user.isBusiness ? "business" : "influencer";  
+
+
+    const token = jwt.sign({ userId: user.id,role }, process.env.JWT_SECRET || "jwt123",  { expiresIn: "5d" });
+    res.cookie("token", token, { httpOnly: true ,sameSite:"strict",secure: process.env.NODE_ENV === "production"});
+
+    res.status(201).json({message:"user Logined succesfully !",
+      user:{
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isBusiness: user.isBusiness,
+        role: role,
+      },token
+  });
+  } catch (error) {
+    console.error("Login Error:", error); 
+    res.status(500).json({error:"server error!"})
   }
 }

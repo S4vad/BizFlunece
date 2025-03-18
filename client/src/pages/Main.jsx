@@ -32,6 +32,7 @@ export default function LandingPage() {
             {!user && (
               <div>
                 <button
+                onClick={()=>navigate('/login')}
                   onMouseEnter={() => setHoverButton("login")}
                   onMouseLeave={() => setHoverButton("signup")}
                   className={`rounded-lg px-4 py-2 transition duration-300 ${
