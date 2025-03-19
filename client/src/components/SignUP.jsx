@@ -2,8 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner"; 
-import GoogleLoginButton from "@/utils/GoogleAuth"; 
+import { toast } from "sonner";
+import GoogleLoginButton from "@/utils/GoogleAuth";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -38,7 +38,18 @@ export default function SignupPage() {
 
       const api = isBusiness ? "business" : "influencer";
 
-      toast.success("Signup successful!");
+      toast.success(
+        <span className="text-green-400">signup Successful !</span>,
+        {
+          description: <span className="text-green-400">Welcome! 🎉</span>,
+          duration: 5000,
+          icon: "✅",
+          action: {
+            label: "cancel",
+            onClick: () => console.log("Toast dismissed"),
+          },
+        },
+      );
 
       setTimeout(() => {
         login(response.data.user);
@@ -46,8 +57,21 @@ export default function SignupPage() {
       }, 1000);
     } catch (error) {
       toast.error(
-        error.response?.data?.error ||
-          "Failed to submit form. Try again later."
+        <span className="font-bold text-red-700">Signup Failed</span>,
+        {
+          description: (
+            <span className="text-red-700">
+              {error.response?.data?.error ||
+                "Failed to submit form. Try again later."}
+            </span>
+          ),
+          duration: 5000,
+          icon: "❌",
+          action: {
+            label: "cancel",
+            onClick: () => console.log("Toast dismissed"),
+          },
+        },
       );
     }
   };
@@ -77,7 +101,7 @@ export default function SignupPage() {
             Influencer
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4 mb-4">
+        <form onSubmit={handleSubmit} className="mb-4 space-y-4">
           <div>
             <label className="mb-2 block text-gray-700">Name</label>
             <input
@@ -85,7 +109,7 @@ export default function SignupPage() {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full rounded-lg border px-4 py-2 focus:border bg-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-lg border bg-white px-4 py-2 focus:border focus:ring-2 focus:ring-indigo-500"
               placeholder="Name"
               required
             />
@@ -99,7 +123,7 @@ export default function SignupPage() {
               value={formData.email}
               onChange={handleInputChange}
               placeholder="Email"
-              className="w-full rounded-lg border px-4 py-2 bg-white focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-lg border bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
@@ -111,7 +135,7 @@ export default function SignupPage() {
               placeholder="Password"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full rounded-lg border px-4 py-2 bg-white focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-lg border bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
@@ -127,7 +151,7 @@ export default function SignupPage() {
                 placeholder="Social Media Handle"
                 value={formData.socialMediaHandle}
                 onChange={handleInputChange}
-                className="w-full rounded-lg border px-4 py-2 bg-white focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 required={!isBusiness}
               />
             </div>
@@ -140,8 +164,7 @@ export default function SignupPage() {
             Create Account
           </button>
         </form>
-        <GoogleLoginButton isBusiness={isBusiness}/>
-        
+        <GoogleLoginButton isBusiness={isBusiness} />
       </div>
     </div>
   );

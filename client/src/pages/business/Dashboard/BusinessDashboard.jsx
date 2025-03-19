@@ -1,8 +1,10 @@
 import StatCard from "@/pages/influencer/InfluencerDashboard/components/StatCard";
 import ActiveCampaign from "./components/ActiveCampaign";
 import RecentActivities from "./components/RecentActivities";
+import { useNavigate } from "react-router-dom";
 
 export default function BusinessDashboard() {
+  const navigate=useNavigate();
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -10,7 +12,7 @@ export default function BusinessDashboard() {
           <h1 className="text-3xl font-bold text-gray-900">
             Business Dashboard
           </h1>
-          <button className="rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700">
+          <button onClick={()=>navigate('/business/createcampaign')} className="rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700">
             + Create New Campaign
           </button>
         </div>

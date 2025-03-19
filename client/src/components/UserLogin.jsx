@@ -35,6 +35,11 @@ export default function LoginPage() {
       toast.success(<span className="text-green-400">Login Successful</span>, {
         description: <span className="text-green-400">Welcome back! 🎉</span>,
         duration: 5000,
+        icon: "✅",
+        action: {
+          label: "cancel",
+          onClick: () => console.log("Toast dismissed"),
+        },
       });
 
       await login(response.data.user);
@@ -53,6 +58,12 @@ export default function LoginPage() {
             </span>
           ),
           duration: 5000,
+
+          icon: "❌",
+          action: {
+            label: "cancel",
+            onClick: () => console.log("Toast dismissed"),
+          },
         },
       );
     }
