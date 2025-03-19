@@ -18,7 +18,10 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <GoogleOAuthProvider clientId={clientId}>
         <ThemeProvider>
-          <Toaster position="top-right" richColors />
+          <Toaster
+            position="top-right"
+            richColors
+          />
           <App />
         </ThemeProvider>
       </GoogleOAuthProvider>

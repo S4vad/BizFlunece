@@ -56,8 +56,8 @@ export default function CreateCampaign() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-4xl rounded-xl bg-white p-8 shadow-sm">
+    <div className="flex min-h-screen items-center justify-center  bg-gray-50">
+      <div className="w-full max-w-4xl rounded-xl bg-white p-8  shadow-sm">
 
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Create a New Campaign</h2>
@@ -128,6 +128,19 @@ export default function CreateCampaign() {
                 required
               />
             </div>
+                        {/* Video Ad Upload */}
+                        <div>
+              <label className="mb-2 block text-gray-700">
+                Upload Short Video Ad
+              </label>
+              <input
+                type="file"
+                name="videoAd"
+                onChange={handleVideoUpload}
+                className="w-full rounded-lg border bg-white  px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
+                accept="video/*"
+              />
+            </div>
           </div>
 
           {/* Right Column */}
@@ -186,19 +199,7 @@ export default function CreateCampaign() {
               />
             </div>
 
-            {/* Video Ad Upload */}
-            <div>
-              <label className="mb-2 block text-gray-700">
-                Upload Short Video Ad
-              </label>
-              <input
-                type="file"
-                name="videoAd"
-                onChange={handleVideoUpload}
-                className="w-full rounded-lg border bg-white  px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
-                accept="video/*"
-              />
-            </div>
+
           </div>
         </form>
       </div>
