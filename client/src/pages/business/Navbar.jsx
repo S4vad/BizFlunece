@@ -49,7 +49,7 @@ export default function Navbar() {
                 <ul className="py-2 text-sm">
                   <li className="cursor-pointer px-4 py-2 hover:bg-gray-100 flex items-center gap-2">
                   <img src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/profile-52e0dc.svg" alt="Login"  className="!size-[20px]"/>
-                    <Link to={"/influencer/profile"}>Profile</Link>
+                    <Link to={"/business/profile"}>Profile</Link>
                   </li>
                   <li className="cursor-pointer px-4 py-2 hover:bg-gray-100">
                   <GridViewIcon className="!size-4 mr-2"/>
