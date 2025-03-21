@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import googleuser from "../models/googleuser.js";
-
+import InfluencerProfile from "../models/InfluencerProfile.js";
 
 dotenv.config();
 
@@ -27,6 +27,20 @@ export async function userSignup(req, res) {
     });
 
     const role = isBusiness ? "business" : "influencer";  
+
+
+    if (!isBusiness) {
+      
+      await InfluencerProfile.create({
+        userId: newUser._id,
+        name: name,
+        image: "",
+        aboutMe: "",
+        bio: "",
+        location:"",
+        platforms: [], 
+      });
+    }
 
 
     const token = jwt.sign(
@@ -156,3 +170,43 @@ export async function userLogin(req, res) {
     res.status(500).json({error:"server error!"})
   }
 }
+
+export async function userProfile(req, res) {
+  try {
+    const userId = req.params.userId;
+    const profile = await InfluencerProfile.findOne({ userId });
+
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });  
+    }
+
+    res.status(200).json(profile);  
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ error: "Internal server error" }); 
+  }
+}
+
+
+export async function profileUpdate(req, res) {
+  try {
+    const { userId } = req.params;
+
+    const updatedProfile = await InfluencerProfile.findOneAndUpdate(
+      { userId },
+      { $push: { portfolio: req.body } }, // Use `$push` for adding to arrays
+      { new: true }
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    res.json(updatedProfile);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
