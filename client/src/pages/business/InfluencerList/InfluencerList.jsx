@@ -7,27 +7,27 @@ import { useAuth } from "@/context/AuthContext";
 export default function InfluencerList() {
   const { user } = useAuth();
   const [influencers, setInfluencers] = useState([]);
-  const [favoriteInfluencers, setFavoriteInfluencers] = useState([]);
+  const [favoriteInfluencers, setFavoriteInfluencers] = useState(new Set());
 
   useEffect(() => {
     const fetchInfluencers = async () => {
       try {
-        const response = await axios.get("/business/influencerlist");
-        setInfluencers(response.data.data);
+        const { data } = await axios.get("/business/influencerlist");
+        setInfluencers(data.data);
       } catch (error) {
         console.log("Error fetching infleunceres", error);
       }
     };
 
-
     const fetchFavoriteInfluencers = async () => {
       try {
         const businessId = user.id;
-        const response = await axios.get(`/business/favoriteInfluencers/${businessId}`);
-        
-        // Ensure it's an array of IDs
-        const favIds = response.data.data?.influencerId || [];
-        setFavoriteInfluencers(favIds.map(id => id.toString())); 
+        const { data } = await axios.get(
+          `/business/favoriteInfluencers/${businessId}`,
+        );
+        const favIds = data.data || [];
+        console.log("the fav id in front ed", favIds);
+        setFavoriteInfluencers(new Set(favIds.map((inf) => inf._id.toString())));
       } catch (error) {
         console.log("Error fetching FavInfluencer", error);
       }
@@ -35,52 +35,35 @@ export default function InfluencerList() {
 
     fetchInfluencers();
     fetchFavoriteInfluencers();
-  }, []);
+  }, [user.id]);
 
-  const addFavInfluencer = async (id) => {
-    const influencerId = id;
-    const businessId = user.id;
-    console.log(influencerId, businessId);
 
+  const toggleFavorite = async (influencerId) => {
     try {
-      const response = await axios.post("/business/addFav", {
-        influencerId,
-        businessId,
-      });
-
-      if (response.data.success) {
-        toast.success("Added successfully");
-
-        setFavoriteInfluencers((prevInfluencers) => [
-          ...prevInfluencers,
+      if (favoriteInfluencers.has(influencerId)) {
+        await axios.post("/business/removeFav", {
           influencerId,
-        ]);
+          businessId: user.id,
+        });
+        setFavoriteInfluencers((prev) => {
+          const newFavorites = new Set(prev);
+          newFavorites.delete(influencerId);
+          return newFavorites;
+        });
+        toast.success("Removed from favorites");
       } else {
-        toast.error("Failed to add influencer");
+        await axios.post("business/addFav", {
+          influencerId,
+          businessId: user.id,
+        });
+        setFavoriteInfluencers((prev) => new Set(prev).add(influencerId));
+        toast.success("Added successfully");
       }
     } catch (error) {
-      console.error("Error adding influencer:", error);
+      console.error("Error toggling favorite:", error);
       toast.error("An error occurred");
     }
   };
-
-  const removeInfluencer = async (id) => {
-    try {
-      const response = await axios.post("/business/removefav", { influencerId: id, businessId: user.id });
-  
-      if (response.data.success) {
-        toast.success("Removed from favorites");
-  
-        // Update state correctly
-        setFavoriteInfluencers(prev => prev.filter(favId => favId !== id));
-      } else {
-        toast.error("Failed to remove influencer");
-      }
-    } catch (error) {
-      console.error("Error removing influencer:", error);
-    }
-  };
-  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,10 +93,8 @@ export default function InfluencerList() {
               <InfluencerCard
                 key={index}
                 influencer={influencer}
-                index={index}
-                addFavInfluencer={addFavInfluencer}
-                removeInfluencer={removeInfluencer}
-                favoriteInfluencers={favoriteInfluencers}
+                isFavorite={favoriteInfluencers.has(influencer._id)}
+                toggleFavorite={toggleFavorite}
               />
             ))}
           </div>
