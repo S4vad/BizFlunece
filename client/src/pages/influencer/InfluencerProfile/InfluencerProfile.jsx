@@ -6,7 +6,7 @@ import ProfileHeader from "./components/ProfileHeader";
 import ProfileStatus from "./components/ProfileStatus";
 import axios from "axios";
 import { toast } from "sonner";
-import PortfolioItem from "./components/PortfolioItem";
+import PlatformItem from "./components/PlatformItem";
 import AddPlatformModal from "./components/AddPlatformModal";
 import { Plus } from "lucide-react";
 
@@ -18,9 +18,8 @@ export default function InfluencerProfile() {
     followers: "---",
     engagementRate: "N/A",
     location: "-----",
-    platforms: [],
-    portfolio: [],
-    image: "/default-profile.jpg",
+    platform: [],
+    image: "/image.png",
     aboutMe: "Add your brief introduction here...",
     bio: "Add your bio here",
   });
@@ -35,7 +34,7 @@ export default function InfluencerProfile() {
           setProfile((prev) => ({
             ...prev,
             ...response.data,
-            portfolio: response.data.portfolio || [], // Ensure portfolio is always an array
+            platform: response.data.platform || [], // Ensure portfolio is always an array
           }));
         }
       } catch (error) {
@@ -51,11 +50,20 @@ export default function InfluencerProfile() {
   const handleInputChange = (field, value) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
-  const handleAddPlatform = (newPlatform) => {
-    setProfile((prev) => {
-      const updatedPortfolio = [...prev.portfolio, newPlatform];
-      return { ...prev, portfolio: updatedPortfolio };
-    });
+
+  const handleAddPlatform = async (newPlatform) => {
+    try {
+      const updatedProfile = await axios.put(`/profile/${user.id}`, {
+        ...profile,
+        platform: [...(profile.platform || []), newPlatform],
+      });
+
+      setProfile(updatedProfile.data); // Refresh state with latest data
+      toast.success("Platform added successfully");
+    } catch (error) {
+      console.error("Error adding platform:", error);
+      toast.error("Failed to add platform");
+    }
   };
 
   const handleSave = async () => {
@@ -64,6 +72,7 @@ export default function InfluencerProfile() {
       setIsEditing(false);
       toast.success("Profile updated successfully");
     } catch (error) {
+      console.error("Error updating profile:", error); // Debugging
       toast.error("Error updating profile");
     }
   };
@@ -86,12 +95,27 @@ export default function InfluencerProfile() {
           />
         </Card>
         <div className="mx-auto mt-8 max-w-4xl">
-          <p>Add Your Active Platform here</p>
+          <div className="flex items-center justify-between mb-6 ml-2">
+            <h1 className="text-2xl font-semibold text-gray-800">Platforms</h1>
+            {/* Add Platform Button */}
+            <button
+              onClick={() => setIsModalOpen(true)} // Open the modal
+              className="mt-4 flex items-center justify-center rounded-full bg-gray-200 p-1 text-white hover:bg-blue-300"
+            >
+              <Plus size={20} /> {/* Plus icon */}
+            </button>
+          </div>
+
+          {profile.platform.length === 0 && (
+            <p className="text-lg text-gray-600">
+              Add Your Active Platform here
+            </p>
+          )}
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {profile.portfolio.length > 0 ? (
-              profile.portfolio.map((platform, index) => (
-                <PortfolioItem
+            {profile.platform.length > 0 ? (
+              profile.platform.map((platform, index) => (
+                <PlatformItem
                   key={`${platform.platform}-${index}`}
                   platform={platform}
                 />
@@ -100,14 +124,6 @@ export default function InfluencerProfile() {
               <p className="text-gray-500">No platforms added yet.</p>
             )}
           </div>
-
-          {/* Add Platform Button */}
-          <button
-            onClick={() => setIsModalOpen(true)} // Open the modal
-            className="mt-4 flex items-center justify-center rounded-full bg-gray-200 p-2 text-white hover:bg-blue-300"
-          >
-            <Plus size={20} /> {/* Plus icon */}
-          </button>
         </div>
 
         {/* Add Platform Modal */}

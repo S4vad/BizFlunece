@@ -1,22 +1,86 @@
+import { useEffect, useState } from "react";
 import InfluencerCard from "./components/InfluencerCard";
+import axios from "axios";
+import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 export default function InfluencerList() {
-  const influencers = [
-    {
-      name: "John Doe",
-      followers: "120K",
-      engagement: "4.8%",
-      niche: "Fashion",
-    },
-    {
-      name: "Sarah Smith",
-      followers: "85K",
-      engagement: "6.2%",
-      niche: "Tech",
-    },
-    { name: "Savad", followers: "2.5M", engagement: "48%", niche: "Tech" },
-    { name: "Sunoos", followers: "5.5M", engagement: "48%", niche: "Gamer" },
-  ];
+  const { user } = useAuth();
+  const [influencers, setInfluencers] = useState([]);
+  const [favoriteInfluencers, setFavoriteInfluencers] = useState([]);
+
+  useEffect(() => {
+    const fetchInfluencers = async () => {
+      try {
+        const response = await axios.get("/business/influencerlist");
+        setInfluencers(response.data.data);
+      } catch (error) {
+        console.log("Error fetching infleunceres", error);
+      }
+    };
+
+
+    const fetchFavoriteInfluencers = async () => {
+      try {
+        const businessId = user.id;
+        const response = await axios.get(`/business/favoriteInfluencers/${businessId}`);
+        
+        // Ensure it's an array of IDs
+        const favIds = response.data.data?.influencerId || [];
+        setFavoriteInfluencers(favIds.map(id => id.toString())); 
+      } catch (error) {
+        console.log("Error fetching FavInfluencer", error);
+      }
+    };
+
+    fetchInfluencers();
+    fetchFavoriteInfluencers();
+  }, []);
+
+  const addFavInfluencer = async (id) => {
+    const influencerId = id;
+    const businessId = user.id;
+    console.log(influencerId, businessId);
+
+    try {
+      const response = await axios.post("/business/addFav", {
+        influencerId,
+        businessId,
+      });
+
+      if (response.data.success) {
+        toast.success("Added successfully");
+
+        setFavoriteInfluencers((prevInfluencers) => [
+          ...prevInfluencers,
+          influencerId,
+        ]);
+      } else {
+        toast.error("Failed to add influencer");
+      }
+    } catch (error) {
+      console.error("Error adding influencer:", error);
+      toast.error("An error occurred");
+    }
+  };
+
+  const removeInfluencer = async (id) => {
+    try {
+      const response = await axios.post("/business/removefav", { influencerId: id, businessId: user.id });
+  
+      if (response.data.success) {
+        toast.success("Removed from favorites");
+  
+        // Update state correctly
+        setFavoriteInfluencers(prev => prev.filter(favId => favId !== id));
+      } else {
+        toast.error("Failed to remove influencer");
+      }
+    } catch (error) {
+      console.error("Error removing influencer:", error);
+    }
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,6 +111,9 @@ export default function InfluencerList() {
                 key={index}
                 influencer={influencer}
                 index={index}
+                addFavInfluencer={addFavInfluencer}
+                removeInfluencer={removeInfluencer}
+                favoriteInfluencers={favoriteInfluencers}
               />
             ))}
           </div>

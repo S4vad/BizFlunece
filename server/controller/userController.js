@@ -26,22 +26,19 @@ export async function userSignup(req, res) {
       socialMediaHandle: socialMediaHandle,
     });
 
-    const role = isBusiness ? "business" : "influencer";  
-
+    const role = isBusiness ? "business" : "influencer";
 
     if (!isBusiness) {
-      
       await InfluencerProfile.create({
         userId: newUser._id,
         name: name,
         image: "",
         aboutMe: "",
         bio: "",
-        location:"",
-        platforms: [], 
+        location: "",
+        platforms: [],
       });
     }
-
 
     const token = jwt.sign(
       { userId: newUser._id },
@@ -110,8 +107,6 @@ export async function googleAuth(req, res) {
       sameSite: "Lax",
     });
 
-    
-
     res.status(201).json({
       message: "User signed up successfully!",
       user: {
@@ -132,42 +127,48 @@ export async function userLogin(req, res) {
   const { email, password } = req.body;
 
   try {
-
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const user = await userModel.findOne({email});
-
-
+    const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({error:"Email is not registered"});
+      return res.status(400).json({ error: "Email is not registered" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({error:"Password is not correct"});
+      return res.status(400).json({ error: "Password is not correct" });
     }
 
-    const role = user.isBusiness ? "business" : "influencer";  
+    const role = user.isBusiness ? "business" : "influencer";
 
+    const token = jwt.sign(
+      { userId: user.id, role },
+      process.env.JWT_SECRET || "jwt123",
+      { expiresIn: "5d" }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
 
-    const token = jwt.sign({ userId: user.id,role }, process.env.JWT_SECRET || "jwt123",  { expiresIn: "5d" });
-    res.cookie("token", token, { httpOnly: true ,sameSite:"strict",secure: process.env.NODE_ENV === "production"});
-
-    res.status(201).json({message:"user Logined succesfully !",
-      user:{
+    res.status(201).json({
+      message: "user Logined succesfully !",
+      user: {
         id: user._id,
         name: user.name,
         email: user.email,
         isBusiness: user.isBusiness,
         role: role,
-      },token
-  });
+      },
+      token,
+    });
   } catch (error) {
-    console.error("Login Error:", error); 
-    res.status(500).json({error:"server error!"})
+    console.error("Login Error:", error);
+    res.status(500).json({ error: "server error!" });
   }
 }
 
@@ -177,24 +178,22 @@ export async function userProfile(req, res) {
     const profile = await InfluencerProfile.findOne({ userId });
 
     if (!profile) {
-      return res.status(404).json({ error: "Profile not found" });  
+      return res.status(404).json({ error: "Profile not found" });
     }
 
-    res.status(200).json(profile);  
+    res.status(200).json(profile);
   } catch (error) {
     console.error("Error fetching profile:", error);
-    res.status(500).json({ error: "Internal server error" }); 
+    res.status(500).json({ error: "Internal server error" });
   }
 }
-
 
 export async function profileUpdate(req, res) {
   try {
     const { userId } = req.params;
-
     const updatedProfile = await InfluencerProfile.findOneAndUpdate(
       { userId },
-      { $push: { portfolio: req.body } }, // Use `$push` for adding to arrays
+      { $set: req.body }, // Use `$set` to update the entire profile
       { new: true }
     );
 
@@ -209,4 +208,28 @@ export async function profileUpdate(req, res) {
   }
 }
 
+export async function uploadImage(req, res) {
+  try {
+    const { userId } = req.params;
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
 
+    const imageUrl = req.file.path; //cloudinary image url
+
+    const updatedProfile = await InfluencerProfile.findOneAndUpdate(
+      { userId },
+      { $set: { image: imageUrl } },
+      { new: true }
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ error: "profile not found" });
+    }
+    console.log("the imgea rl is", imageUrl);
+    res.json({ success: true, imageUrl });
+  } catch (error) {
+    console.log("image upload error", error);
+    res.status(500).json({ error: "Internal server error!" });
+  }
+}

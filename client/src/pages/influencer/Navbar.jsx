@@ -58,13 +58,15 @@ export default function Navbar() {
             {showProfile && (
               <div className="absolute right-0 top-10 z-10 h-40 w-36 rounded-md border border-gray-200 bg-white shadow-md">
                 <ul className="py-2 text-sm">
-                  <li className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-100">
+                    onClick={() => navigate("/influencer/profile")}
+                    <li className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-100" >
                     <img
                       src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/profile-52e0dc.svg"
                       alt="Login"
                       className="!size-[20px]"
                     />
-                    <Link to={"/influencer/profile"}>Profile</Link>
+                    Profile
+                    
                   </li>
                   <li
                     className="cursor-pointer px-4 py-2 hover:bg-gray-100"

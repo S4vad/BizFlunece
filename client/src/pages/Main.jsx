@@ -15,13 +15,13 @@ export default function LandingPage() {
   const user = getUserFromStorage();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-night">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-background">
       {/* Navbar */}
-      <nav className="bg-white shadow-sm dark:bg-night-50">
+      <nav className="bg-white shadow-sm dark:bg-dark-surface">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
           <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
-            <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">
+            <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-dark-text-primary dark:hover:text-indigo-500">
               About Us
             </div>
             <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">

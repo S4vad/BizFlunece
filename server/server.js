@@ -6,6 +6,7 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes.js"
 // import adminRoute from './routes/adminRoute'
 import cookieParser from "cookie-parser";
+import businessRoutes from "./routes/businessRoutes.js"
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 
 app.use('/',userRoutes)
 // app.use('/admin',adminRoute)
+app.use("/business", businessRoutes); 
 
 app.use(express.static("public"));
 

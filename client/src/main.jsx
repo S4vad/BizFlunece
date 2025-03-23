@@ -9,7 +9,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "sonner";
 
 const clientId = import.meta.env.VITE_CLIENT_ID;
-console.log("Google Client ID from env:", clientId);
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -26,5 +25,5 @@ createRoot(document.getElementById("root")).render(
         </ThemeProvider>
       </GoogleOAuthProvider>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );

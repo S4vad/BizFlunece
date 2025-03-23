@@ -25,10 +25,7 @@ const profileSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    platforms: {
-      type: [String],
-    },
-    portfolio: [
+    platform: [
       {
         platform: {
           type: String,
@@ -52,7 +49,6 @@ const profileSchema = new mongoose.Schema(
     ],
     image: {
       type: String,
-
       trim: true,
     },
     aboutMe: {
