@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 const Fav = new mongoose.Schema({
-  BusinessId:{type:Number,required:true},
-  InfluencerId: { type: Number, required: true }
+  businessId: { type: String, required: true },
+  influencerId: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "InfluencerProfile",
+    required: true,
+    unique:true
+  },]
 });
 
-
-const FavInfluencer = mongoose.model('FavInfluencer',Fav)
+const FavInfluencer = mongoose.model("FavInfluencer", Fav);
 
 export default FavInfluencer;

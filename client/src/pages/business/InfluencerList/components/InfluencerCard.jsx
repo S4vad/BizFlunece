@@ -1,8 +1,34 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const InfluencerCard = ({ influencer, index }) => {
+const InfluencerCard = ({
+  influencer,
+  index,
+  addFavInfluencer,
+  removeInfluencer,
+  favoriteInfluencers
+}) => {
   const [hasLiked, setHasLiked] = useState(false);
+
+  useEffect(()=>{
+    if(favoriteInfluencers.includes(influencer._id)){
+      setHasLiked(true)
+    }
+  },[favoriteInfluencers,influencer._id])
+
+  const handleLike = async () => {
+    try {
+      if (hasLiked) {
+        const response = await removeInfluencer(influencer._id);
+        if (response.success) setHasLiked(false);
+      } else {
+        const response = await addFavInfluencer(influencer._id);
+        if (response.success) setHasLiked(true);
+      }
+    } catch (error) {
+      console.error("Error handling favorite:", error);
+    }
+  };
 
   return (
     <div
@@ -18,7 +44,7 @@ const InfluencerCard = ({ influencer, index }) => {
           <p className="text-gray-600">{influencer.niche}</p>
         </div>
         <button
-          onClick={() => setHasLiked(!hasLiked)}
+          onClick={handleLike}
           className="absolute right-2 top-2 z-10 transform transition-transform hover:scale-110"
         >
           {hasLiked ? "❤️" : "🤍"}
@@ -42,10 +68,12 @@ export default InfluencerCard;
 
 InfluencerCard.propTypes = {
   influencer: PropTypes.shape({
+    _id: PropTypes.string.isRequired, // Added _id
     name: PropTypes.string.isRequired,
     followers: PropTypes.string.isRequired,
     engagement: PropTypes.string.isRequired,
     niche: PropTypes.string.isRequired,
   }).isRequired,
   index: PropTypes.number.isRequired,
+  addFavInfluencer: PropTypes.func.isRequired,
 };

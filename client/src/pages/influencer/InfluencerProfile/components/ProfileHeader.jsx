@@ -1,6 +1,9 @@
 import { Edit, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function ProfileHeader({
   profile,
@@ -9,24 +12,65 @@ export default function ProfileHeader({
   onSave,
   onInputChange,
 }) {
+  const [image, setImage] = useState(profile.image);
+  const [loading, setLoading] = useState(false);
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await axios.post(
+        `profile/upload/${profile.userId}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+
+      if (response.data.success) {
+        setImage(response.data.imageUrl);
+        onInputChange("image", response.data.imageUrl); //update image in profile state
+        toast.success("profile image update succesfully")
+        console.log("Server response:", response.data);
+
+      }
+    } catch (error) {
+      console.log("Error uploading image",error)
+      
+    }finally{
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <div className="items-center space-y-8 sm:flex sm:space-x-6">
         <div className="relative">
-          <img
-            src={profile.image || "/default-profile.jpg"}
-            alt="Influencer"
-            className="h-28 w-28 rounded-full border-4 border-gray-200 object-cover sm:h-32 sm:w-32"
-          />
-          {isEditing && (
-            <button
-              onClick={() =>
-                onInputChange("image", prompt("Enter new image URL:"))
-              }
-              className="absolute bottom-0 right-0 rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700"
-            >
-              <Edit size={16} />
-            </button>
+          {isEditing ? (
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+              <img
+                src={image}
+                alt="profile"
+                className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover hover:opacity-80"
+              />
+              {loading && <p className="text-sm text-gray-500">Uploading...</p>}
+            </label>
+          ) : (
+            <img
+              src={image}
+              alt="profile"
+              className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover hover:opacity-80"
+            />
           )}
         </div>
 
@@ -36,7 +80,7 @@ export default function ProfileHeader({
               type="text"
               value={profile.name}
               onChange={(e) => onInputChange("name", e.target.value)}
-              className="text-2xl font-bold border border-gray-300 p-2 rounded-lg w-full"
+              className="w-full rounded-lg border border-gray-300 p-2 text-2xl font-bold"
             />
           ) : (
             <h2 className="text-2xl font-bold">{profile.name}</h2>
@@ -45,7 +89,7 @@ export default function ProfileHeader({
             <textarea
               value={profile.bio}
               onChange={(e) => onInputChange("bio", e.target.value)}
-              className="mt-2 w-full p-2 border border-gray-300 rounded-lg"
+              className="mt-2 w-full rounded-lg border border-gray-300 p-2"
             />
           ) : (
             <p className="text-gray-500 sm:w-2/3">{profile.bio}</p>
@@ -58,7 +102,7 @@ export default function ProfileHeader({
         </div>
 
         <button
-        className="flex items-center gap-1"
+          className="flex items-center gap-1"
           onClick={isEditing ? onSave : onEdit}
         >
           {isEditing ? <Save size={16} /> : <Edit size={16} />}

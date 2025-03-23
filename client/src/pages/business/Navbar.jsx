@@ -3,8 +3,11 @@ import { ModeToggle } from "@/components/darkmode/ModeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import LogoutIcon from '@mui/icons-material/Logout';
-import GridViewIcon from '@mui/icons-material/GridView';
+import BookmarksIcon from "@mui/icons-material/Bookmarks";
+import LogoutIcon from "@mui/icons-material/Logout";
+import GridViewIcon from "@mui/icons-material/GridView";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
 export default function Navbar() {
@@ -37,32 +40,47 @@ export default function Navbar() {
             onMouseOver={handleHover}
             onMouseOut={handleOutHover}
           >
-            <div className="ring-offset-3 w-12 cursor-pointer rounded-full ring ring-blue-700 ring-offset-base-100">
-              <img
+            <Avatar className="ring ring-blue-700 ring-offset-2">
+              <AvatarImage
                 src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                 alt="Profile"
               />
-            </div>
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
 
             {showProfile && (
-              <div className="absolute right-0 top-12 z-10 w-36 h-40  rounded-md border border-gray-200 bg-white shadow-md">
+              <div className="absolute right-0 top-10 z-10 h-40 w-36 rounded-md border border-gray-200 bg-white shadow-md">
                 <ul className="py-2 text-sm">
-                  <li className="cursor-pointer px-4 py-2 hover:bg-gray-100 flex items-center gap-2">
-                  <img src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/profile-52e0dc.svg" alt="Login"  className="!size-[20px]"/>
-                    <Link to={"/business/profile"}>Profile</Link>
+                    <li className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-100" 
+                    onClick={() => navigate("/business/profile")}
+                    >
+                    <img
+                      src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/profile-52e0dc.svg"
+                      alt="Login"
+                      className="!size-[20px]"
+                    />
+                    Profile
+                    
                   </li>
-                  <li className="cursor-pointer px-4 py-2 hover:bg-gray-100">
-                  <GridViewIcon className="!size-4 mr-2"/>
+                  <li
+                    className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                    onClick={() => navigate("/business/dashboard")}
+                  >
+                    <GridViewIcon className="mr-2 !size-4" />
                     Dashboard
                   </li>
-                  <li className="cursor-pointer px-4 py-2 hover:bg-gray-100" onClick={()=>navigate("/business/favorite")}>
-                    <FavoriteBorderIcon className="!h-4 !w-4 mr-2"/>Favorite
+                  <li
+                    className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                    onClick={() => navigate("/business/Favorite")}
+                  >
+                    <BookmarksIcon className="mr-2 !h-4 !w-4" />
+                    Favorite
                   </li>
                   <li
                     onClick={profileLogout}
                     className="cursor-pointer px-4 py-2 text-red-600 hover:bg-red-100"
                   >
-                  <LogoutIcon className="!size-4 mr-2 "/>
+                    <LogoutIcon className="mr-2 !size-4" />
                     Logout
                   </li>
                 </ul>

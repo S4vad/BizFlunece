@@ -20,7 +20,7 @@ export default function ProfileStatus({ profile, isEditing, onInputChange }) {
             type="text"
             value={profile.location}
             onChange={(e) => onInputChange("location", e.target.value)}
-            className="text-lg font-semibold text-gray-900 border border-gray-300 p-2 rounded-lg w-full"
+            className="w-full rounded-lg border border-gray-300 p-2 text-lg font-semibold text-gray-900"
           />
         ) : (
           <p className="text-lg font-semibold text-gray-900">
@@ -30,20 +30,10 @@ export default function ProfileStatus({ profile, isEditing, onInputChange }) {
       </div>
       <div>
         <p className="text-sm text-gray-500">Platforms</p>
-        {isEditing ? (
-          <input
-            type="text"
-            value={profile.platforms.join(", ")}
-            onChange={(e) =>
-              onInputChange("platforms", e.target.value.split(", "))
-            }
-            className="text-lg font-semibold text-gray-900 border border-gray-300 p-2 rounded-lg w-full"
-          />
-        ) : (
-          <p className="text-lg font-semibold text-gray-900">
-            {profile.platforms.join(", ")}
-          </p>
-        )}
+
+        <p className="text-lg font-semibold text-gray-900">
+          {profile.platform.map((p) => p.platform).join(", ")}
+        </p>
       </div>
     </div>
   );

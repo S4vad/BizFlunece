@@ -1,4 +1,4 @@
-export default function PortfolioItem({ platform }) {
+export default function PlatformItem({ platform }) {
   // Handle undefined platform
   if (!platform) {
    return null; // Or render a fallback UI
