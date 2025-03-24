@@ -6,7 +6,7 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import ThemeProvider from "./components/darkmode/ThemeProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { Toaster } from "sonner";
+import { Toaster } from "react-hot-toast";
 
 const clientId = import.meta.env.VITE_CLIENT_ID;
 
@@ -19,7 +19,6 @@ createRoot(document.getElementById("root")).render(
         <ThemeProvider>
           <Toaster
             position="top-right"
-            richColors
           />
           <App />
         </ThemeProvider>

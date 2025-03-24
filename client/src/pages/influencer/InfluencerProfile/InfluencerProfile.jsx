@@ -5,7 +5,7 @@ import { getUserFromStorage } from "@/utils/LocalStorage";
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileStatus from "./components/ProfileStatus";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import PlatformItem from "./components/PlatformItem";
 import AddPlatformModal from "./components/AddPlatformModal";
 import { Plus } from "lucide-react";

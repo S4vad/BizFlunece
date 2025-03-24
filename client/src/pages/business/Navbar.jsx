@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GridViewIcon from "@mui/icons-material/GridView";
