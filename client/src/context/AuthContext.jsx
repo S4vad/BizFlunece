@@ -1,23 +1,39 @@
-import { createContext, useContext, useState } from "react";
-import {
-  getUserFromStorage,
-  setUserToStorage,
-  removeUserFromStorage,
-} from "../utils/LocalStorage";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(getUserFromStorage());
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  
+  useEffect(() => {
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    if (savedUser) {
+      setUser(savedUser);
+      redirectBasedOnRole(savedUser.role);
+    }
+  }, []);
 
   const login = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-    setUserToStorage(userData);
+    redirectBasedOnRole(userData.role);
   };
 
   const logout = () => {
+    localStorage.removeItem("user");
     setUser(null);
-    removeUserFromStorage();
+    navigate("/login");
+  };
+
+  const redirectBasedOnRole = (role) => {
+    if (role === "influencer") {
+      navigate("/influencer/dashboard");
+    } else if (role === "business") {
+      navigate("/business/dashboard");
+    }
   };
 
   return (
@@ -27,6 +43,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-
-export const useAuth =() =>useContext(AuthContext);
-//custom hook for using AuthContext
+export const useAuth = () => useContext(AuthContext);

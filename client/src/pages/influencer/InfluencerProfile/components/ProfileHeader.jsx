@@ -35,20 +35,18 @@ export default function ProfileHeader({
       if (response.data.success) {
         setImage(response.data.imageUrl);
         onInputChange("image", response.data.imageUrl); //update image in profile state
-        toast.success("profile image update succesfully")
+        toast.success("profile image update succesfully");
         console.log("Server response:", response.data);
-
       }
     } catch (error) {
-      console.log("Error uploading image",error)
-      
-    }finally{
+      console.log("Error uploading image", error);
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
+    <div className="relative">
       <div className="items-center space-y-8 sm:flex sm:space-x-6">
         <div className="relative">
           {isEditing ? (
@@ -59,7 +57,7 @@ export default function ProfileHeader({
                 onChange={handleImageUpload}
               />
               <img
-                src={image}
+                src={profile.image}
                 alt="profile"
                 className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover hover:opacity-80"
               />
@@ -67,7 +65,7 @@ export default function ProfileHeader({
             </label>
           ) : (
             <img
-              src={image}
+              src={profile.image}
               alt="profile"
               className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover hover:opacity-80"
             />
@@ -102,10 +100,14 @@ export default function ProfileHeader({
         </div>
 
         <button
-          className="flex items-center gap-1"
+          className={`${isEditing ? "text-green-700" : "text-blue-700"} flex items-center gap-1 absolute top-1 right-1`}
           onClick={isEditing ? onSave : onEdit}
         >
-          {isEditing ? <Save size={16} /> : <Edit size={16} />}
+          {isEditing ? (
+            <Save className="stroke-green-700" size={16} />
+          ) : (
+            <Edit className="stroke-blue-700" size={16} />
+          )}
           {isEditing ? "Save" : "Edit"}
         </button>
       </div>

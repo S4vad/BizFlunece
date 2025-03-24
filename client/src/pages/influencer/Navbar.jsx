@@ -1,17 +1,35 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GridViewIcon from "@mui/icons-material/GridView";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import axios from "axios";
+import { getUserFromStorage } from "@/utils/LocalStorage";
 
 export default function Navbar() {
   const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
+
+  const [profile, setProfile] = useState(null);
+  const user = getUserFromStorage();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(`/profile/${user.id}`);
+        setProfile(response.data);
+      } catch (error) {
+        console.log("Error fetching profile:", error);
+      }
+    };
+
+    if (user) fetchProfile();
+  }, [user]);
 
   const handleHover = () => setShowProfile(true);
   const handleOutHover = () => setShowProfile(false);
@@ -49,7 +67,7 @@ export default function Navbar() {
           >
             <Avatar className="ring ring-blue-700 ring-offset-2">
               <AvatarImage
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                src={profile?.image || "image.png"}
                 alt="Profile"
               />
               <AvatarFallback>U</AvatarFallback>

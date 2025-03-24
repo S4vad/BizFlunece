@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import googleuser from "../models/googleuser.js";
 import InfluencerProfile from "../models/InfluencerProfile.js";
+import campaignData from "../models/campaignData.js";
 
 dotenv.config();
 
@@ -233,3 +234,16 @@ export async function updateImage(req, res) {
     res.status(500).json({ error: "Internal server error!" });
   }
 }
+
+
+export async function getCampaign(req,res){
+  try {
+    const campaigns=await campaignData.find()  
+    res.status(200).json({success:true,data:campaigns})
+    
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" }); 
+    console.log(error);
+    
+  }
+} 
