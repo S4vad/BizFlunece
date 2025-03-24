@@ -208,7 +208,7 @@ export async function profileUpdate(req, res) {
   }
 }
 
-export async function uploadImage(req, res) {
+export async function updateImage(req, res) {
   try {
     const { userId } = req.params;
     if (!req.file || !req.file.path) {

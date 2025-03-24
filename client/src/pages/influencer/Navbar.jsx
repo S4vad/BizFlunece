@@ -22,8 +22,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0  bg-white shadow-sm dark:bg-night-50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 ">
+    <nav className="dark:bg-night-50 sticky top-0 bg-white shadow-sm">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
 
         <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
@@ -58,15 +58,16 @@ export default function Navbar() {
             {showProfile && (
               <div className="absolute right-0 top-10 z-10 h-40 w-36 rounded-md border border-gray-200 bg-white shadow-md">
                 <ul className="py-2 text-sm">
+                  <li
+                    className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-100"
                     onClick={() => navigate("/influencer/profile")}
-                    <li className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-100" >
+                  >
                     <img
                       src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/profile-52e0dc.svg"
                       alt="Login"
                       className="!size-[20px]"
                     />
                     Profile
-                    
                   </li>
                   <li
                     className="cursor-pointer px-4 py-2 hover:bg-gray-100"

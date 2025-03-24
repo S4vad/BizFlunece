@@ -2,7 +2,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 export default function GoogleLoginButton({ isBusiness }) {
   const navigate = useNavigate();

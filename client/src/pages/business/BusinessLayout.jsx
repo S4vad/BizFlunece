@@ -7,7 +7,7 @@ const BusinessLayout = () => {
   return (
     <>
       <Navbar/>
-      <main className="pb-24">
+      <main className="">
         <BusinessRoutes/>
       </main>
 

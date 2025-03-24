@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import InfluencerCard from "./components/InfluencerCard";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 
 export default function InfluencerList() {

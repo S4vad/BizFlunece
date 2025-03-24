@@ -2,7 +2,7 @@ import { Edit, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { useState } from "react";
 
 export default function ProfileHeader({
