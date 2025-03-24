@@ -1,12 +1,13 @@
 import express from "express";
 import { uploadImage } from "../config/cloudinary.js";
 
-import { userSignup ,googleAuth,userLogin,userProfile,profileUpdate, updateImage} from "../controller/userController.js";
+import { userSignup ,googleAuth,userLogin,userProfile,profileUpdate, updateImage,getCampaign} from "../controller/userController.js";
 
 
 const routes =express.Router();
 
 routes.get('/profile/:userId',userProfile)
+routes.get('/influencer/campaignlist',getCampaign)
 
 routes.post('/signup',userSignup)
 routes.post('/login',userLogin)

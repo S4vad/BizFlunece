@@ -77,6 +77,29 @@ export default function InfluencerProfile() {
     }
   };
 
+  const handlePlatform = async (platformId) => {
+    try {
+      
+      setProfile((prev) => ({
+        ...prev,
+        platform: prev.platform.filter((p) => p._id !== platformId),
+      }));
+  
+      // update backend
+      await axios.put(`/profile/${user.id}`, {
+        ...profile,
+        platform: profile.platform.filter((p) => p._id !== platformId),
+      });
+  
+      toast.success("Platform removed successfully");
+    } catch (error) {
+      console.error("Error removing platform:", error);
+      toast.error("Failed to remove platform");
+    }
+  };
+  
+  
+
   return (
     <div className="mx-auto max-w-4xl p-6">
       <Card className="rounded-2xl bg-white p-6 shadow-lg">
@@ -118,6 +141,9 @@ export default function InfluencerProfile() {
                 <PlatformItem
                   key={`${platform.platform}-${index}`}
                   platform={platform}
+                  isEditing={isEditing}
+              
+                  handlePlatform={handlePlatform}
                 />
               ))
             ) : (
