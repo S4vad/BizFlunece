@@ -2,44 +2,38 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Instagram, Youtube, Twitter, Globe } from "lucide-react";
 import { getUserFromStorage } from "@/utils/LocalStorage";
-import ProfileHeader from "./components/ProfileHeader";
-import ProfileStatus from "./components/ProfileStatus";
+import ProfileHeader from "@/pages/influencer/InfluencerProfile/components/ProfileHeader";
+import ProfileStatus from "@/pages/influencer/InfluencerProfile/components/ProfileStatus";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import PlatformItem from "./components/PlatformItem";
-import AddPlatformModal from "./components/AddPlatformModal";
-import { Plus } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+
 
 export default function InfluencerProfile() {
   const [isEditing, setIsEditing] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [profile, setProfile] = useState({
     name: "Your Name",
     followers: "---",
-    engagementRate: "N/A",
+   
     location: "-----",
     platform: [],
     image: "/image.png",
-    aboutMe: "Add your brief introduction here...",
+    aboutUs: "Add your brief introduction here...",
     bio: "Add your bio here",
   });
 
-  const {user} = useAuth();
+  const user = getUserFromStorage();
 
   useEffect(() => {
-    
     if (!user?.id) return;
-    
+
     const fetchProfile = async () => {
       try {
-        const {data} = await axios.get(`/profile/${user.id}`);
-        console.log('the response infleuncer profile i s',data)
+        const { data } = await axios.get(`/profile/${user.id}`);
+        console.log("the response infleuncer profile i s", data);
         if (!isEditing) {
           setProfile((prev) => ({
             ...prev,
             ...data.data,
-            platform: data.data.platform || [], // Ensure portfolio is always an array
           }));
         }
       } catch (error) {
@@ -56,21 +50,6 @@ export default function InfluencerProfile() {
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAddPlatform = async (newPlatform) => {
-    try {
-      const updatedProfile = await axios.put(`/profile/${user.id}`, {
-        ...profile,
-        platform: [...(profile.platform || []), newPlatform],
-      });
-
-      setProfile(updatedProfile.data); 
-      toast.success("Platform added successfully");
-    } catch (error) {
-      console.error("Error adding platform:", error);
-      toast.error("Failed to add platform");
-    }
-  };
-
   const handleSave = async () => {
     try {
       await axios.put(`/profile/${user.id}`, profile);
@@ -81,29 +60,6 @@ export default function InfluencerProfile() {
       toast.error("Error updating profile");
     }
   };
-
-  const handlePlatform = async (platformId) => {
-    try {
-      
-      setProfile((prev) => ({
-        ...prev,
-        platform: prev.platform.filter((p) => p._id !== platformId),
-      }));
-  
-      // update backend
-      await axios.put(`/profile/${user.id}`, {
-        ...profile,
-        platform: profile.platform.filter((p) => p._id !== platformId),
-      });
-  
-      toast.success("Platform removed successfully");
-    } catch (error) {
-      console.error("Error removing platform:", error);
-      toast.error("Failed to remove platform");
-    }
-  };
-  
-  
 
   return (
     <div className="mx-auto max-w-4xl p-6">
@@ -122,57 +78,16 @@ export default function InfluencerProfile() {
             onInputChange={handleInputChange}
           />
         </Card>
-        <div className="mx-auto mt-8 max-w-4xl">
-          <div className="flex items-center justify-between mb-6 ml-2">
-            <h1 className="text-2xl font-semibold text-gray-800">Platforms</h1>
-            {/* Add Platform Button */}
-            <button
-              onClick={() => setIsModalOpen(true)} // Open the modal
-              className="mt-4 flex items-center justify-center rounded-full bg-gray-200 p-1 text-white hover:bg-blue-300"
-            >
-              <Plus size={20} /> {/* Plus icon */}
-            </button>
-          </div>
-
-          {profile.platform.length === 0 && (
-            <p className="text-lg text-gray-600">
-              Add Your Active Platform here
-            </p>
-          )}
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {profile.platform.length > 0 ? (
-              profile.platform.map((platform, index) => (
-                <PlatformItem
-                  key={`${platform.platform}-${index}`}
-                  platform={platform}
-                  isEditing={isEditing}
-              
-                  handlePlatform={handlePlatform}
-                />
-              ))
-            ) : (
-              <p className="text-gray-500">No platforms added yet.</p>
-            )}
-          </div>
-        </div>
-
-        {/* Add Platform Modal */}
-        <AddPlatformModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onAddPlatform={handleAddPlatform}
-        />
 
         <h3 className="mt-6 text-xl font-semibold">About Me</h3>
         {isEditing ? (
           <textarea
-            value={profile.aboutMe}
-            onChange={(e) => handleInputChange("aboutMe", e.target.value)}
+            value={profile.aboutUs}
+            onChange={(e) => handleInputChange("aboutUs", e.target.value)}
             className="mt-2 w-full rounded-lg border border-gray-300 p-2"
           />
         ) : (
-          <p className="mt-2 text-gray-600">{profile.aboutMe}</p>
+          <p className="mt-2 text-gray-600">{profile.aboutUs}</p>
         )}
 
         <h3 className="mt-6 text-xl font-semibold">Campaign History</h3>

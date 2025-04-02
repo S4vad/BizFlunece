@@ -125,6 +125,12 @@ export default function LoginPage() {
           >
             Login
           </button>
+          <div className="text-center dark:text-white">
+            Don't have an account?{" "}
+            <a href="/signup" className="text-indigo-600 dark:text-blue-400">
+              Signup
+            </a>
+          </div>
         </form>
       </div>
     </div>

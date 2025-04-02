@@ -173,16 +173,17 @@ export async function userLogin(req, res) {
   }
 }
 
-export async function userProfile(req, res) {
+export async function getProfile(req, res) {
   try {
     const userId = req.params.userId;
     const profile = await InfluencerProfile.findOne({ userId });
+    console.log('the prefile if',profile)
 
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
     }
 
-    res.status(200).json(profile);
+  res.status(200).json({ success: true, data: profile });
   } catch (error) {
     console.error("Error fetching profile:", error);
     res.status(500).json({ error: "Internal server error" });
