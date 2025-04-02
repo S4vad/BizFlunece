@@ -163,6 +163,12 @@ export default function SignupPage() {
           >
             Create Account
           </button>
+          <div className="text-center dark:text-white">
+            Already have an account?{" "}
+            <a href="/login" className="text-indigo-600 dark:text-blue-400">
+              Login
+            </a>
+          </div>
         </form>
         <GoogleLoginButton isBusiness={isBusiness} />
       </div>

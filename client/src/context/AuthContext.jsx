@@ -4,37 +4,37 @@ import { useNavigate } from "react-router-dom";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
+    return JSON.parse(localStorage.getItem("user")) || null;
+  });
 
-  
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem("user"));
-    if (savedUser) {
-      setUser(savedUser);
-      redirectBasedOnRole(savedUser.role);
+    const hasNavigated = sessionStorage.getItem("hasNavigated");
+    if (user && !hasNavigated) {
+      navigateBasedOnRole(user.role);
+      sessionStorage.setItem("hasNavigated", "true");
     }
-  }, []);
+  }, [user]); // Runs when user state changes
 
   const login = (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
+    sessionStorage.setItem("hasNavigated", "true"); // Set session flag
     setUser(userData);
-    redirectBasedOnRole(userData.role);
+    navigateBasedOnRole(userData.role);
   };
 
   const logout = () => {
     localStorage.removeItem("user");
+    sessionStorage.removeItem("hasNavigated"); // Reset session flag
     setUser(null);
     navigate("/login");
   };
 
-  const redirectBasedOnRole = (role) => {
-    if (role === "influencer") {
-      navigate("/influencer/dashboard");
-    } else if (role === "business") {
-      navigate("/business/dashboard");
-    }
-  };
+  function navigateBasedOnRole(role) {
+    if (role === "influencer") navigate("/influencer/dashboard");
+    else if (role === "business") navigate("/business/dashboard");
+  }
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

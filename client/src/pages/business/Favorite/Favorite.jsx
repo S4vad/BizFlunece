@@ -3,27 +3,36 @@ import { useEffect, useState } from "react";
 import InfluencerCard from "../InfluencerList/components/InfluencerCard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getUserFromStorage } from "@/utils/LocalStorage";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Favorite() {
   const [influencers, setInfluencers] = useState([]);
   const [clicked, setClicked] = useState(false);
+  const {user} = useAuth();
+
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchINfluencers = async () => {
-      const businessId=getUserFromStorage();
+
+    const fetchInfluencers = async () => {
+      console.log('ther user is ',user)
+      if (!user || !user.id) return;
+
       try {
-        const { data } = await axios.get(`/business/favoriteInfluencers/${businessId.id}`);
-        console.log("the influcner are", data);
+        const { data } = await axios.get(
+          `/business/favoriteInfluencers/${user.id}`,
+        );
+        console.log("The influencers are", data);
         setInfluencers(data.data);
       } catch (error) {
-        console.log(error);
+        console.log("Error fetching influencers:", error);
       }
     };
-    fetchINfluencers();
+
+    fetchInfluencers();
   }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       {influencers.length > 0 ? (
@@ -35,11 +44,11 @@ export default function Favorite() {
           </div>
         </div>
       ) : (
-        <p className="mt-10 text-center text-lg text-gray-500">
-          No influencers Added.
+        <div className="mt-10 text-center text-lg text-gray-500">
+          <p>No influencers Added.</p>
           <span className="ml-5 text-indigo-600"> Add Influencer</span>
           <div
-            className="inline-flex align-middle"
+            className="inline-flex cursor-pointer align-middle"
             onClick={() => {
               setClicked(true);
               setTimeout(() => {
@@ -48,11 +57,13 @@ export default function Favorite() {
             }}
           >
             <AiOutlineArrowRight
-              className={`fill-indigo-600 text-indigo-600 hover:translate-x-4 hover:fill-indigo-500 hover:transition-all hover:delay-200 hover:duration-300 ${clicked ? "animate-move-arrow" : ""}`}
+              className={`fill-indigo-600 text-indigo-600 hover:translate-x-4 hover:fill-indigo-500 hover:transition-all hover:delay-200 hover:duration-300 ${
+                clicked ? "animate-move-arrow" : ""
+              }`}
               size={20}
             />
           </div>
-        </p>
+        </div>
       )}
     </div>
   );

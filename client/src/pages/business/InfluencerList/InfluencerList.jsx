@@ -3,11 +3,13 @@ import InfluencerCard from "./components/InfluencerCard";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function InfluencerList() {
   const { user } = useAuth();
   const [influencers, setInfluencers] = useState([]);
   const [favoriteInfluencers, setFavoriteInfluencers] = useState(new Set());
+  const navigate=useNavigate();
 
   useEffect(() => {
     const fetchInfluencers = async () => {
@@ -69,7 +71,7 @@ export default function InfluencerList() {
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mx-auto flex max-w-7xl items-center justify-end px-4 py-3">
-          <button className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+          <button onClick={()=>navigate('/business/createcampaign')} className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
             New Campaign
           </button>
         </div>

@@ -8,7 +8,6 @@ import GridViewIcon from "@mui/icons-material/GridView";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axios from "axios";
-import { getUserFromStorage } from "@/utils/LocalStorage";
 
 export default function Navbar() {
   const [showProfile, setShowProfile] = useState(false);
@@ -16,13 +15,13 @@ export default function Navbar() {
   const { logout } = useAuth();
 
   const [profile, setProfile] = useState(null);
-  const user = getUserFromStorage();
+  const {user} = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`/profile/${user.id}`);
-        setProfile(response.data);
+        const {data} = await axios.get(`/profile/${user.id}`);
+        setProfile(data.data);
       } catch (error) {
         console.log("Error fetching profile:", error);
       }

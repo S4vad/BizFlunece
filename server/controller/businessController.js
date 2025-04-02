@@ -65,7 +65,7 @@ export async function favoriteInfluencers(req, res) {
     const response = await FavInfluencer.findOne({ businessId }).populate(
       "influencerId"
     );
-    console.log("the fav influecers", response);
+    
     res.status(200).json({ success: true, data: response?.influencerId || [] });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });
