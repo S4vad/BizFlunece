@@ -1,7 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import {
+  getUserFromStorage,
+  removeUserFromStorage,
+} from "@/utils/LocalStorage";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GridViewIcon from "@mui/icons-material/GridView";
@@ -12,15 +15,15 @@ import axios from "axios";
 export default function Navbar() {
   const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
   const [profile, setProfile] = useState(null);
-  const {user} = useAuth();
+  const user = getUserFromStorage();
+  const api = user.isBusiness ? "/business/company_profile" : "/profile";
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const {data} = await axios.get(`/profile/${user.id}`);
+        const { data } = await axios.get(`${api}/${user.id}`);
         setProfile(data.data);
       } catch (error) {
         console.log("Error fetching profile:", error);
@@ -28,13 +31,13 @@ export default function Navbar() {
     };
 
     if (user) fetchProfile();
-  }, [user]);
+  }, []);
 
   const handleHover = () => setShowProfile(true);
   const handleOutHover = () => setShowProfile(false);
 
   const profileLogout = async () => {
-    await logout();
+    await removeUserFromStorage();
     navigate("/");
   };
 
@@ -45,18 +48,23 @@ export default function Navbar() {
 
         <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
           <Link
-            to="/influencer/dashboard"
+            to={`/${user.isBusiness ? "business" : "influencer"}/dashboard`}
             className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500"
           >
             Dashboard
           </Link>
-
-          <Link
-            to="/influencer/campaignlist"
-            className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500"
-          >
-            Campaigns
-          </Link>
+          {user.isBusiness ? (
+            <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">
+              <Link to="/business/influencerList">Influencers</Link>
+            </div>
+          ) : (
+            <Link
+              to="/influencer/campaignlist"
+              className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500"
+            >
+              Campaigns
+            </Link>
+          )}
         </div>
         <div className="flex items-center gap-10">
           <div
@@ -65,10 +73,7 @@ export default function Navbar() {
             onMouseOut={handleOutHover}
           >
             <Avatar className="ring ring-blue-700 ring-offset-2">
-              <AvatarImage
-                src={profile?.image || "image.png"}
-                alt="Profile"
-              />
+              <AvatarImage src={profile?.image || "image.png"} alt="Profile" />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
 
@@ -77,7 +82,11 @@ export default function Navbar() {
                 <ul className="py-2 text-sm">
                   <li
                     className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                    onClick={() => navigate("/influencer/profile")}
+                    onClick={() =>
+                      navigate(
+                        `/${user.isBusiness ? "business" : "influencer"}/profile`,
+                      )
+                    }
                   >
                     <img
                       src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/profile-52e0dc.svg"
@@ -88,17 +97,25 @@ export default function Navbar() {
                   </li>
                   <li
                     className="cursor-pointer px-4 py-2 hover:bg-gray-100"
-                    onClick={() => navigate("/influencer/dashboard")}
+                    onClick={() =>
+                      navigate(
+                        `/${user.isBusiness ? "business" : "influencer"}/dashboard`,
+                      )
+                    }
                   >
                     <GridViewIcon className="mr-2 !size-4" />
                     Dashboard
                   </li>
                   <li
                     className="cursor-pointer px-4 py-2 hover:bg-gray-100"
-                    onClick={() => navigate("/influencer/bookmark")}
+                    onClick={() =>
+                      navigate(
+                        `/${user.isBusiness ? "business/favorite" : "influencer/bookmark"}`,
+                      )
+                    }
                   >
                     <BookmarksIcon className="mr-2 !h-4 !w-4" />
-                    Bookmarks
+                    {user.isBusiness ? "Favorite" : "Bookmarks"}
                   </li>
                   <li
                     onClick={profileLogout}

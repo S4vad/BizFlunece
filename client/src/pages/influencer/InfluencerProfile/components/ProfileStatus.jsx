@@ -1,4 +1,9 @@
-export default function ProfileStatus({ profile, isEditing, onInputChange }) {
+export default function ProfileStatus({
+  user,
+  profile,
+  isEditing,
+  onInputChange,
+}) {
   return (
     <div className="ml-4 mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
       <div>
@@ -7,12 +12,15 @@ export default function ProfileStatus({ profile, isEditing, onInputChange }) {
           {profile.followers}
         </p>
       </div>
-      <div>
-        <p className="text-sm text-gray-500">Engagement</p>
-        <p className="text-lg font-semibold text-gray-900">
-          {profile.engagementRate}
-        </p>
-      </div>
+      {!user.isBusiness && (
+        <div>
+          <p className="text-sm text-gray-500">Engagement</p>
+          <p className="text-lg font-semibold text-gray-900">
+            {profile.engagementRate}
+          </p>
+        </div>
+      )}
+
       <div>
         <p className="text-sm text-gray-500">Location</p>
         {isEditing ? (
@@ -28,13 +36,15 @@ export default function ProfileStatus({ profile, isEditing, onInputChange }) {
           </p>
         )}
       </div>
-      <div>
-        <p className="text-sm text-gray-500">Platforms</p>
+      {!user.isBusiness && (
+        <div>
+          <p className="text-sm text-gray-500">Platforms</p>
 
-        <p className="text-lg font-semibold text-gray-900">
-          {profile.platform.map((p) => p.platform).join(", ")}
-        </p>
-      </div>
+          <p className="text-lg font-semibold text-gray-900">
+            {profile.platform.map((p) => p.platform).join(", ")}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
