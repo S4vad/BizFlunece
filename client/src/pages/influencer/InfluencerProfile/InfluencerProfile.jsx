@@ -25,16 +25,15 @@ export default function InfluencerProfile() {
     bio: "Add your bio here",
   });
 
-  const {user} = useAuth();
+  const user = getUserFromStorage();
 
   useEffect(() => {
-    
     if (!user?.id) return;
-    
+
     const fetchProfile = async () => {
       try {
-        const {data} = await axios.get(`/profile/${user.id}`);
-        console.log('the response infleuncer profile i s',data)
+        const { data } = await axios.get(`/profile/${user.id}`);
+        console.log("the response infleuncer profile i s", data);
         if (!isEditing) {
           setProfile((prev) => ({
             ...prev,
@@ -63,7 +62,7 @@ export default function InfluencerProfile() {
         platform: [...(profile.platform || []), newPlatform],
       });
 
-      setProfile(updatedProfile.data); 
+      setProfile(updatedProfile.data);
       toast.success("Platform added successfully");
     } catch (error) {
       console.error("Error adding platform:", error);
@@ -84,32 +83,30 @@ export default function InfluencerProfile() {
 
   const handlePlatform = async (platformId) => {
     try {
-      
       setProfile((prev) => ({
         ...prev,
         platform: prev.platform.filter((p) => p._id !== platformId),
       }));
-  
+
       // update backend
       await axios.put(`/profile/${user.id}`, {
         ...profile,
         platform: profile.platform.filter((p) => p._id !== platformId),
       });
-  
+
       toast.success("Platform removed successfully");
     } catch (error) {
       console.error("Error removing platform:", error);
       toast.error("Failed to remove platform");
     }
   };
-  
-  
 
   return (
     <div className="mx-auto max-w-4xl p-6">
       <Card className="rounded-2xl bg-white p-6 shadow-lg">
         <Card className="p-6">
           <ProfileHeader
+            user={user}
             profile={profile}
             isEditing={isEditing}
             onEdit={() => setIsEditing(true)}
@@ -117,13 +114,14 @@ export default function InfluencerProfile() {
             onInputChange={handleInputChange}
           />
           <ProfileStatus
+            user={user}
             profile={profile}
             isEditing={isEditing}
             onInputChange={handleInputChange}
           />
         </Card>
         <div className="mx-auto mt-8 max-w-4xl">
-          <div className="flex items-center justify-between mb-6 ml-2">
+          <div className="mb-6 ml-2 flex items-center justify-between">
             <h1 className="text-2xl font-semibold text-gray-800">Platforms</h1>
             {/* Add Platform Button */}
             <button
@@ -147,7 +145,6 @@ export default function InfluencerProfile() {
                   key={`${platform.platform}-${index}`}
                   platform={platform}
                   isEditing={isEditing}
-              
                   handlePlatform={handlePlatform}
                 />
               ))

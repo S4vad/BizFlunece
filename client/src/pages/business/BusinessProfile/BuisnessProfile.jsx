@@ -7,17 +7,15 @@ import ProfileStatus from "@/pages/influencer/InfluencerProfile/components/Profi
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-
-export default function InfluencerProfile() {
+export default function BusinessProfile() {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState({
     name: "Your Name",
     followers: "---",
-   
     location: "-----",
-    platform: [],
     image: "/image.png",
-    aboutUs: "Add your brief introduction here...",
+    aboutCompany: "Add your brief introduction here...",
     bio: "Add your bio here",
   });
 
@@ -28,8 +26,9 @@ export default function InfluencerProfile() {
 
     const fetchProfile = async () => {
       try {
-        const { data } = await axios.get(`/profile/${user.id}`);
-        console.log("the response infleuncer profile i s", data);
+        setIsLoading(true);
+        const { data } = await axios.get(`/business/company_profile/${user.id}`);
+        console.log("the response influencer profile is", data);
         if (!isEditing) {
           setProfile((prev) => ({
             ...prev,
@@ -38,13 +37,15 @@ export default function InfluencerProfile() {
         }
       } catch (error) {
         console.log("Error fetching profile:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     if (user) {
       fetchProfile();
     }
-  }, [user?.id]);
+  }, []);
 
   const handleInputChange = (field, value) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
@@ -52,20 +53,31 @@ export default function InfluencerProfile() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`/profile/${user.id}`, profile);
+      await axios.put(`/business/update-profile/${user.id}`, profile);
       setIsEditing(false);
       toast.success("Profile updated successfully");
     } catch (error) {
-      console.error("Error updating profile:", error); // Debugging
+      console.error("Error updating profile:", error);
       toast.error("Error updating profile");
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <p className="text-lg font-semibold text-gray-600">
+          Loading profile...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-4xl p-6">
       <Card className="rounded-2xl bg-white p-6 shadow-lg">
         <Card className="p-6">
           <ProfileHeader
+            user={user}
             profile={profile}
             isEditing={isEditing}
             onEdit={() => setIsEditing(true)}
@@ -73,21 +85,22 @@ export default function InfluencerProfile() {
             onInputChange={handleInputChange}
           />
           <ProfileStatus
+            user={user}
             profile={profile}
             isEditing={isEditing}
             onInputChange={handleInputChange}
           />
         </Card>
 
-        <h3 className="mt-6 text-xl font-semibold">About Me</h3>
+        <h3 className="mt-6 text-xl font-semibold">About Organization</h3>
         {isEditing ? (
           <textarea
-            value={profile.aboutUs}
-            onChange={(e) => handleInputChange("aboutUs", e.target.value)}
+            value={profile.aboutCompany}
+            onChange={(e) => handleInputChange("aboutCompany", e.target.value)}
             className="mt-2 w-full rounded-lg border border-gray-300 p-2"
           />
         ) : (
-          <p className="mt-2 text-gray-600">{profile.aboutUs}</p>
+          <p className="mt-2 text-gray-600">{profile.aboutCompany}</p>
         )}
 
         <h3 className="mt-6 text-xl font-semibold">Campaign History</h3>
@@ -112,6 +125,7 @@ export default function InfluencerProfile() {
             <Globe size={24} />
           </a>
         </div>
+
         {user && user.isBusiness === false && (
           <div className="mx-auto mt-8 max-w-4xl">
             <div className="rounded-xl bg-indigo-600 p-6 text-center">

@@ -26,7 +26,7 @@ const profileSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    aboutUs: {
+    aboutCompany: {
       type: String,
       trim: true,
     },
@@ -43,5 +43,5 @@ const profileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("BusinessProfile", profileSchema);
+export default mongoose.model("CompanyProfile", profileSchema);
 

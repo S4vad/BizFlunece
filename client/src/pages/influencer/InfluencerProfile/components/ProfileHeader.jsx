@@ -5,7 +5,9 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
 
+
 export default function ProfileHeader({
+  user,
   profile,
   isEditing,
   onEdit,
@@ -14,6 +16,7 @@ export default function ProfileHeader({
 }) {
   const [image, setImage] = useState(profile.image);
   const [loading, setLoading] = useState(false);
+ 
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -22,10 +25,11 @@ export default function ProfileHeader({
     setLoading(true);
     const formData = new FormData();
     formData.append("image", file);
+    const api = user.isBusiness ? "/business/add-profile" : "profile";
 
     try {
       const response = await axios.post(
-        `profile/upload/${profile.userId}`,
+        `${api}/upload/${profile.userId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -35,7 +39,7 @@ export default function ProfileHeader({
       if (response.data.success) {
         setImage(response.data.imageUrl);
         onInputChange("image", response.data.imageUrl); //update image in profile state
-        toast.success("profile image update succesfully");
+        toast.success("profile image updated succesfully");
         console.log("Server response:", response.data);
       }
     } catch (error) {
@@ -50,19 +54,32 @@ export default function ProfileHeader({
       <div className="items-center space-y-8 sm:flex sm:space-x-6">
         <div className="relative">
           {isEditing ? (
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleImageUpload}
-              />
-              <img
-                src={profile.image}
-                alt="profile"
-                className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover hover:opacity-80"
-              />
-              {loading && <p className="text-sm text-gray-500">Uploading...</p>}
-            </label>
+            <div className="group relative h-32 w-32">
+              <label className="block h-full w-full cursor-pointer">
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+                <img
+                  src={profile.image}
+                  alt="profile"
+                  className="h-32 w-32 rounded-full border-2 border-gray-300 object-cover"
+                />
+
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="text-sm font-medium text-white">
+                    Change Photo
+                  </span>
+                </div>
+              </label>
+
+              {loading && (
+                <p className="mt-1 text-center text-sm text-gray-500">
+                  Uploading...
+                </p>
+              )}
+            </div>
           ) : (
             <img
               src={profile.image}
@@ -100,7 +117,7 @@ export default function ProfileHeader({
         </div>
 
         <button
-          className={`${isEditing ? "text-green-700" : "text-blue-700"} flex items-center gap-1 absolute top-1 right-1`}
+          className={`${isEditing ? "text-green-700" : "text-blue-700"} absolute right-1 top-1 flex items-center gap-1`}
           onClick={isEditing ? onSave : onEdit}
         >
           {isEditing ? (

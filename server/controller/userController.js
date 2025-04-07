@@ -5,7 +5,9 @@ import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import googleuser from "../models/googleuser.js";
 import InfluencerProfile from "../models/InfluencerProfile.js";
+import CompanyProfile from "../models/BusinessProfile.js";
 import campaignData from "../models/campaignData.js";
+import InfluencerBookmark from "../models/FavCampaign.js";
 
 dotenv.config();
 
@@ -38,6 +40,15 @@ export async function userSignup(req, res) {
         bio: "",
         location: "",
         platforms: [],
+      });
+    } else {
+      await CompanyProfile.create({
+        userId: newUser._id,
+        name: name,
+        image: "",
+        aboutCompany: "",
+        bio: "",
+        location: "",
       });
     }
 
@@ -177,13 +188,13 @@ export async function getProfile(req, res) {
   try {
     const userId = req.params.userId;
     const profile = await InfluencerProfile.findOne({ userId });
-    console.log('the prefile if',profile)
+    console.log("the prefile if", profile);
 
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
     }
 
-  res.status(200).json({ success: true, data: profile });
+    res.status(200).json({ success: true, data: profile });
   } catch (error) {
     console.error("Error fetching profile:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -236,15 +247,84 @@ export async function updateImage(req, res) {
   }
 }
 
-
-export async function getCampaign(req,res){
+export async function getCampaign(req, res) {
   try {
-    const campaigns=await campaignData.find()  
-    res.status(200).json({success:true,data:campaigns})
-    
+    const campaigns = await campaignData.find();
+    res.status(200).json({ success: true, data: campaigns });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" }); 
+    res.status(500).json({ error: "Internal server error" });
     console.log(error);
-    
   }
-} 
+}
+
+export async function isBookmarked(req, res) {
+  const { userId, campaignId } = req.query;
+
+  try {
+    const bookmark = await InfluencerBookmark.findOne({
+      userId,
+      campaignIds: campaignId,
+    });
+
+    if (bookmark) {
+      res.status(200).json({ bookmarked: true });
+    } else {
+      res.status(200).json({ bookmarked: false });
+    }
+  } catch (error) {
+    console.error("Error checking bookmark status", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function addBookmark(req, res) {
+  const { userId, campaignId } = req.body;
+
+  try {
+    const existingBookmark = await InfluencerBookmark.findOne({ userId });
+
+    if (existingBookmark) {
+      if (!existingBookmark.campaignIds.includes(campaignId)) {
+        existingBookmark.campaignIds.push(campaignId);
+        await existingBookmark.save();
+      }
+    } else {
+      await InfluencerBookmark.create({
+        userId,
+        campaignIds: [campaignId],
+      });
+    }
+
+    res.status(200).json({ success: true, message: "Bookmark added" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function removeBookmark(req, res) {
+  const { userId, campaignId } = req.body;
+
+  try {
+    const existingBookmark = await InfluencerBookmark.findOne({ userId });
+
+    if (existingBookmark) {
+      const updatedCampaignIds = existingBookmark.campaignIds.filter(
+        (id) => id.toString() !== campaignId
+      );
+
+      existingBookmark.campaignIds = updatedCampaignIds;
+      await existingBookmark.save();
+
+      res.status(200).json({ success: true, message: "Bookmark removed" });
+    } else {
+      res.status(404).json({ success: false, message: "Bookmark not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+

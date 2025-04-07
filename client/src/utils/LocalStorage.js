@@ -1,4 +1,4 @@
-const USER_KEY = 'getUser';
+const USER_KEY = 'user';
 
 export const getUserFromStorage=() =>{
   const user =localStorage.getItem(USER_KEY);
