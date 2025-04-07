@@ -60,7 +60,7 @@ export async function userSignup(req, res) {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // Set to true in production
-      sameSite: "lax",
+      sameSite: "None",
     });
 
     res.status(201).json({
@@ -116,7 +116,7 @@ export async function googleAuth(req, res) {
     res.cookie("token", jwtToken, {
       httpOnly: true,
       secure: false,
-      sameSite: "Lax",
+      sameSite: "None",
     });
 
     res.status(201).json({
@@ -325,6 +325,17 @@ export async function removeBookmark(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function getSingleCampaign(req, res) {    
+  try {
+    const {campaignId} = req.query;
+    const campaign = await campaignData.findById(campaignId);
+    res.status(200).json({ success: true, data: campaign });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+} 
 
 
 

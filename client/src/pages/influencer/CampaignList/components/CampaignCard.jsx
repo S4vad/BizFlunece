@@ -8,7 +8,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { getUserFromStorage } from "@/utils/LocalStorage";
 
-export default function CampaignCard({ item }) {
+export default function CampaignCard({ item,handleCard }) {
   const [bookmark, setBookmark] = useState(false);
   const user = getUserFromStorage();
 
@@ -54,7 +54,7 @@ export default function CampaignCard({ item }) {
   };
 
   return (
-    <div className="w-full max-w-3xl rounded-2xl bg-white p-8">
+    <div className="w-full max-w-2xl rounded-2xl bg-white p-8 cursor-pointer"  onClick={() => handleCard(item._id)}>
       <div className="flex items-center justify-between space-y-1">
         <div className="flex flex-col">
           <div className="text-lg font-semibold">{item.title}</div>

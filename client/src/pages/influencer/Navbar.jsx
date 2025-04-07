@@ -42,7 +42,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="dark:bg-night-50 sticky top-0 bg-white shadow-sm">
+    <nav className="dark:bg-night-50 sticky top-0 bg-white shadow-sm z-50">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
 

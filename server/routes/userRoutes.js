@@ -1,7 +1,7 @@
 import express from "express";
 import { uploadImage } from "../config/cloudinary.js";
 
-import { userSignup ,googleAuth,userLogin,profileUpdate, updateImage,getCampaign, getProfile,addBookmark,removeBookmark,isBookmarked} from "../controller/userController.js";
+import { userSignup ,googleAuth,userLogin,profileUpdate, updateImage,getCampaign, getProfile,addBookmark,removeBookmark,isBookmarked,getSingleCampaign} from "../controller/userController.js";
 
 
 const routes =express.Router();
@@ -9,6 +9,7 @@ const routes =express.Router();
 routes.get('/profile/:userId',getProfile)
 routes.get('/influencer/campaignlist',getCampaign)
 routes.get('/influencer/is-bookmarked', isBookmarked);
+routes.get('/influencer/get-single-campaign',getSingleCampaign)
 
 
 routes.post('/signup',userSignup)
