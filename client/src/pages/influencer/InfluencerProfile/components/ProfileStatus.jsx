@@ -3,8 +3,8 @@ import Select from "react-select";
 export default function ProfileStatus({
   user,
   profile,
-  isEditing,
-  onInputChange,
+  isEditing = false, 
+  onInputChange = null,
 }) {
   const categoryOptions = [
     { value: "Fashion", label: "Fashion" },

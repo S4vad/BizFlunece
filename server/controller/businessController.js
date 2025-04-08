@@ -200,3 +200,5 @@ export async function updateCompanyImage(req, res) {
     });
   }
 }
+
+

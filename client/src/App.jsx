@@ -7,6 +7,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/protectedRoute";
 import InfluencerLayout from "./pages/influencer/InfluencerLayout";
 import BusinessLayout from "./pages/business/BusinessLayout";
+import InfluencerDetails from "@/pages/business/InfluencerList/components/InfluencerDetails";
+
 
 export default function App() {
   return (
@@ -16,6 +18,7 @@ export default function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/campaign" element={<Campaign />} />
+        <Route path="/influencer-details/:id" element={<InfluencerDetails />} />
 
         <Route
           path="/influencer/*"

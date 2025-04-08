@@ -1,10 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
-const InfluencerCard = ({ influencer, isFavorite, toggleFavorite }) => {
+const InfluencerCard = ({ influencer, isFavorite, toggleFavorite  }) => {
   const [isPreview, setIsPreview] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/influencer-details/${influencer.userId}`);
+  };
   
   return (
-    <div className="relative rounded-lg border p-4 transition-shadow hover:shadow-md">
+    <div className="relative rounded-lg border p-4 transition-shadow hover:shadow-md" onClick={handleClick }>
       <div className="flex items-center gap-4">
         <div className="flex h-12 w-12 items-center justify-center">
           <img
