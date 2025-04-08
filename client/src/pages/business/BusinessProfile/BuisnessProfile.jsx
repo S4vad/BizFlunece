@@ -6,6 +6,7 @@ import ProfileHeader from "@/pages/influencer/InfluencerProfile/components/Profi
 import ProfileStatus from "@/pages/influencer/InfluencerProfile/components/ProfileStatus";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { ClipLoader } from "react-spinners";
 
 export default function BusinessProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -27,7 +28,9 @@ export default function BusinessProfile() {
     const fetchProfile = async () => {
       try {
         setIsLoading(true);
-        const { data } = await axios.get(`/business/company_profile/${user.id}`);
+        const { data } = await axios.get(
+          `/business/company_profile/${user.id}`,
+        );
         console.log("the response influencer profile is", data);
         if (!isEditing) {
           setProfile((prev) => ({
@@ -64,9 +67,9 @@ export default function BusinessProfile() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
+      <div className="flex h-[100vh] items-center justify-center">
         <p className="text-lg font-semibold text-gray-600">
-          Loading profile...
+          <ClipLoader color="#1258dc" size={50} />
         </p>
       </div>
     );
