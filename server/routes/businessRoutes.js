@@ -11,11 +11,13 @@ import {
 } from "../controller/businessController.js";
 import { uploadVideo } from "../config/cloudinary.js";
 import { uploadImage } from "../config/cloudinary.js";
+import { getProfile } from "../controller/userController.js";
 const routes = express.Router();
 
 routes.get("/influencerlist", InfluencerList);
 routes.get("/favoriteInfluencers/:businessId", favoriteInfluencers);
 routes.get("/company_profile/:userId", getCompanyProfile);
+routes.get("/influencer/:userId", getProfile);
 
 routes.post("/addFav", addFavInfluencers);
 routes.post("/removeFav", removeFavInfluencers);

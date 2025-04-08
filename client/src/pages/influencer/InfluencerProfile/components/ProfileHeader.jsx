@@ -8,10 +8,10 @@ import { useState } from "react";
 export default function ProfileHeader({
   user,
   profile,
-  isEditing,
-  onEdit,
-  onSave,
-  onInputChange,
+  isEditing = false, 
+  onEdit = null, 
+  onSave = null, 
+  onInputChange = null, 
 }) {
 
   const [loading, setLoading] = useState(false);
@@ -118,7 +118,7 @@ export default function ProfileHeader({
           </div>
         </div>
 
-        <button
+        {!user.isBusiness && (<button
           className={`${isEditing ? "text-green-700" : "text-blue-700"} absolute right-1 top-1 flex items-center gap-1`}
           onClick={isEditing ? onSave : onEdit}
         >
@@ -128,7 +128,7 @@ export default function ProfileHeader({
             <Edit className="stroke-blue-700" size={16} />
           )}
           {isEditing ? "Save" : "Edit"}
-        </button>
+        </button>)}
       </div>
     </div>
   );

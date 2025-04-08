@@ -1,5 +1,9 @@
 import { AiOutlineDelete } from "react-icons/ai";
-export default function PlatformItem({ platform, isEditing, handlePlatform }) {
+export default function PlatformItem({
+  platform,
+  isEditing = false,
+  handlePlatform = null,
+}) {
   // Handle undefined platform
   if (!platform) {
     return null; // Or render a fallback UI

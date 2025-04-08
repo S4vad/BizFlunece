@@ -196,22 +196,7 @@ export default function InfluencerProfile() {
             <Globe size={24} />
           </a>
         </div>
-        {user && user.isBusiness === false && (
-          <div className="mx-auto mt-8 max-w-4xl">
-            <div className="rounded-xl bg-indigo-600 p-6 text-center">
-              <h3 className="text-2xl font-bold text-white">
-                Let&apos;s Collaborate!
-              </h3>
-              <p className="mt-2 text-indigo-100">
-                Interested in working together? Reach out to discuss partnership
-                opportunities.
-              </p>
-              <button className="mt-4 animate-bounce rounded-lg bg-white px-6 py-2 font-semibold text-indigo-600 transition-colors hover:bg-indigo-50">
-              Let&apos;s connect
-              </button>
-            </div>
-          </div>
-        )}
+
       </Card>
     </div>
   );
