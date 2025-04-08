@@ -15,7 +15,7 @@ const imageStorage=new CloudinaryStorage({
   cloudinary,
   params:{
     folder:"profile_images",
-    allowed_formats:['jpg','png','jpeg']
+    allowed_formats:['jpg','png','jpeg','svg']
   }
 })
 

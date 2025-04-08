@@ -1,17 +1,13 @@
-
-import Navbar from "../influencer/Navbar"
-
+import Navbar from "@/pages/influencer/Navbar";
 import BusinessRoutes from "@/routes/BusinessRoutes";
 
 const BusinessLayout = () => {
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <main>
-        <BusinessRoutes/>
+        <BusinessRoutes />
       </main>
-
-
     </>
   );
 };

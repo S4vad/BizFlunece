@@ -188,7 +188,8 @@ export async function getProfile(req, res) {
   try {
     const userId = req.params.userId;
     const profile = await InfluencerProfile.findOne({ userId });
-    console.log("the prefile if", profile);
+    console.log("itfrom user")
+
 
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });

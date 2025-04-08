@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 import PlatformItem from "./components/PlatformItem";
 import AddPlatformModal from "./components/AddPlatformModal";
 import { Plus } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+
 
 export default function InfluencerProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -23,13 +23,14 @@ export default function InfluencerProfile() {
     image: "/image.png",
     aboutMe: "Add your brief introduction here...",
     bio: "Add your bio here",
+    influencerCategory: [],
   });
 
   const user = getUserFromStorage();
 
   useEffect(() => {
     if (!user?.id) return;
-
+  
     const fetchProfile = async () => {
       try {
         const { data } = await axios.get(`/profile/${user.id}`);
@@ -38,18 +39,19 @@ export default function InfluencerProfile() {
           setProfile((prev) => ({
             ...prev,
             ...data.data,
-            platform: data.data.platform || [], // Ensure portfolio is always an array
+            platform: data.data.platform || [],
           }));
         }
+        setIsEditing(false);
       } catch (error) {
         console.log("Error fetching profile:", error);
       }
     };
-
+  
     if (user) {
       fetchProfile();
     }
-  }, [user?.id]);
+  }, [user?.id]); // Only depend on user.id
 
   const handleInputChange = (field, value) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
@@ -198,14 +200,14 @@ export default function InfluencerProfile() {
           <div className="mx-auto mt-8 max-w-4xl">
             <div className="rounded-xl bg-indigo-600 p-6 text-center">
               <h3 className="text-2xl font-bold text-white">
-                Let's Collaborate!
+                Let&apos;s Collaborate!
               </h3>
               <p className="mt-2 text-indigo-100">
                 Interested in working together? Reach out to discuss partnership
                 opportunities.
               </p>
               <button className="mt-4 animate-bounce rounded-lg bg-white px-6 py-2 font-semibold text-indigo-600 transition-colors hover:bg-indigo-50">
-                Let's connect
+              Let&apos;s connect
               </button>
             </div>
           </div>

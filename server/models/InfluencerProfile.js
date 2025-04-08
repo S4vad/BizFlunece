@@ -60,6 +60,9 @@ const profileSchema = new mongoose.Schema(
 
       trim: true,
     },
+    influencerCategory: {
+      type: [String], // Array of strings
+    },
     isProfileCompleted: {
       type: Boolean,
       default: false,
@@ -69,4 +72,3 @@ const profileSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("InfluencerProfile", profileSchema);
-
