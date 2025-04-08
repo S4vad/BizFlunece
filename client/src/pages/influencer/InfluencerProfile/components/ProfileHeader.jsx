@@ -1,10 +1,9 @@
 import { Edit, Save } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { Star } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
-
 
 export default function ProfileHeader({
   user,
@@ -14,9 +13,8 @@ export default function ProfileHeader({
   onSave,
   onInputChange,
 }) {
-  const [image, setImage] = useState(profile.image);
+
   const [loading, setLoading] = useState(false);
- 
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -25,22 +23,26 @@ export default function ProfileHeader({
     setLoading(true);
     const formData = new FormData();
     formData.append("image", file);
-    const api = user.isBusiness ? "/business/add-profile" : "profile";
+    const api = user.isBusiness ? "/business" : "";
 
     try {
-      const response = await axios.post(
-        `${api}/upload/${profile.userId}`,
+      console.log("adding");
+
+      const { data } = await axios.post(
+        `${api}/profile/upload/${profile.userId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
         },
       );
+      console.log(data);
 
-      if (response.data.success) {
-        setImage(response.data.imageUrl);
-        onInputChange("image", response.data.imageUrl); //update image in profile state
-        toast.success("profile image updated succesfully");
-        console.log("Server response:", response.data);
+      if (data.success) {
+      
+        onInputChange("image", data.imageUrl); 
+        toast.success("Profile image updated successfully");
+      } else {
+        toast.error("Error updating profile image");
       }
     } catch (error) {
       console.log("Error uploading image", error);

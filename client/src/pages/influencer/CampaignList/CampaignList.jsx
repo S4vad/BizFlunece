@@ -51,7 +51,7 @@ export default function CampaignList() {
         )}
       </div>
 
-      <div className="hidden h-full w-full overflow-y-auto rounded-2xl sticky top-6 bg-white p-6 shadow-md md:block md:w-1/2">
+      <div className="hidden h-full w-full overflow-y-auto rounded-2xl sticky top-0 bg-white p-6 shadow-md md:block md:w-1/2">
         {selectedCampaign && (
           <div>
             <h2 className="mb-4 text-2xl font-bold">

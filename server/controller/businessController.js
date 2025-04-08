@@ -134,8 +134,9 @@ export async function getCompanyProfile(req, res) {
   try {
     const userId = req.params.userId;
     console.log("the user id is", userId);
+    console.log("itfrom admin")
     const profile = await CompanyProfile.findOne({ userId });
-    console.log("the prefile if", profile);
+
 
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
@@ -184,12 +185,18 @@ export async function updateCompanyImage(req, res) {
     );
 
     if (!updatedProfile) {
-      return res.status(404).json({ error: "profile not found" });
+      return res.status(404).json({ 
+        success: false,
+        error: "Company profile not found" 
+      });
     }
     console.log("the imgea rl is", imageUrl);
     res.json({ success: true, imageUrl });
   } catch (error) {
     console.log("image upload error", error);
-    res.status(500).json({ error: "Internal server error!" });
+      res.status(500).json({ 
+      success: false,
+      error: "Failed to update company profile image" 
+    });
   }
 }

@@ -21,7 +21,7 @@ routes.post("/addFav", addFavInfluencers);
 routes.post("/removeFav", removeFavInfluencers);
 routes.post("/createcampaign", uploadVideo.single("videoAd"), createCampaign);
 routes.post(
-  "/add-profile/upload/:userId",
+  "/profile/upload/:userId",
   uploadImage.single("image"),
   updateCompanyImage
 );
