@@ -367,3 +367,4 @@ export async function getSingleCampaignStatus(req, res) {
     res.status(500).json({ success: false, error: "Internal server errror" });
   }
 }
+

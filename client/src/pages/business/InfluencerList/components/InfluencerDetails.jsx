@@ -42,15 +42,15 @@ export default function InfluencerDetails() {
 
       <CustomBreadcrumb
         items={[
-          { label: "Home", href: "/business"},
-          { label: "Influencers", href:  "/business/influencerList"},
+          { label: "Home", link: "/business"},
+          { label: "Influencers", link:  "/business/influencerList"},
           { label: influencer.name },
         ]}
       />
       <div className="mx-auto max-w-4xl p-6">
         <Card className="rounded-2xl bg-white p-6 shadow-lg">
           <Card className="p-6">
-            <ProfileHeader user={user} profile={influencer} />
+            <ProfileHeader user={user} profile={influencer} showEdit={false}/>
             <ProfileStatus user={user} profile={influencer} />
           </Card>
           <div className="mx-auto mt-8 max-w-4xl">

@@ -89,10 +89,7 @@ export async function createCampaign(req, res) {
       videoDuration,
     } = req.body;
 
-
-
     const companyProfile = await CompanyProfile.findOne({ userId: businessId });
-
 
     if (!companyProfile) {
       return res
@@ -116,7 +113,7 @@ export async function createCampaign(req, res) {
       location,
       companyName,
       videoDuration,
-      companyImage
+      companyImage,
     });
 
     res.status(200).json({
@@ -134,9 +131,8 @@ export async function getCompanyProfile(req, res) {
   try {
     const userId = req.params.userId;
     console.log("the user id is", userId);
-    console.log("itfrom admin")
+    console.log("itfrom admin");
     const profile = await CompanyProfile.findOne({ userId });
-
 
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
@@ -185,20 +181,64 @@ export async function updateCompanyImage(req, res) {
     );
 
     if (!updatedProfile) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        error: "Company profile not found" 
+        error: "Company profile not found",
       });
     }
     console.log("the imgea rl is", imageUrl);
     res.json({ success: true, imageUrl });
   } catch (error) {
     console.log("image upload error", error);
-      res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      error: "Failed to update company profile image" 
+      error: "Failed to update company profile image",
     });
   }
 }
 
+export async function getCampaigns(req, res) {
+  const id = req.params.id;
+
+  try {
+    const result = await campaignData.find({ businessId: id });
+    
+    if (result) {
+      res.status(200).json({ success: true, data: result });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "internal server error" });
+  }
+}
+
+export async function updateCampaignStatus(req, res) {
+  const { status, campaignId } = req.body;
+
+  try {
+    const updatedCampaign = await campaignData.findByIdAndUpdate(
+      campaignId,
+      { status },
+      { new: true }
+    );
+
+    if (updatedCampaign) {
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message: "Campaign status updated successfully.",
+        });
+    }
+
+    return res
+      .status(400)
+      .json({ success: false, message: "Campaign not found." });
+  } catch (error) {
+    console.error("Error updating campaign status:", error);
+    return res
+      .status(500)
+      .json({ success: false, error: "Internal server error" });
+  }
+}
 
