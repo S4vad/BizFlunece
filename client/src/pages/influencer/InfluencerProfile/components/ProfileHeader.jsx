@@ -12,6 +12,7 @@ export default function ProfileHeader({
   onEdit = null, 
   onSave = null, 
   onInputChange = null, 
+  showEdit=true
 }) {
 
   const [loading, setLoading] = useState(false);
@@ -118,7 +119,7 @@ export default function ProfileHeader({
           </div>
         </div>
 
-        {!user.isBusiness && (<button
+        {showEdit && (<button
           className={`${isEditing ? "text-green-700" : "text-blue-700"} absolute right-1 top-1 flex items-center gap-1`}
           onClick={isEditing ? onSave : onEdit}
         >

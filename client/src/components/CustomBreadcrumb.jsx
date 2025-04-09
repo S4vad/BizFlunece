@@ -1,4 +1,4 @@
-// src/components/shared/CustomBreadcrumb.jsx
+import { Link } from "react-router-dom"; 
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,17 +10,21 @@ import {
 
 export default function CustomBreadcrumb({ items }) {
   return (
-    <Breadcrumb className="md:ml-10 mt-2 px-6 pt-4  text-muted-foreground">
-      <BreadcrumbList >
+    <Breadcrumb className="md:ml-10 mt-2 px-6 pt-4 text-muted-foreground">
+      <BreadcrumbList>
         {items.map((item, index) => (
           <div key={index} className="flex items-center">
-            <BreadcrumbItem className=" text-xs font-semibold text-gray-500">
-              {item.href ? (
-                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+            <BreadcrumbItem className="text-xs font-semibold text-gray-500">
+              {item.link ? (
+                <BreadcrumbLink asChild>
+                  <Link to={item.link}>{item.label}</Link> 
+                </BreadcrumbLink>
               ) : (
-                <BreadcrumbPage className=" text-xs font-semibold text-gray-500" >{item.label}</BreadcrumbPage >
+                <BreadcrumbPage className="text-xs font-semibold text-gray-500">
+                  {item.label}
+                </BreadcrumbPage>
               )}
-            </BreadcrumbItem >
+            </BreadcrumbItem>
             {index < items.length - 1 && <BreadcrumbSeparator />}
           </div>
         ))}

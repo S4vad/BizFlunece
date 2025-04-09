@@ -53,6 +53,10 @@ const campaignSchema=mongoose.Schema( {
   },
   companyImage:{
     type:String,
+  },
+  status:{
+    type:String,
+    default:"Active"
   }
 },
 { timestamps: true }
