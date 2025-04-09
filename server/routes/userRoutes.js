@@ -1,28 +1,42 @@
 import express from "express";
 import { uploadImage } from "../config/cloudinary.js";
 
-import { userSignup ,googleAuth,userLogin,profileUpdate, updateImage,getCampaign, getProfile,addBookmark,removeBookmark,isBookmarked,getSingleCampaign} from "../controller/userController.js";
+import {
+  userSignup,
+  googleAuth,
+  userLogin,
+  profileUpdate,
+  updateImage,
+  getCampaign,
+  getProfile,
+  addBookmark,
+  removeBookmark,
+  isBookmarked,
+  getSingleCampaign,
+  addCampaignParticipation,
+  getSingleCampaignStatus
+} from "../controller/userController.js";
 
+const routes = express.Router();
 
-const routes =express.Router();
+routes.get("/profile/:userId", getProfile);
+routes.get("/influencer/campaignlist", getCampaign);
+routes.get("/influencer/is-bookmarked", isBookmarked);
+routes.get("/influencer/get-single-campaign", getSingleCampaign);
+routes.get('/campaign-participation-status',getSingleCampaignStatus)
 
-routes.get('/profile/:userId',getProfile)
-routes.get('/influencer/campaignlist',getCampaign)
-routes.get('/influencer/is-bookmarked', isBookmarked);
-routes.get('/influencer/get-single-campaign',getSingleCampaign)
+routes.post("/signup", userSignup);
+routes.post("/login", userLogin);
+routes.post("/googleAuth", googleAuth);
+routes.post(
+  "/profile/upload/:userId",
+  uploadImage.single("image"),
+  updateImage
+);
+routes.post("/influencer/add-bookmark", addBookmark);
+routes.post("/influencer/remove-bookmark", removeBookmark);
+routes.post("/campaign-participation", addCampaignParticipation);
 
-
-routes.post('/signup',userSignup)
-routes.post('/login',userLogin)
-routes.post('/googleAuth',googleAuth)
-routes.post('/profile/upload/:userId',uploadImage.single("image"),updateImage)
-routes.post('/influencer/add-bookmark',addBookmark)
-routes.post('/influencer/remove-bookmark',removeBookmark)
-
-
-routes.put('/profile/:userId',profileUpdate)
-
-
-
+routes.put("/profile/:userId", profileUpdate);
 
 export default routes;

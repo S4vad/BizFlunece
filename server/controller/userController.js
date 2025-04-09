@@ -8,6 +8,7 @@ import InfluencerProfile from "../models/InfluencerProfile.js";
 import CompanyProfile from "../models/BusinessProfile.js";
 import campaignData from "../models/campaignData.js";
 import InfluencerBookmark from "../models/FavCampaign.js";
+import CampaignParticipation from "../models/campaignParticipations.js";
 
 dotenv.config();
 
@@ -188,8 +189,7 @@ export async function getProfile(req, res) {
   try {
     const userId = req.params.userId;
     const profile = await InfluencerProfile.findOne({ userId });
-    console.log("itfrom user")
-
+    console.log("itfrom user");
 
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
@@ -327,16 +327,43 @@ export async function removeBookmark(req, res) {
   }
 }
 
-export async function getSingleCampaign(req, res) {    
+export async function getSingleCampaign(req, res) {
   try {
-    const {campaignId} = req.query;
+    const { campaignId } = req.query;
     const campaign = await campaignData.findById(campaignId);
     res.status(200).json({ success: true, data: campaign });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
-} 
+}
 
+export async function addCampaignParticipation(req, res) {
+  const { campaignId, userId, campaignOwner } = req.body;
+  try {
+    await CampaignParticipation.create({
+      userId,
+      campaignId,
+      campaignOwner,
+    });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
+export async function getSingleCampaignStatus(req, res) {
+  const campaignId = req.query.campaignId;
+  const userId = req.query.userId;
+  try {
+    const check = await CampaignParticipation.findOne({ campaignId, userId });
 
+    if (check) {
+      res.status(200).json({ success: true, button: false });
+    } else {
+      res.status(200).json({ success: true, button: true });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Internal server errror" });
+  }
+}
