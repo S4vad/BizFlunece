@@ -7,9 +7,10 @@ export default function UserRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/influencer/dashboard" />} />
-      <Route path="dashboard" element={<InflencerDashboard />} />
-      <Route path="profile" element={<InfluencerProfile />} />
-      <Route path="campaignlist" element={<CampaignList />} />
+      <Route path="/dashboard" element={<InflencerDashboard />} />
+      <Route path="/profile" element={<InfluencerProfile />} />
+      <Route path="/campaignlist" element={<CampaignList />} />
+  
     </Routes>
   );
 }

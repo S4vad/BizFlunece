@@ -20,12 +20,13 @@ export default function ActiveCampaign() {
       fecthCampaigns();
     }
   }, [user.id]);
-  const toggleCampaignStatus = async(id,status) => {
-   const pass= status === "Active" ? "Disabled" : "Active"
+  const toggleCampaignStatus = async (id, status) => {
+    const pass = status === "Active" ? "Disabled" : "Active";
 
-    await axios.post('/business/campaign-status-update',{
-      status:pass,campaignId:id
-    })
+    await axios.post("/business/campaign-status-update", {
+      status: pass,
+      campaignId: id,
+    });
 
     setCampaigns((prevCampaigns) =>
       prevCampaigns.map((campaign) =>
@@ -85,7 +86,9 @@ export default function ActiveCampaign() {
               </div>
             </div>
             <button
-              onClick={() => toggleCampaignStatus(campaign._id,campaign.status)}
+              onClick={() =>
+                toggleCampaignStatus(campaign._id, campaign.status)
+              }
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 campaign.status === "Active"
                   ? "bg-red-600 text-white hover:bg-red-700"

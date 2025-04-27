@@ -3,38 +3,52 @@ dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import userRoutes from "./routes/userRoutes.js"
+import userRoutes from "./routes/userRoutes.js";
 // import adminRoute from './routes/adminRoute'
 import cookieParser from "cookie-parser";
-import businessRoutes from "./routes/businessRoutes.js"
+import businessRoutes from "./routes/businessRoutes.js";
+import { createServer } from "http";
+import createSocketServer from "./config/socketServer.js";
+import conversationRoutes from "./routes/converSationRoutes.js"
+import publicRoutes from "./routes/publicRoutes.js"
+import authMiddleware from "./middleware/authMiddleware.js";
 
 const app = express();
+const server = createServer(app);
 
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true // Important for cookies
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true, // Important for cookies
+  })
+);
 
 app.use(express.json());
+app.use(cookieParser());
+app.use(express.static("public"));
+
+
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("✅ connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-app.get("/", (req, res) => {
-  res.send("API is running");
-});
+// Initialize Socket.IO
+createSocketServer(server);
 
-app.use(cookieParser());
+// Public 
+app.use("/", publicRoutes);
 
-app.use('/',userRoutes)
-// app.use('/admin',adminRoute)
-app.use("/business", businessRoutes); 
+// Protected 
+app.use(authMiddleware); 
+app.use("/", userRoutes);
+app.use("/business", businessRoutes);
+app.use("/conversation", conversationRoutes);
 
-app.use(express.static("public"));
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Socket.io endpoint: http://localhost:${PORT}/socket.io/`);
 });

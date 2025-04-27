@@ -25,9 +25,6 @@ routes.get("/influencer/is-bookmarked", isBookmarked);
 routes.get("/influencer/get-single-campaign", getSingleCampaign);
 routes.get('/campaign-participation-status',getSingleCampaignStatus)
 
-routes.post("/signup", userSignup);
-routes.post("/login", userLogin);
-routes.post("/googleAuth", googleAuth);
 routes.post(
   "/profile/upload/:userId",
   uploadImage.single("image"),

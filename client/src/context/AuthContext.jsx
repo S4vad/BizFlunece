@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("user");
     sessionStorage.removeItem("hasNavigated"); // Reset session flag
+    // res.clearCookie("user"); 
     setUser(null);
     navigate("/login");
   };

@@ -1,4 +1,4 @@
-import userModel from "../models/userShema.js";
+import userModel from "../models/Users.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -353,18 +353,21 @@ export async function addCampaignParticipation(req, res) {
 }
 
 export async function getSingleCampaignStatus(req, res) {
-  const campaignId = req.query.campaignId;
-  const userId = req.query.userId;
+  const { campaignId, userId } = req.query;
+  
   try {
-    const check = await CampaignParticipation.findOne({ campaignId, userId });
+    const check = await CampaignParticipation.findOne({
+      campaignId,
+      userId,
+    });
 
     if (check) {
-      res.status(200).json({ success: true, button: false });
+      res.status(200).json({ participated: true });
     } else {
-      res.status(200).json({ success: true, button: true });
+      res.status(200).json({ participated: false });
     }
   } catch (error) {
-    res.status(500).json({ success: false, error: "Internal server errror" });
+    console.error("Error checking campaign status", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
-
