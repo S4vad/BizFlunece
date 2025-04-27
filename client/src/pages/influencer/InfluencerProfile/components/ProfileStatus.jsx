@@ -3,7 +3,7 @@ import Select from "react-select";
 export default function ProfileStatus({
   user,
   profile,
-  isEditing = false, 
+  isEditing = false,
   onInputChange = null,
 }) {
   const categoryOptions = [
@@ -31,16 +31,16 @@ export default function ProfileStatus({
     <div className="ml-4 mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
       <div>
         <p className="text-sm text-gray-500">Followers</p>
-        <p className="text-lg font-semibold text-gray-900">
+        <div className="text-lg font-semibold text-gray-900">
           {profile.followers}
-        </p>
+        </div>
       </div>
       {!user.isBusiness && (
         <div>
           <p className="text-sm text-gray-500">Engagement</p>
-          <p className="text-lg font-semibold text-gray-900">
+          <div className="text-lg font-semibold text-gray-900">
             {profile.engagementRate}
-          </p>
+          </div>
         </div>
       )}
 
@@ -54,42 +54,47 @@ export default function ProfileStatus({
             className="w-full rounded-lg border border-gray-300 p-2 text-lg font-semibold text-gray-900"
           />
         ) : (
-          <p className="text-sm font-semibold text-gray-900">
+          <div className="text-sm font-semibold text-gray-900">
             {profile.location}
-          </p>
+          </div>
         )}
       </div>
       {!user.isBusiness && (
         <div>
           <p className="text-sm text-gray-500">Platforms</p>
 
-          <p className="text-lg font-semibold text-gray-900">
+          <div className="text-lg font-semibold text-gray-900">
             {profile.platform.map((p) => p.platform).join(", ")}
-          </p>
+          </div>
         </div>
       )}
       <div>
-        <p className="text-sm text-gray-500">Influencer Category</p>
-        {isEditing ? (
-          <Select
-            isMulti
-            options={categoryOptions}
-            value={categoryOptions.filter((opt) =>
-              influencerCategory.includes(opt.value),
+        {!user.isBusiness && (
+          <div>
+            <p className="text-sm text-gray-500">Influencer Category</p>
+
+            {isEditing ? (
+              <Select
+                isMulti
+                options={categoryOptions}
+                value={categoryOptions.filter((opt) =>
+                  influencerCategory.includes(opt.value),
+                )}
+                onChange={(selectedOptions) =>
+                  onInputChange(
+                    "influencerCategory",
+                    selectedOptions.map((opt) => opt.value),
+                  )
+                }
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+            ) : (
+              <div className="text-sm font-semibold text-gray-900">
+                {influencerCategory.join(", ")}
+              </div>
             )}
-            onChange={(selectedOptions) =>
-              onInputChange(
-                "influencerCategory",
-                selectedOptions.map((opt) => opt.value),
-              )
-            }
-            className="basic-multi-select"
-            classNamePrefix="select"
-          />
-        ) : (
-          <p className="text-sm font-semibold text-gray-900">
-            {influencerCategory.join(", ")}
-          </p>
+          </div>
         )}
       </div>
     </div>

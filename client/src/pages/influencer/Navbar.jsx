@@ -8,17 +8,19 @@ import {
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GridViewIcon from "@mui/icons-material/GridView";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axios from "axios";
+import { MessageCircleMore } from "lucide-react";
 
 export default function Navbar() {
   const [showProfile, setShowProfile] = useState(false);
+
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
   const user = getUserFromStorage();
   const api = user.isBusiness ? "/business/company_profile" : "/profile";
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -42,31 +44,68 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="dark:bg-night-50 sticky top-0 bg-white shadow-sm z-50">
+    <nav className="dark:bg-night-50 sticky top-0 z-50 bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
+        <div className="text-3xl font-bold text-indigo-600 hover:cursor-pointer">
+          <Link
+            to={`/${user.isBusiness ? "business" : "influencer"}/dashboard`}
+          >
+            BizFluenze
+          </Link>
+        </div>
 
         <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
           <Link
             to={`/${user.isBusiness ? "business" : "influencer"}/dashboard`}
-            className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500"
+            className="group relative text-white dark:text-white"
           >
-            Dashboard
+            <span className="relative z-10 transition-colors duration-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-500">
+              Dashboard
+            </span>
+            <span className="absolute bottom-0 left-1/2 h-px w-0 origin-center translate-x-[-50%] bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
           </Link>
+
+          {/* Influencers / Campaigns Link */}
           {user.isBusiness ? (
-            <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">
-              <Link to="/business/influencerList">Influencers</Link>
-            </div>
+            <Link
+              to="/business/influencerList"
+              className="group relative cursor-pointer transition dark:text-white"
+            >
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-500">
+                Influencers
+              </span>
+              <span className="absolute bottom-0 left-1/2 h-px w-0 origin-center translate-x-[-50%] bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
           ) : (
             <Link
               to="/influencer/campaignlist"
-              className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500"
+              className="group relative cursor-pointer transition dark:text-white"
             >
-              Campaigns
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-500">
+                Campaigns
+              </span>
+              <span className="absolute bottom-0 left-1/2 h-px w-0 origin-center translate-x-[-50%] bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
             </Link>
           )}
         </div>
+
         <div className="flex items-center gap-10">
+          {/* Chat Icon and List */}
+          <div className="relative">
+            <button
+              className="group flex items-center gap-1 transition dark:text-white"
+              onClick={() => navigate(`/${user.isBusiness?'business':'influencer'}/messages`)}
+            >
+              <MessageCircleMore className="h-5 w-5 stroke-indigo-600 transition group-hover:stroke-indigo-400 dark:group-hover:stroke-indigo-400" />
+              <span className="group relative">
+                <p className="relative z-10 text-sm text-indigo-600 transition group-hover:text-indigo-400 dark:group-hover:text-indigo-400">
+                  Messages
+                </p>
+                <span className="absolute bottom-0 left-1/2 h-px w-0 origin-center translate-x-[-50%] bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+              </span>
+            </button>
+          </div>
+
           <div
             className="relative cursor-pointer"
             onMouseOver={handleHover}

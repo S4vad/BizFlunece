@@ -6,7 +6,7 @@ import ProfileHeader from "@/pages/influencer/InfluencerProfile/components/Profi
 import ProfileStatus from "@/pages/influencer/InfluencerProfile/components/ProfileStatus";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { ClipLoader } from "react-spinners";
+import Loader from "@/components/ui/Loader";
 
 export default function BusinessProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -31,7 +31,6 @@ export default function BusinessProfile() {
         const { data } = await axios.get(
           `/business/company_profile/${user.id}`,
         );
-        console.log("the response influencer profile is", data);
         if (!isEditing) {
           setProfile((prev) => ({
             ...prev,
@@ -68,9 +67,7 @@ export default function BusinessProfile() {
   if (isLoading) {
     return (
       <div className="flex h-[100vh] items-center justify-center">
-        <p className="text-lg font-semibold text-gray-600">
-          <ClipLoader color="#1258dc" size={50} />
-        </p>
+        <Loader />
       </div>
     );
   }
@@ -103,7 +100,7 @@ export default function BusinessProfile() {
             className="mt-2 w-full rounded-lg border border-gray-300 p-2"
           />
         ) : (
-          <p className="mt-2 text-gray-600">{profile.aboutCompany}</p>
+          <div className="mt-2 text-gray-600">{profile.aboutCompany}</div>
         )}
 
         <h3 className="mt-6 text-xl font-semibold">Campaign History</h3>

@@ -7,10 +7,7 @@ import PlatformItem from "@/pages/influencer/InfluencerProfile/components/Platfo
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Navbar from "@/pages/influencer/Navbar";
-import { ScaleLoader } from "react-spinners";
-
-
-
+import Loader from "@/components/ui/Loader";
 import { getUserFromStorage } from "@/utils/LocalStorage";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 
@@ -33,8 +30,7 @@ export default function InfluencerDetails() {
     fetchInfluencer();
   }, [id]);
 
-  if (!influencer) return <ScaleLoader  className="items-center" color="#1258dc" size={35} />
-  ;
+  if (!influencer) return <Loader />;
 
   return (
     <>
@@ -42,16 +38,17 @@ export default function InfluencerDetails() {
 
       <CustomBreadcrumb
         items={[
-          { label: "Home", link: "/business"},
-          { label: "Influencers", link:  "/business/influencerList"},
+          { label: "Home", link: "/business" },
+          { label: "Influencers", link: "/business/influencerList" },
           { label: influencer.name },
         ]}
       />
       <div className="mx-auto max-w-4xl p-6">
         <Card className="rounded-2xl bg-white p-6 shadow-lg">
           <Card className="p-6">
-            <ProfileHeader user={user} profile={influencer} showEdit={false}/>
+            <ProfileHeader user={user} profile={influencer} showEdit={false} />
             <ProfileStatus user={user} profile={influencer} />
+
           </Card>
           <div className="mx-auto mt-8 max-w-4xl">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
