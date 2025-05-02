@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const InfluencerBookmarkSchema=new mongoose.Schema({
+const CampaignBookmarkSchema=new mongoose.Schema({
   userId: { type: String, required: true },
   campaignIds: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -9,6 +9,6 @@ const InfluencerBookmarkSchema=new mongoose.Schema({
   },]
 });
 
-const InfluencerBookmark  = mongoose.model("InfluencerBookmark ", InfluencerBookmarkSchema);
+const CampaignBookmark  = mongoose.model("CampaignBookmark ", CampaignBookmarkSchema);
 
-export default InfluencerBookmark; 
+export default CampaignBookmark; 

@@ -7,7 +7,7 @@ import googleuser from "../models/googleuser.js";
 import InfluencerProfile from "../models/InfluencerProfile.js";
 import CompanyProfile from "../models/BusinessProfile.js";
 import campaignData from "../models/campaignData.js";
-import InfluencerBookmark from "../models/FavCampaign.js";
+import CampaignBookmark from "../models/FavCampaign.js";
 import CampaignParticipation from "../models/campaignParticipations.js";
 
 dotenv.config();
@@ -262,7 +262,7 @@ export async function isBookmarked(req, res) {
   const { userId, campaignId } = req.query;
 
   try {
-    const bookmark = await InfluencerBookmark.findOne({
+    const bookmark = await CampaignBookmark.findOne({
       userId,
       campaignIds: campaignId,
     });
@@ -282,7 +282,7 @@ export async function addBookmark(req, res) {
   const { userId, campaignId } = req.body;
 
   try {
-    const existingBookmark = await InfluencerBookmark.findOne({ userId });
+    const existingBookmark = await CampaignBookmark.findOne({ userId });
 
     if (existingBookmark) {
       if (!existingBookmark.campaignIds.includes(campaignId)) {
@@ -290,7 +290,7 @@ export async function addBookmark(req, res) {
         await existingBookmark.save();
       }
     } else {
-      await InfluencerBookmark.create({
+      await CampaignBookmark.create({
         userId,
         campaignIds: [campaignId],
       });
@@ -307,7 +307,7 @@ export async function removeBookmark(req, res) {
   const { userId, campaignId } = req.body;
 
   try {
-    const existingBookmark = await InfluencerBookmark.findOne({ userId });
+    const existingBookmark = await CampaignBookmark.findOne({ userId });
 
     if (existingBookmark) {
       const updatedCampaignIds = existingBookmark.campaignIds.filter(
@@ -360,14 +360,17 @@ export async function getSingleCampaignStatus(req, res) {
       campaignId,
       userId,
     });
+    console.log('check is',check)
 
     if (check) {
-      res.status(200).json({ participated: true });
+      res.status(200).json({ participated: true,show:false });
     } else {
-      res.status(200).json({ participated: false });
+      res.status(200).json({ participated: false ,show:true });
     }
   } catch (error) {
     console.error("Error checking campaign status", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+

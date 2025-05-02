@@ -130,18 +130,19 @@ export default function ProfileHeader({
           </div>
         </div>
 
-        <div className="flex md:flex-col justify-evenly md:justify-end gap-4">
+        <div className="flex justify-evenly gap-4 md:flex-col md:justify-end">
+          {!showEdit && (
+            <div>
+              <button className="rounded-lg bg-indigo-600 px-[20px] py-1 text-white hover:bg-indigo-500">
+                Favorite
+              </button>
+            </div>
+          )}
           <div>
-            <button className="rounded-lg bg-indigo-600 px-[26px] py-1 text-white hover:bg-indigo-500">
-              Follow
-            </button>
-          </div>
-          <div>
-          {/* simple login if not editable then show messge button */}
-           {!showEdit &&
-            <StartConversationButton partnerUserId={profile.userId} />
-
-           }
+            {/* simple login if not editable then show messge button */}
+            {!showEdit && (
+              <StartConversationButton partnerUserId={profile.userId} />
+            )}
           </div>
         </div>
       </div>

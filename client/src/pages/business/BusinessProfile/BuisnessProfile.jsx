@@ -7,6 +7,8 @@ import ProfileStatus from "@/pages/influencer/InfluencerProfile/components/Profi
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import Loader from "@/components/ui/Loader";
+import { useLocation } from "react-router-dom";
+import Navbar from "../../influencer/Navbar"
 
 export default function BusinessProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -20,17 +22,20 @@ export default function BusinessProfile() {
     bio: "Add your bio here",
   });
 
+  const location = useLocation();
+ 
+
   const user = getUserFromStorage();
+  const userId =location?.state?.businessId || user?.id ;
+  console.log("fthe front user id",userId) //location from campaignList page in influencer side.
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!userId) return;
 
     const fetchProfile = async () => {
       try {
         setIsLoading(true);
-        const { data } = await axios.get(
-          `/business/company_profile/${user.id}`,
-        );
+        const { data } = await axios.get(`/business/company_profile/${userId}`);
         if (!isEditing) {
           setProfile((prev) => ({
             ...prev,
@@ -55,7 +60,7 @@ export default function BusinessProfile() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`/business/update-profile/${user.id}`, profile);
+      await axios.put(`/business/update-profile/${userId}`, profile);
       setIsEditing(false);
       toast.success("Profile updated successfully");
     } catch (error) {
@@ -73,6 +78,9 @@ export default function BusinessProfile() {
   }
 
   return (
+   <>
+    <Navbar />
+
     <div className="mx-auto max-w-4xl p-6">
       <Card className="rounded-2xl bg-white p-6 shadow-lg">
         <Card className="p-6">
@@ -144,5 +152,6 @@ export default function BusinessProfile() {
         )}
       </Card>
     </div>
+    </>
   );
 }

@@ -7,12 +7,15 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { getUserFromStorage } from "@/utils/LocalStorage";
+import { useNavigate } from "react-router-dom";
 
-export default function CampaignCard({ item,handleCard }) {
+export default function CampaignCard({ item, handleCard }) {
   const [bookmark, setBookmark] = useState(false);
   const user = getUserFromStorage();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Campaign item data:", item);
     const fetchBookmarkStatus = async () => {
       try {
         const res = await axios.get("/influencer/is-bookmarked", {
@@ -53,8 +56,21 @@ export default function CampaignCard({ item,handleCard }) {
     }
   };
 
+  const handleProfile = async () => {
+    try {
+      navigate("/business/profile", {
+        state: { businessId: item.businessId },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="w-full max-w-2xl rounded-2xl bg-white p-8 cursor-pointer"  onClick={() => handleCard(item._id)}>
+    <div
+      className="w-full max-w-2xl cursor-pointer rounded-2xl bg-white p-8"
+      onClick={() => handleCard(item._id)}
+    >
       <div className="flex items-center justify-between space-y-1">
         <div className="flex flex-col">
           <div className="text-lg font-semibold">{item.title}</div>
@@ -72,7 +88,15 @@ export default function CampaignCard({ item,handleCard }) {
             {item.location}
           </div>
         </div>
-        <img src={item.companyImage} className="size-12 rounded-xl" alt="" />
+        <img
+          src={item.companyImage}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleProfile();
+          }}
+          className="size-12 rounded-xl"
+          alt=""
+        />
       </div>
 
       <div className="items-center space-y-3 py-2 md:flex md:space-x-5 md:space-y-0">
