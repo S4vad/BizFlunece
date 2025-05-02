@@ -30,7 +30,7 @@ export default function CampaignList() {
           },
         });
 
-        setShowButton(res?.data?.button ?? false);
+        setShowButton(res?.data?.show);
       } catch (error) {
         console.error("Error fetching initial campaign data:", error);
       }
@@ -43,7 +43,6 @@ export default function CampaignList() {
     const fetchCampaigns = async () => {
       try {
         const { data } = await axios.get("/influencer/campaignlist");
-        console.log(data);
         setCampaigns(data.data);
       } catch (error) {
         console.log(error);
@@ -65,7 +64,7 @@ export default function CampaignList() {
           `/campaign-participation-status?campaignId=${id}&userId=${user.id}`,
         )
         .then((res) => {
-          setShowButton(res.data.button);
+          setShowButton(res.data.show);
         });
     } catch (error) {
       console.log(error);
@@ -127,6 +126,8 @@ export default function CampaignList() {
               </div>
             )}
 
+            {/* left side */}
+    
             <div className="mb-6 flex items-center gap-4">
               {selectedCampaign.companyImage && (
                 <img

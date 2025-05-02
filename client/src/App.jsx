@@ -9,7 +9,7 @@ import InfluencerLayout from "./pages/influencer/InfluencerLayout";
 import BusinessLayout from "./pages/business/BusinessLayout";
 import InfluencerDetails from "@/pages/business/InfluencerList/components/InfluencerDetails";
 import MessagesLayout from "./pages/Message/MessagesLayout";
-
+import BuisnessProfile from "@/pages/business/BusinessProfile/BuisnessProfile";
 
 export default function App() {
   return (
@@ -21,7 +21,11 @@ export default function App() {
         <Route path="/campaign" element={<Campaign />} />
         <Route path="/influencer-details/:id" element={<InfluencerDetails />} />
         <Route path="/conversation/messages" element={<MessagesLayout />} />
-        <Route path="/conversation/messages/:userId" element={<MessagesLayout />} />
+        <Route
+          path="/conversation/messages/:userId"
+          element={<MessagesLayout />}
+        />
+        <Route path="/business/profile" element={<BuisnessProfile />} />
 
         <Route
           path="/influencer/*"

@@ -64,7 +64,7 @@ export default function ProfileStatus({
           <p className="text-sm text-gray-500">Platforms</p>
 
           <div className="text-lg font-semibold text-gray-900">
-            {profile.platform.map((p) => p.platform).join(", ")}
+            {profile?.platform?.map((p) => p.platform).join(", ")}
           </div>
         </div>
       )}
@@ -83,7 +83,7 @@ export default function ProfileStatus({
                 onChange={(selectedOptions) =>
                   onInputChange(
                     "influencerCategory",
-                    selectedOptions.map((opt) => opt.value),
+                    selectedOptions?.map((opt) => opt.value),
                   )
                 }
                 className="basic-multi-select"

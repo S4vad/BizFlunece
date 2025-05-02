@@ -25,6 +25,7 @@ routes.get("/influencer/is-bookmarked", isBookmarked);
 routes.get("/influencer/get-single-campaign", getSingleCampaign);
 routes.get('/campaign-participation-status',getSingleCampaignStatus)
 
+
 routes.post(
   "/profile/upload/:userId",
   uploadImage.single("image"),

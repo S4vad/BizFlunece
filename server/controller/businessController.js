@@ -130,8 +130,7 @@ export async function createCampaign(req, res) {
 export async function getCompanyProfile(req, res) {
   try {
     const userId = req.params.userId;
-    console.log("the user id is", userId);
-    console.log("itfrom admin");
+    console.log("the backend user id ",userId)
     const profile = await CompanyProfile.findOne({ userId });
 
     if (!profile) {
@@ -202,7 +201,7 @@ export async function getCampaigns(req, res) {
 
   try {
     const result = await campaignData.find({ businessId: id });
-    
+
     if (result) {
       res.status(200).json({ success: true, data: result });
     }
@@ -223,12 +222,10 @@ export async function updateCampaignStatus(req, res) {
     );
 
     if (updatedCampaign) {
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Campaign status updated successfully.",
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Campaign status updated successfully.",
+      });
     }
 
     return res
@@ -241,4 +238,3 @@ export async function updateCampaignStatus(req, res) {
       .json({ success: false, error: "Internal server error" });
   }
 }
-
