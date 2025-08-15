@@ -6,30 +6,27 @@ import { useEffect } from "react";
 const StartConversationButton = ({ partnerUserId }) => {
   const navigate = useNavigate();
   const currentUser = getUserFromStorage();
-  const { startNewConversation, initializeChat, initialized ,loadConversations} = useChatStore();
+  const { startNewConversation, initializeChat, initialized } = useChatStore();
 
-  useEffect(() => {
-    if (currentUser.id && !initialized) {
-      initializeChat(currentUser);
+ useEffect(() => {
+  if (currentUser?.id && !initialized) {
+    initializeChat(currentUser);
+  }
+}, [currentUser?.id, initialized, initializeChat]);
+
+const handleStartConversation = async () => {
+  if (!currentUser?.id || !partnerUserId) return;
+
+  try {
+    const conversation = await startNewConversation(currentUser.id, partnerUserId);
+    if (conversation) {
+      navigate(`/conversation/messages/${partnerUserId}`, { replace: true }); // ✅ prevent history loop
     }
-  }, [currentUser, initialized, initializeChat]);
+  } catch (error) {
+    console.error("Failed to start conversation:", error);
+  }
+};
 
-
-  const handleStartConversation = async () => {
-    if (!currentUser.id || !partnerUserId) return;
-  
-    try {
-      const conversation = await startNewConversation(currentUser.id, partnerUserId);
-      console.log('the coversation is',conversation)
-
-      await loadConversations(currentUser.id);
-      if (conversation) {
-        await navigate(`/conversation/messages/${partnerUserId}`);
-      }
-    } catch (error) {
-      console.error("Failed to start conversation:", error);
-    }
-  };
 
   return (
     <button

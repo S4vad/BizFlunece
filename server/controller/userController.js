@@ -10,8 +10,6 @@ import campaignData from "../models/campaignData.js";
 import CampaignBookmark from "../models/FavCampaign.js";
 import CampaignParticipation from "../models/campaignParticipations.js";
 
-dotenv.config();
-
 export async function userSignup(req, res) {
   const { name, email, password, isBusiness } = req.body;
   const socialMediaHandle = isBusiness ? null : req.body.socialMediaHandle; // Only set for influencers
@@ -340,37 +338,43 @@ export async function getSingleCampaign(req, res) {
 
 export async function addCampaignParticipation(req, res) {
   const { campaignId, userId, campaignOwner } = req.body;
+
   try {
+    const influencerProfile = await InfluencerProfile.findOne({
+      userId: userId,
+    });
+    const companyProfile = await CompanyProfile.findOne({
+      userId: campaignOwner,
+    });
     await CampaignParticipation.create({
-      userId,
+      influencer: influencerProfile._id,
       campaignId,
-      campaignOwner,
+      campaignOwner: companyProfile._id,
     });
     res.status(200).json({ success: true });
   } catch (error) {
+    console.error("Error creating campaign participation:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
 
 export async function getSingleCampaignStatus(req, res) {
   const { campaignId, userId } = req.query;
-  
+
   try {
     const check = await CampaignParticipation.findOne({
       campaignId,
-      userId,
+      influencer: userId,
     });
-    console.log('check is',check)
+    console.log("check is", check);
 
     if (check) {
-      res.status(200).json({ participated: true,show:false });
+      res.status(200).json({ participated: true, show: false });
     } else {
-      res.status(200).json({ participated: false ,show:true });
+      res.status(200).json({ participated: false, show: true });
     }
   } catch (error) {
     console.error("Error checking campaign status", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
-

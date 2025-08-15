@@ -7,6 +7,7 @@ import { getUserFromStorage } from "@/utils/LocalStorage";
 
 const ConversationList = () => {
   const currentUser = getUserFromStorage();
+  console.log("current user",currentUser)
   const {
     conversations,
     activeConversation,
@@ -21,19 +22,29 @@ const ConversationList = () => {
     if (currentUser?.id) {
       loadConversations(currentUser.id);
     }
-  }, [loadConversations, currentUser.id]);
+    // run only once after mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) return <Loader />;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
 
+  // Remove duplicate partnerUser._id entries
+  const uniqueConversations = conversations.filter(
+    (c, index, self) =>
+      index === self.findIndex(
+        (t) => t.partnerUser._id === c.partnerUser._id
+      )
+  );
+
   return (
     <div className="h-full overflow-y-auto">
-      {conversations.length === 0 ? (
+      {uniqueConversations.length === 0 ? (
         <div className="p-4 text-center text-gray-500">
           No conversations yet
         </div>
       ) : (
-        conversations.map((conversation) => (
+        uniqueConversations.map((conversation) => (
           <div
             key={conversation.partnerUser._id}
             className={`flex cursor-pointer items-center border-b p-3 hover:bg-gray-50 ${

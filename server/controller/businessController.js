@@ -2,6 +2,7 @@ import InfluencerProfile from "../models/InfluencerProfile.js";
 import FavInfluencer from "../models/FavInfluencers.js";
 import campaignData from "../models/campaignData.js";
 import CompanyProfile from "../models/BusinessProfile.js";
+import CampaignParticipation from "../models/campaignParticipations.js";
 
 export async function InfluencerList(req, res) {
   try {
@@ -130,7 +131,6 @@ export async function createCampaign(req, res) {
 export async function getCompanyProfile(req, res) {
   try {
     const userId = req.params.userId;
-    console.log("the backend user id ",userId)
     const profile = await CompanyProfile.findOne({ userId });
 
     if (!profile) {
@@ -238,3 +238,137 @@ export async function updateCampaignStatus(req, res) {
       .json({ success: false, error: "Internal server error" });
   }
 }
+
+export const getPendingRequests = async (req, res) => {
+  try {
+    const { businessId } = req.params;
+    const owner = await CompanyProfile.findOne({ userId: businessId });
+
+    const requests = await CampaignParticipation.find({
+      campaignOwner: owner._id,
+      "adminResponse.status": "pending",
+    })
+      .populate({
+        path: "campaignId",
+        select: "title description budget duration",
+      })
+      .populate({
+        path: "influencer",
+      })
+      .sort({ requestedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: requests.length,
+      data: requests,
+    });
+  } catch (error) {
+    console.error("Error fetching pending requests:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching requests",
+    });
+  }
+};
+
+export const handleParticipationRequest = async (req, res) => {
+  try {
+    const { participationId, action } = req.body;
+    const businessId = req.user.userId;
+    const owner=await CompanyProfile.findOne({userId:businessId})
+    console.log(participationId, action, businessId);
+
+    if (!["approve", "reject"].includes(action)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid action. Must be 'approve' or 'reject'",
+      });
+    }
+    // Find and validate the participation request
+    const participation = await CampaignParticipation.findOne({
+      _id: participationId,
+      campaignOwner: owner._id,
+    });
+
+    if (!participation) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found or you don't have permission",
+      });
+    }
+
+    // Update the participation status
+    participation.adminResponse = {
+      status: action === "approve" ? "approved" : "rejected",
+      respondedAt: new Date(),
+    };
+
+    participation.requestedStatus =
+      action === "approve" ? "approved" : "rejected";
+
+    await participation.save();
+
+    // If approved, you might want to add the influencer to the campaign
+    if (action === "approve") {
+      await Campaign.findByIdAndUpdate(
+        participation.campaignId,
+        { $addToSet: { influencers: participation.influencer } },
+        { new: true }
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Request ${action}d successfully`,
+      data: participation,
+    });
+  } catch (error) {
+    console.error("Error handling participation request:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while handling request",
+    });
+  }
+};
+
+export const getCampaignParticipations = async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+    const businessId = req.user.userId; // From auth middleware
+
+    // Verify the business owns this campaign
+    const campaign = await Campaign.findOne({
+      _id: campaignId,
+      companyId: businessId,
+    });
+
+    if (!campaign) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You don't have permission to view this campaign's participations",
+      });
+    }
+
+    const participations = await CampaignParticipation.find({
+      campaignId,
+    })
+      .populate({
+        path: "influencer",
+        select: "name image followers engagementRate",
+      })
+      .sort({ requestedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: participations.length,
+      data: participations,
+    });
+  } catch (error) {
+    console.error("Error fetching campaign participations:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching participations",
+    });
+  }
+};

@@ -1,158 +1,142 @@
 import express from "express";
-import MessageModel from "../models/messageModel.js";
-import userModel from "../models/Users.js";
-import InfluencerProfile from "../models/InfluencerProfile.js";
-import BusinessProfile from "../models/BusinessProfile.js";
-import { compareSync } from "bcrypt";
+import {
+  sendMessage,
+  getMessages,
+  markAsRead,
+} from "../controller/messageController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+import {uploadImage} from "../config/cloudinary.js"
+import Conversation from "../models/conversation.model.js";
+import User from "../models/Users.js";
+import mongoose from "mongoose";
+
+
+
 const router = express.Router();
 
-// Get all conversations
+// Protected routes
+router.use(authMiddleware);
+
+// Message routes
+router.post(
+  "/send/:receiver",
+  uploadImage.single("image"),
+  sendMessage
+);
+router.get("/messages/:receiver", getMessages);
+router.patch("/read/:messageId", markAsRead);
+
+// Conversation list route
 router.get("/chat", async (req, res) => {
   try {
-    const partners = await MessageModel.aggregate([
-      {
-        $match: {
-          $or: [
-            { senderId: req.currentUser.userId },
-            { receiverId: req.currentUser.userId},
-          ],
-        },
-      },
-      {
-        $group: {
-          _id: {
-            $cond: [
-              { $eq: ["$senderId", req.currentUser.userId] },
-              "$receiverId",
-              "$senderId",
-            ],
-          },
-        },
-      },
-    ]);
+    const userId = req.userId;
+    const conversations = await Conversation.find({
+      participants: { $in: [userId] },
+    })
+    .populate({
+      path: "participants",
+      match: { _id: { $ne: userId } },
+      select: "name email isBusiness",
+      model: "userLogin"
+    })
+    .populate({
+      path: "messages",
+      options: { sort: { createdAt: -1 }, limit: 1 },
+      populate: [
+        { path: "sender", select: "name", model: "userLogin" },
+      ],
+    })
+    .sort({ updatedAt: -1 });
 
-    const conversations = await Promise.all(
-      partners.map(async ({ _id: partnerUserId }) => {
-        const [lastMessage, unreadCount, partnerUser] = await Promise.all([
-          MessageModel.findOne({
-            $or: [
-              { senderId: req.currentUser.userId, receiverId: partnerUserId },
-              { senderId: partnerUserId, receiverId: req.currentUser.userId },
-            ],
-          }).sort({ timestamp: -1 }),
+    const formattedConversations = await Promise.all(
+      conversations.map(async (conv) => {
+        const partnerUser = conv.participants.find(
+          p => p._id.toString() !== userId
+        );
 
-          MessageModel.countDocuments({
-            senderId: partnerUserId,
-            receiverId: req.currentUser.userId,
-            read: false,
-          }),
-
-          userModel.findById(partnerUserId).select("-password -__v"),
-        ]);
+        // Get profile data
+        let profile;
+        if (partnerUser.isBusiness) {
+          profile = await CompanyProfile.findOne({ userId: partnerUser._id });
+        } else {
+          profile = await InfluencerProfile.findOne({ userId: partnerUser._id });
+        }
 
         return {
-          partnerUser: partnerUser.toObject(),
-          lastMessage,
-          unreadCount,
+          partnerUser: {
+            ...partnerUser.toObject(),
+            image: profile?.image || null,
+            bio: profile?.bio || null
+          },
+          lastMessage: conv.messages[0] ? {
+            _id: conv.messages[0]._id,
+            content: conv.messages[0].message,
+            senderId: conv.messages[0].sender._id,
+            timestamp: conv.messages[0].createdAt,
+          } : null,
+          unreadCount: conv.messages.filter(
+            msg => !msg.read && msg.sender._id.toString() !== userId
+          ).length,
         };
       })
     );
 
-    res.json(conversations.filter((c) => c.partnerUser)); // Filter out null users
+    res.status(200).json(formattedConversations);
   } catch (error) {
     console.error("Error fetching conversations:", error);
-    res.status(500).json({ message: "Error fetching conversations" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-/// Get messages between current user and partner user
-router.get("/messages/:partnerUserId", async (req, res) => {
-  const currentUserId = req.currentUser.userId; 
-  const partnerUserId = req.params.partnerUserId;
-  try {
-    const messages = await MessageModel.find({
-      $or: [
-        { senderId: currentUserId, receiverId: partnerUserId },
-        { senderId: partnerUserId, receiverId: currentUserId },
-      ],
-    }).sort("timestamp");
-    console.log('the message is',messages)
-
-    res.json(messages||[]);
-  } catch (error) {
-    console.error("Error fetching messages:", error);
-    res.status(500).json({ message: "Error fetching messages" });
-  }
-});
-
-
-// Mark messages as read
-router.patch("/read/:partnerUserId", async (req, res) => {
-  try {
-    await MessageModel.updateMany(
-      {
-        senderId: req.params.partnerUserId,
-        receiverId: req.currentUser.userId,
-        read: false,
-      },
-      { $set: { read: true } }
-    );
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error marking messages as read:", error);
-    res.status(500).json({ message: "Error marking messages as read" });
-  }
-});
-
-// Get user profile
-router.get("/profile/:partnerId", async (req, res) => {
-  try {
-    const user = await userModel.findById(req.params.partnerId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const profile = user.isBusiness
-      ? await BusinessProfile.findOne({ userId: user._id })
-      : await InfluencerProfile.findOne({ userId: user._id });
-
-    res.json({
-      user: user.toObject(),
-      profile: profile ? profile.toObject() : null,
-    });
-  } catch (error) {
-    console.error("Profile error:", error);
-    res.status(500).json({
-      message: "Error fetching profile",
-      error: error.message,
-    });
-  }
-});
-
+// Start new conversation
 router.post("/start-conversation", async (req, res) => {
   try {
     const { userId, partnerId } = req.body;
-    console.log('the start conversation is backend ',userId,partnerId)
 
-    if (!userId || !partnerId) {
-      return res
-        .status(400)
-        .json({ message: "Both userId and partnerId are required" });
+    // Validate input
+    if (!mongoose.Types.ObjectId.isValid(userId) || 
+        !mongoose.Types.ObjectId.isValid(partnerId)) {
+      return res.status(400).json({ message: "Invalid user IDs" });
     }
 
-    // Check if conversation exists
-    const existingMessages = await MessageModel.find({
-      $or: [
-        { senderId: userId, receiverId: partnerId },
-        { senderId: partnerId, receiverId: userId },
-      ],
-    }).sort({ timestamp: -1 });
+    // Check if users exist - using the correct model name 'userLogin'
+    const users = await User.find({ 
+      _id: { $in: [userId, partnerId] } 
+    });
+    
+    if (users.length !== 2) {
+      return res.status(404).json({ message: "One or both users not found" });
+    }
 
-    console.log('the existing backend messsage',existingMessages)
+    // Find or create conversation
+    let conversation = await Conversation.findOne({
+      participants: { $all: [userId, partnerId] }
+    }).populate({
+      path: 'participants',
+      match: { _id: { $ne: userId } },
+      select: 'name email isBusiness',
+      model: 'userLogin' // Explicitly specify the model name
+    });
 
-    const partnerUser = await userModel.findById(partnerId).select("-password");
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [userId, partnerId],
+        messages: []
+      });
+      
+      // Re-populate after creation
+      conversation = await Conversation.findById(conversation._id)
+        .populate({
+          path: 'participants',
+          match: { _id: { $ne: userId } },
+          select: 'name email isBusiness',
+          model: 'userLogin'
+        });
+    }
 
-    console.log('the partnerUser',partnerUser)
+    const partnerUser = conversation.participants.find(
+      p => p._id.toString() !== userId.toString()
+    );
 
     if (!partnerUser) {
       return res.status(404).json({ message: "Partner user not found" });
@@ -160,15 +144,58 @@ router.post("/start-conversation", async (req, res) => {
 
     res.status(200).json({
       conversation: {
-        partnerUser: partnerUser.toObject(),
-        lastMessage: existingMessages[0] || null,
-        unreadCount: 0,
-      },
+        partnerUser: {
+          _id: partnerUser._id,
+          name: partnerUser.name,
+          email: partnerUser.email,
+          isBusiness: partnerUser.isBusiness
+        },
+        lastMessage: null,
+        unreadCount: 0
+      }
     });
+
   } catch (error) {
-    console.error("Error starting conversation:", error);
-    res.status(500).json({ message: error.message });
+    console.error("Start conversation error:", error);
+    res.status(500).json({ 
+      message: "Failed to start conversation",
+      error: error.message 
+    });
   }
 });
 
+
+router.get("/profile/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Get appropriate profile based on user type
+    let profile;
+    if (user.isBusiness) {
+      profile = await CompanyProfile.findOne({ userId });
+    } else {
+      profile = await InfluencerProfile.findOne({ userId });
+    }
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.status(200).json({
+      ...profile.toObject(),
+      isBusiness: user.isBusiness,
+      email: user.email
+    });
+
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ message: "Error fetching profile" });
+  }
+});
 export default router;

@@ -2,6 +2,7 @@ import StatCard from "@/pages/influencer/InfluencerDashboard/components/StatCard
 import ActiveCampaign from "./components/ActiveCampaign";
 import RecentActivities from "./components/RecentActivities";
 import { useNavigate } from "react-router-dom";
+import InfluencerRequests from "./components/InfluencerRequests";
 
 export default function BusinessDashboard() {
   const navigate=useNavigate();
@@ -31,6 +32,12 @@ export default function BusinessDashboard() {
           </h2>
           <ActiveCampaign />
         </div>
+
+        <div className="mb-8 rounded-lg bg-white p-6 shadow-lg">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">Influencer Requests</h2>
+          <InfluencerRequests />
+        </div>
+
         <div className="rounded-lg bg-white p-6 shadow-lg">
           <h2 className="mb-4 text-2xl font-bold text-gray-900">
             Recent Activities

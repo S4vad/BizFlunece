@@ -1,48 +1,29 @@
-import { useEffect } from 'react';
-import useChatStore from '../stores/chatStore';
+import { useEffect, useState } from 'react';
+import { useSocket } from './useSocket';
 
-const useChat = (currentUser) => {
-  const {
-    socket,
-    messages,
-    activeConversation,
-    partnerUserProfile,
-    initializeChat,
-    sendMessage,
-    setActiveConversation,
-    markAsRead,
-    cleanup
-  } = useChatStore();
+export const useChat = (userId) => {
+  const { socket, onlineUsers } = useSocket(userId);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState(null);
 
-  // Initialize chat only when currentUser changes
   useEffect(() => {
-    if (currentUser) {
-      initializeChat(currentUser);
-      return () => {
-        cleanup();
-      };
-    }
-  }, [currentUser]); // Only depend on user.id
+    if (!socket) return;
 
-  // Mark messages as read
+    socket.on('newMessage', (message) => {
+      setNewMessage(message);
+    });
+
+    return () => {
+      socket.off('newMessage');
+    };
+  }, [socket]);
+
   useEffect(() => {
-    if (activeConversation?.partnerUser?._id) {
-      const unreadMessages = messages.filter(
-        msg => !msg.read && msg.senderId === activeConversation.partnerUser._id
-      );
-      unreadMessages.forEach(msg => markAsRead(msg._id));
+    if (newMessage) {
+      setMessages(prev => [...prev, newMessage]);
+      setNewMessage(null);
     }
-  }, [messages, activeConversation?.partnerUser?._id, markAsRead]);
+  }, [newMessage]);
 
-  return {
-    socket,
-    messages,
-    activeConversation,
-    partnerUserProfile,
-    sendMessage,
-    setActiveConversation,
-    markAsRead
-  };
+  return { messages, onlineUsers };
 };
-
-export default useChat;

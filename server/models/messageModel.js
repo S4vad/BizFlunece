@@ -1,38 +1,38 @@
 import mongoose from "mongoose";
 
-const messageSchema = new mongoose.Schema({
-  senderId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "userLogin",
-    required: true,
+const messageSchema = new mongoose.Schema(
+  {
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    receiver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    message: {
+      type: String,
+      default: "",
+    },
+    image: {
+      type: String,
+      default: "",
+    },
+    read: {
+      type: Boolean,
+      default: false,
+    },
   },
-  receiverId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "userLogin",
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-  timestamp: {
-    type: Date,
-    default: Date.now,
-  },
-  read: {
-    type: Boolean,
-    default: false,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
+// Index for faster querying
+messageSchema.index({ sender: 1, receiver: 1, createdAt: -1 });
 
+const Message = mongoose.model("Message", messageSchema);
 
-messageSchema.index({ sender: 1, receiver: 1 }); // For finding conversations
-messageSchema.index({ receiver: 1, read: 1 }); // For finding unread messages
-messageSchema.index({ timestamp: -1 }); // For sorting
-
-
-
-const MessageModel = mongoose.model("Message", messageSchema);
-
-export default MessageModel;
+export default Message;

@@ -1,91 +1,99 @@
+import http from "http";
+import express from "express";
 import { Server } from "socket.io";
-import MessageModel from "../models/messageModel.js";
-import userModel from "../models/Users.js";
-import InfluencerProfile from "../models/InfluencerProfile.js";
-import BusinessProfile from "../models/BusinessProfile.js";
+import Message from "../models/messageModel.js";
 
-export default function createSocketServer(server) {
-  const io = new Server(server, {
-    cors: {
-      origin: "http://localhost:5173", // Match your frontend URL
-      methods: ["GET", "POST"],
-      credentials: true,
-    },
+const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST"]
+  },
+  path: "/socket.io",
+  pingTimeout: 60000,
+  pingInterval: 25000
+});
+
+// Store user socket connections
+const userSocketMap = {};
+
+export const getReceiverSocketId = (receiverId) => {
+  return userSocketMap[receiverId];
+};
+
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  // Handle authentication and user joining
+  socket.on("authenticate", (userId) => {
+    if (!userId) {
+      socket.disconnect();
+      return;
+    }
+    
+    // Remove previous connection if exists
+    if (userSocketMap[userId]) {
+      io.to(userSocketMap[userId]).emit("forceDisconnect", "Multiple connections detected");
+      io.sockets.sockets.get(userSocketMap[userId])?.disconnect();
+    }
+    
+    userSocketMap[userId] = socket.id;
+    console.log(`User ${userId} connected with socket ID: ${socket.id}`);
+    io.emit("onlineUsers", Object.keys(userSocketMap));
   });
 
-  io.on("connection", (socket) => {
-    console.log("New client connected:", socket.id);
+  // Handle sending messages
+  socket.on("sendMessage", async (messageData) => {
+    try {
+      const { senderId, receiverId, content } = messageData;
 
-    // Join user's room
-    socket.on("join", (userId) => {
-      socket.join(userId);
-      console.log(`User ${userId} joined their room`);
-    });
+      // Create message in database
+      const newMessage = await Message.create({
+        sender: senderId,
+        receiver: receiverId,
+        message: content,
+        read: false
+      });
 
-    // Handle sending messages
-    socket.on("sendMessage", async ({ senderId, receiverId, content }) => {
-      try {
-        // Verify both users exist
-        const [sender, receiver] = await Promise.all([
-          userModel.findById(senderId),
-          userModel.findById(receiverId),
-        ]);
+      // Populate sender and receiver details
+      const populatedMessage = await Message.findById(newMessage._id)
+        .populate("sender", "name image")
+        .populate("receiver", "name image");
 
-        if (!sender || !receiver) {
-          throw new Error("Invalid sender or receiver");
-        }
-
-        // Create and save the message
-        const message = new MessageModel({
-          sender: sender._id,
-          receiver: receiver._id,
-          content,
-        });
-
-        await message.save();
-
-        // Get sender's profile for the frontend
-        const senderProfile = sender.isBusiness
-          ? await BusinessProfile.findOne({ userId: sender._id })
-          : await InfluencerProfile.findOne({ userId: sender._id });
-
-        // Prepare the message object to emit
-        const messageWithSender = {
-          ...message.toObject(),
-          senderProfile: senderProfile ? senderProfile.toObject() : null,
-        };
-
-        // Emit to both parties
-        io.to(senderId.toString()).emit("newMessage", messageWithSender);
-        io.to(receiverId.toString()).emit("newMessage", messageWithSender);
-      } catch (error) {
-        console.error("Error sending message:", error);
-        socket.emit("messageError", error.message);
+      // Emit to both sender and receiver
+      const receiverSocketId = getReceiverSocketId(receiverId);
+      const senderSocketId = getReceiverSocketId(senderId);
+      
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", populatedMessage);
       }
-    });
-
-    // Handle message read status updates
-    socket.on("markAsRead", async ({ messageId, userId }) => {
-      try {
-        const message = await MessageModel.findByIdAndUpdate(
-          messageId,
-          { read: true },
-          { new: true }
-        );
-
-        if (message) {
-          io.to(userId.toString()).emit("messageRead", messageId);
-        }
-      } catch (error) {
-        console.error("Error marking message as read:", error);
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("newMessage", populatedMessage);
       }
-    });
-
-    // Handle disconnection
-    socket.on("disconnect", () => {
-      console.log("Client disconnected:", socket.id);
-    });
+    } catch (error) {
+      console.error("Error handling sendMessage:", error);
+    }
   });
 
-  return io;
-}
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    const userId = Object.keys(userSocketMap).find(
+      key => userSocketMap[key] === socket.id
+    );
+    if (userId) {
+      delete userSocketMap[userId];
+      io.emit("onlineUsers", Object.keys(userSocketMap));
+      console.log(`User ${userId} disconnected`);
+    }
+  });
+
+  // Error handling
+  socket.on("error", (error) => {
+    console.error("Socket error:", error);
+  });
+});
+
+export { app, server, io };
