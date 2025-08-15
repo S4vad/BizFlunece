@@ -8,13 +8,11 @@ import userRoutes from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser";
 import businessRoutes from "./routes/businessRoutes.js";
 import { createServer } from "http";
-import createSocketServer from "./config/socketServer.js";
+import {app,server} from "./config/socketServer.js";
 import conversationRoutes from "./routes/converSationRoutes.js"
 import publicRoutes from "./routes/publicRoutes.js"
 import authMiddleware from "./middleware/authMiddleware.js";
 
-const app = express();
-const server = createServer(app);
 
 app.use(
   cors({
@@ -34,8 +32,7 @@ mongoose
   .then(() => console.log("✅ connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Initialize Socket.IO
-createSocketServer(server);
+
 
 // Public 
 app.use("/", publicRoutes);

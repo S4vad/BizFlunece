@@ -7,7 +7,7 @@ const CampaignParticipationSchema = new mongoose.Schema(
       ref: "campaignData",
       required: true,
     },
-    userId: {
+    influencer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "InfluencerProfile",
       required: true,
@@ -39,11 +39,11 @@ const CampaignParticipationSchema = new mongoose.Schema(
 );
 
 // Ensure one participation record per user per campaign
-CampaignParticipationSchema.index({userId:1,campaignId:1},{unique:true})
+CampaignParticipationSchema.index({ influencer: 1, campaignId: 1 }, { unique: true });
 
 // Index for quick queries
 CampaignParticipationSchema.index({campaignOwner:1})
-CampaignParticipationSchema.index({userId:1,requestedStatus:1})
+CampaignParticipationSchema.index({ influencer: 1, requestedStatus: 1 });
 CampaignParticipationSchema.index({campaignId:1,"adminResponse.status":1})
 
 const CampaignParticipation = mongoose.model(

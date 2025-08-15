@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ConversationList from "./ConversationList";
 import ChatInterface from "./ChatInterface";
@@ -8,117 +8,120 @@ import { getUserFromStorage } from "@/utils/LocalStorage";
 import Navbar from "../influencer/Navbar";
 
 const MessagesLayout = () => {
-  const { userId:partnerUserId } = useParams();
+  const { userId: partnerUserId } = useParams();
   const navigate = useNavigate();
   const currentUser = getUserFromStorage();
+
   const {
+    socket,
     conversations,
     loading,
     setActiveConversation,
     startNewConversation,
     initializeChat,
     initialized,
-    hasLoaded, // Add this to your store
+    hasLoaded,
+    cleanup,
+    activeConversation // ✅ added to fix "not defined"
   } = useChatStore();
+
+  // Stable callback for conversation selection
+  const handleSelectConversation = useCallback(
+    async (conversation) => {
+      await setActiveConversation(conversation);
+      navigate(`/conversation/messages/${conversation.partnerUser._id}`);
+    },
+    [navigate, setActiveConversation]
+  );
 
   // Initialize chat only once
   useEffect(() => {
-    if (currentUser.id && !initialized) {
+    if (currentUser?.id && !initialized) {
       initializeChat(currentUser);
     }
   }, [currentUser?.id, initialized, initializeChat]);
 
+  // Handle initial conversation selection
   useEffect(() => {
-    if (!hasLoaded || loading) return;
+    if (!hasLoaded || loading || !currentUser?.id) return;
 
-    const handleConversation = async () => {
-      if (!partnerUserId) {
-        if (conversations.length > 0) {
-          navigate(`/conversation/messages/${conversations[0].partnerUser._id}`);
+    const handleInitialConversation = async () => {
+      if (partnerUserId) {
+        const existingConv = conversations.find(
+          (c) => c.partnerUser._id === partnerUserId
+        );
+
+        if (existingConv) {
+          await setActiveConversation(existingConv);
+        } else if (
+          !activeConversation ||
+          activeConversation.partnerUser._id !== partnerUserId
+        ) {
+          await startNewConversation(currentUser.id, partnerUserId);
         }
-        return;
-      }
-
-      const existingConversation = conversations.find(
-        (c) => c.partnerUser._id === partnerUserId
-      );
-
-      if (existingConversation) {
-        await setActiveConversation(existingConversation);
-      } else {
-        if (conversations.length > 0) {
-          navigate("/conversation/messages");
-        } else {
-          await startNewConversation(currentUser._id, partnerUserId);
-        }
+      } else if (conversations.length > 0 && !activeConversation) {
+        await handleSelectConversation(conversations[0]);
       }
     };
 
-    handleConversation();
+    handleInitialConversation();
   }, [
     partnerUserId,
     conversations,
     hasLoaded,
     loading,
-    currentUser._id,
+    currentUser?.id,
+    handleSelectConversation,
     setActiveConversation,
     startNewConversation,
-    navigate
+    activeConversation
   ]);
-
 
   if (loading && !hasLoaded) return <Loader />;
 
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <Navbar />
-      <div className="flex h-[calc(100vh-80px)] rounded-lg border bg-white">
-        <div className="w-full border-r md:w-80">
-          <div className="flex items-center justify-between border-b p-3">
-            <h3 className="mr-4 text-lg font-semibold text-indigo-600">
-              Messages
-            </h3>
-            <div className="relative w-60 max-w-xs">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg
-                  className="h-4 w-4 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"
-                  />
-                </svg>
-              </span>
-              <input
-                type="text"
-                placeholder="Search messages"
-                className="w-full rounded-lg border border-gray-300 py-1.5 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-[0.8] focus:ring-blue-500"
-              />
-            </div>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Conversation List - Fixed width */}
+        <div className="w-80 border-r bg-white flex flex-col">
+          <div className="p-3 border-b">
+            <h3 className="text-lg font-semibold text-indigo-600">Messages</h3>
           </div>
-          <ConversationList />
+          <ConversationList onSelectConversation={handleSelectConversation} />
         </div>
 
-        <div className={`flex-1 ${!partnerUserId ? "hidden md:block" : ""}`}>
+        {/* Chat Interface - Flexible width */}
+        <div className="flex-1 flex flex-col bg-gray-50">
           {partnerUserId ? (
-            <ChatInterface />
+            <ChatInterface key={partnerUserId} />
           ) : (
-            <div className="flex h-full items-center justify-center">
-              <div className="p-6 text-center">
-                <h3 className="mb-2 text-xl font-medium">
-                  {conversations.length === 0
-                    ? "Welcome to Messages"
-                    : "Select a conversation"}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center p-6 max-w-md">
+                <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
+                  <svg
+                    className="h-8 w-8 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-medium mb-2">
+                  {conversations.length
+                    ? "Select a conversation"
+                    : "No conversations yet"}
                 </h3>
-                <p className="text-gray-500">
-                  {conversations.length === 0
-                    ? "Start a new conversation by visiting a profile"
-                    : "Choose from your existing conversations"}
+                <p className="text-gray-500 mb-4">
+                  {conversations.length
+                    ? "Choose a chat to continue"
+                    : "Start by messaging someone"}
                 </p>
               </div>
             </div>
