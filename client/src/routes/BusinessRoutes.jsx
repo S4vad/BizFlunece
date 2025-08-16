@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import BusinessDashboard from "@/pages/business/Dashboard/BusinessDashboard";
 import InfluencerList from "@/pages/business/InfluencerList/InfluencerList";
 import CreateCampaign from "@/pages/business/CampaignCreator/CreateCampaign";
+import MessagesLayout from "@/pages/Message/MessagesLayout";
 import Favorite from "@/pages/business/Favorite/Favorite";
 
 export default function BusinessRoutes() {
@@ -12,6 +13,8 @@ export default function BusinessRoutes() {
       <Route path="/influencerList" element={<InfluencerList />} />
       <Route path="/createcampaign" element={<CreateCampaign />} />
       <Route path="/favorite" element={<Favorite />} />
+      <Route path="/messages" element={<MessagesLayout />} />
+      <Route path="/messages/:id" element={<MessagesLayout />} />
     </Routes>
   );
 }

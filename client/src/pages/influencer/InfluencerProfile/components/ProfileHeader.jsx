@@ -3,7 +3,6 @@ import { Star } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
-import StartConversationButton from "@/pages/Message/StartConversationButton";
 
 export default function ProfileHeader({
   user,
@@ -138,12 +137,12 @@ export default function ProfileHeader({
               </button>
             </div>
           )}
-          <div>
-            {/* simple login if not editable then show messge button */}
+          {/* <div>
+           
             {!showEdit && (
               <StartConversationButton partnerUserId={profile.userId} />
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

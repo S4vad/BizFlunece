@@ -27,6 +27,7 @@ export async function userSignup(req, res) {
       isBusiness: isBusiness,
       socialMediaHandle: socialMediaHandle,
     });
+    
 
     const role = isBusiness ? "business" : "influencer";
 
@@ -187,7 +188,6 @@ export async function getProfile(req, res) {
   try {
     const userId = req.params.userId;
     const profile = await InfluencerProfile.findOne({ userId });
-    console.log("itfrom user");
 
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
@@ -376,5 +376,26 @@ export async function getSingleCampaignStatus(req, res) {
   } catch (error) {
     console.error("Error checking campaign status", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function getCurrentUser(req, res) {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res
+        .status(400)
+        .json({ message: "!token required for authentication" });
+    }
+
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decode) {
+      return res.status(400).json({ message: "!user not found" });
+    }
+
+    res.status(200).json({ data: decode });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+    console.log("error fetching current user");
   }
 }

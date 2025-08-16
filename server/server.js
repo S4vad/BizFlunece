@@ -7,11 +7,12 @@ import userRoutes from "./routes/userRoutes.js";
 // import adminRoute from './routes/adminRoute'
 import cookieParser from "cookie-parser";
 import businessRoutes from "./routes/businessRoutes.js";
-import { createServer } from "http";
 import {app,server} from "./config/socketServer.js";
-import conversationRoutes from "./routes/converSationRoutes.js"
 import publicRoutes from "./routes/publicRoutes.js"
 import authMiddleware from "./middleware/authMiddleware.js";
+import { getChatUsers, getMessage,sendMessage } from "./controller/messageController.js";
+import { uploadImage } from "./config/cloudinary.js";
+
 
 
 app.use(
@@ -41,7 +42,13 @@ app.use("/", publicRoutes);
 app.use(authMiddleware); 
 app.use("/", userRoutes);
 app.use("/business", businessRoutes);
-app.use("/conversation", conversationRoutes);
+
+// message controllers
+
+app.post("/send/:receiver", authMiddleware, uploadImage.single("image"), sendMessage);
+app.get("/get-messages/:receiver", authMiddleware, getMessage);
+app.get("/get-chat-users",authMiddleware,getChatUsers)
+
 
 
 const PORT = process.env.PORT || 5001;

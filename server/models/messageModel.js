@@ -18,20 +18,13 @@ const messageSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "",
-    },
-    read: {
-      type: Boolean,
-      default: false,
+      default:"",
     },
   },
   {
     timestamps: true,
   }
 );
-
-// Index for faster querying
-messageSchema.index({ sender: 1, receiver: 1, createdAt: -1 });
 
 const Message = mongoose.model("Message", messageSchema);
 

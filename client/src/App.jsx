@@ -10,8 +10,19 @@ import BusinessLayout from "./pages/business/BusinessLayout";
 import InfluencerDetails from "@/pages/business/InfluencerList/components/InfluencerDetails";
 import MessagesLayout from "./pages/Message/MessagesLayout";
 import BuisnessProfile from "@/pages/business/BusinessProfile/BuisnessProfile";
+import { useEffect } from "react";
+import { initSocket } from "./utils/socket";
 
 export default function App() {
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData?.id) {
+      const socket = initSocket(userData.id);
+      socket.on("connect", () => {
+        console.log("Socket connected:", socket.id);
+      });
+    }
+  }, []);
   return (
     <AuthProvider>
       <Routes>
