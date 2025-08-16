@@ -12,7 +12,8 @@ import {
   updateCampaignStatus,
   getPendingRequests,
   handleParticipationRequest,
-  getCampaignParticipations
+  getCampaignParticipations,
+  getRecentCampaigns
 } from "../controller/businessController.js";
 import { uploadVideo } from "../config/cloudinary.js";
 import { uploadImage } from "../config/cloudinary.js";
@@ -27,6 +28,7 @@ routes.get("/influencer/:userId", getProfile);
 routes.get('/campaigns/:id',getCampaigns)
 routes.get("/pending-requests/:businessId", getPendingRequests);
 routes.get("/campaign-participations/:campaignId", getCampaignParticipations);
+routes.get("/get-recent-activities/:businessId",getRecentCampaigns)
 
 routes.post("/addFav", addFavInfluencers);
 routes.post("/removeFav", removeFavInfluencers);

@@ -59,8 +59,9 @@ export async function userSignup(req, res) {
     );
     res.cookie("token", token, {
       httpOnly: true,
+      maxAge:7*24*60*60*1000,
       secure: process.env.NODE_ENV === "production", // Set to true in production
-      sameSite: "None",
+      sameSite: "lax",
     });
 
     res.status(201).json({
@@ -248,7 +249,7 @@ export async function updateImage(req, res) {
 
 export async function getCampaign(req, res) {
   try {
-    const campaigns = await campaignData.find();
+    const campaigns = await campaignData.find({status:{$ne:"Disabled"}});
     res.status(200).json({ success: true, data: campaigns });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
