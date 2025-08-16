@@ -1,145 +1,119 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import useChatStore from "@/stores/chatStore";
-import ProfilePicture from "./ProfilePicture";
-import Loader from "../../components/ui/Loader";
-import { getUserFromStorage } from "@/utils/LocalStorage";
+// ChatInterface.jsx
+import { useRef, useState, useEffect } from "react";
+import EmojiPicker from "emoji-picker-react";
+import { SenderMessage } from "../../components/SenderMessage";
+import { ReceiverMessage } from "../../components/ReceiverMesssage";
+import { useDispatch, useSelector } from "react-redux";
+import { addMessage } from "../../store/chatSlice";
+import axios from "axios";
+import { getSocket } from "../../utils/socket";
 
-const ChatInterface = () => {
-  const { partnerUserId } = useParams();
-  const currentUser = getUserFromStorage();
-  const {
-    messages,
-    activeConversation,
-    sendMessage,
-    loading,
-    error,
-    hasLoaded,
-    socket
-  } = useChatStore();
-  const [messageInput, setMessageInput] = useState("");
+const ChatInterface = ({ partnerUser, currentUser }) => {
+  const dispatch = useDispatch();
+  const messages = useSelector((state) => state.chat.messages);
+  const [input, setInput] = useState("");
+  const [showPicker, setShowPicker] = useState(false);
+  const [frontImage, setFrontImage] = useState(null);
+  const [backImage, setBackImage] = useState(null);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef();
+  const currentUserId = currentUser.id;
+  const socket = getSocket();
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSubmit = async (e) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setBackImage(file);
+    setFrontImage(URL.createObjectURL(file));
+  };
+
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (messageInput.trim() && partnerUserId) {
-      try {
-        await sendMessage({
-          content: messageInput,
-          partnerUserId,
-        });
-        setMessageInput("");
-      } catch (err) {
-        console.error("Failed to send message:", err);
-      }
+    if (!input.trim() && !backImage) return;
+
+    const formData = new FormData();
+    formData.append("receiver", partnerUser.userId);
+    if (input) formData.append("message", input);
+    if (backImage) formData.append("image", backImage);
+
+    try {
+      const res=await axios.post("/send/" + partnerUser.userId, formData);   
+
+      dispatch(addMessage(res.data));
+      socket.emit("sendMessage", res.data);
+
+      setInput("");
+      setFrontImage(null);
+      setBackImage(null);
+    } catch (err) {
+      console.log(err);
     }
   };
 
-  // Check socket connection status
-
-useEffect(() => {
-  if (socket && !socket.connected) {
-    console.log("Attempting to reconnect socket...");
-    socket.connect();
-  }
-}, []); // ✅ Run only once, not every render
-
-
-  if (loading && !hasLoaded) return <Loader />;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
-  if (!activeConversation) return <div className="p-4 text-gray-500">Loading conversation...</div>;
-
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Chat Header */}
-      <div className="flex items-center gap-3 border-b p-3 bg-gray-50">
-        <ProfilePicture
-          src={activeConversation.partnerUser?.image}
-          alt={activeConversation.partnerUser?.name}
-          size="md"
-        />
-        <div>
-          <h3 className="font-semibold">
-            {activeConversation.partnerUser?.name || "Loading..."}
-          </h3>
-          <p className="text-sm text-gray-500">
-            {activeConversation.partnerUser?.isBusiness ? "Business" : "Influencer"}
-          </p>
-        </div>
+      <div className="p-4 border-b font-bold">
+        {partnerUser.firstName} {partnerUser.lastName}
       </div>
 
-      {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-gray-500">
-              <p>No messages yet</p>
-              <p>Start the conversation!</p>
-            </div>
-          </div>
-        ) : (
-          messages.map((message) => (
-            <div
-              key={message._id}
-              className={`flex ${message.sender._id === partnerUserId ? "justify-start" : "justify-end"}`}
-            >
-              <div
-                className={`max-w-xs rounded-lg p-3 ${
-                  message.sender._id === partnerUserId
-                    ? "bg-gray-100"
-                    : "bg-blue-500 text-white"
-                }`}
-              >
-                {message.image && (
-                  <img
-                    src={message.image}
-                    alt="Message content"
-                    className="mb-2 max-h-60 rounded-lg object-cover"
-                  />
-                )}
-                {message.message && <p>{message.message}</p>}
-                <div className={`mt-1 text-xs ${message.sender._id === partnerUserId ? "text-gray-500" : "text-blue-100"}`}>
-                  {new Date(message.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  {message.sender._id === currentUser.id && (
-                    <span className="ml-2">
-                      {message.read ? "✓✓" : "✓"}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
+        {showPicker && (
+          <EmojiPicker
+            onEmojiClick={(e) => setInput((prev) => prev + e.emoji)}
+          />
+        )}
+
+        {messages.map((msg, i) =>
+          msg.sender === currentUserId ? (
+            <SenderMessage key={i} image={msg.image} message={msg.message} />
+          ) : (
+            <ReceiverMessage key={i} image={msg.image} message={msg.message} />
+          )
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input */}
-      <form onSubmit={handleSubmit} className="border-t p-3 bg-gray-50">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            className="flex-1 rounded-lg border p-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
-            placeholder="Type a message..."
-            disabled={!partnerUserId}
-          />
-          <button
-            type="submit"
-            disabled={!messageInput.trim() || !partnerUserId}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:opacity-50 hover:bg-blue-600 transition-colors"
-          >
-            Send
-          </button>
-        </div>
+      {frontImage && (
+        <img
+          src={frontImage}
+          alt=""
+          className="size-40 rounded-lg mx-auto mb-2"
+        />
+      )}
+
+      <form
+        onSubmit={handleSend}
+        className="p-3 flex items-center gap-2 border-t"
+      >
+        <button type="button" onClick={() => setShowPicker(!showPicker)}>
+          😀
+        </button>
+        <input
+          type="text"
+          className="flex-1 border rounded p-2"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Message..."
+        />
+        <input
+          type="file"
+          ref={fileInputRef}
+          hidden
+          onChange={handleImageChange}
+          accept="image/*"
+        />
+        <button type="button" onClick={() => fileInputRef.current.click()}>
+          📷
+        </button>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Send
+        </button>
       </form>
     </div>
   );

@@ -1,132 +1,103 @@
-import { useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import ConversationList from "./ConversationList";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setCurrentChat,
+  setUsers,
+  setOnlineUsers,
+  setMessages,
+  addMessage,
+} from "../../store/chatSlice";
 import ChatInterface from "./ChatInterface";
-import useChatStore from "@/stores/chatStore";
-import Loader from "../../components/ui/Loader";
-import { getUserFromStorage } from "@/utils/LocalStorage";
-import Navbar from "../influencer/Navbar";
+import { useEffect } from "react";
+import axios from "axios";
+import { getSocket } from "../../utils/socket";
+import ProfilePicture from "./ProfilePicture";
 
 const MessagesLayout = () => {
-  const { userId: partnerUserId } = useParams();
-  const navigate = useNavigate();
-  const currentUser = getUserFromStorage();
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.chat.users);
+  const currentChatId = useSelector((state) => state.chat.currentChatId);
+  const onlineUsers = useSelector((state) => state.chat.onlineUsers);
+  const userData = JSON.parse(localStorage.getItem("user"));
 
-  const {
-    socket,
-    conversations,
-    loading,
-    setActiveConversation,
-    startNewConversation,
-    initializeChat,
-    initialized,
-    hasLoaded,
-    cleanup,
-    activeConversation // ✅ added to fix "not defined"
-  } = useChatStore();
-
-  // Stable callback for conversation selection
-  const handleSelectConversation = useCallback(
-    async (conversation) => {
-      await setActiveConversation(conversation);
-      navigate(`/conversation/messages/${conversation.partnerUser._id}`);
-    },
-    [navigate, setActiveConversation]
-  );
-
-  // Initialize chat only once
+  // fetch users
   useEffect(() => {
-    if (currentUser?.id && !initialized) {
-      initializeChat(currentUser);
-    }
-  }, [currentUser?.id, initialized, initializeChat]);
-
-  // Handle initial conversation selection
-  useEffect(() => {
-    if (!hasLoaded || loading || !currentUser?.id) return;
-
-    const handleInitialConversation = async () => {
-      if (partnerUserId) {
-        const existingConv = conversations.find(
-          (c) => c.partnerUser._id === partnerUserId
+    if (!userData) return;
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get(
+          `/get-chat-users?isBusiness=${userData.isBusiness}`,
         );
-
-        if (existingConv) {
-          await setActiveConversation(existingConv);
-        } else if (
-          !activeConversation ||
-          activeConversation.partnerUser._id !== partnerUserId
-        ) {
-          await startNewConversation(currentUser.id, partnerUserId);
-        }
-      } else if (conversations.length > 0 && !activeConversation) {
-        await handleSelectConversation(conversations[0]);
+        dispatch(setUsers(res.data));
+      } catch (err) {
+        console.log(err);
       }
     };
+    fetchUsers();
+  }, []);
 
-    handleInitialConversation();
-  }, [
-    partnerUserId,
-    conversations,
-    hasLoaded,
-    loading,
-    currentUser?.id,
-    handleSelectConversation,
-    setActiveConversation,
-    startNewConversation,
-    activeConversation
-  ]);
+  // socket listeners
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
 
-  if (loading && !hasLoaded) return <Loader />;
+    socket.on("getOnlineUsers", (users) => {
+      dispatch(setOnlineUsers(users));
+    });
+
+    socket.on("newMessage", (msg) => {
+      dispatch(addMessage(msg));
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+      socket.off("newMessage");
+    };
+  }, [dispatch]);
+
+  // fetch messages for selected user
+  const handleUserClick = async (user) => {
+    dispatch(setCurrentChat(user.userId));
+    try {
+      const res = await axios.get("/get-messages/" + user.userId);
+      dispatch(setMessages(res.data || []));
+    } catch (err) {
+      dispatch(setMessages([]));
+      console.log(err);
+    }
+  };
+
+  const chatUser = users.find((u) => u.userId === currentChatId);
 
   return (
-    <div className="h-screen flex flex-col">
-      <Navbar />
-      <div className="flex flex-1 overflow-hidden">
-        {/* Conversation List - Fixed width */}
-        <div className="w-80 border-r bg-white flex flex-col">
-          <div className="p-3 border-b">
-            <h3 className="text-lg font-semibold text-indigo-600">Messages</h3>
-          </div>
-          <ConversationList onSelectConversation={handleSelectConversation} />
-        </div>
-
-        {/* Chat Interface - Flexible width */}
-        <div className="flex-1 flex flex-col bg-gray-50">
-          {partnerUserId ? (
-            <ChatInterface key={partnerUserId} />
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center p-6 max-w-md">
-                <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                  <svg
-                    className="h-8 w-8 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-medium mb-2">
-                  {conversations.length
-                    ? "Select a conversation"
-                    : "No conversations yet"}
-                </h3>
-                <p className="text-gray-500 mb-4">
-                  {conversations.length
-                    ? "Choose a chat to continue"
-                    : "Start by messaging someone"}
-                </p>
-              </div>
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <div className="w-1/4 border-r bg-white p-4">
+        <h2 className="mb-4 text-xl font-bold text-purple-600">Messages</h2>
+        <div className="space-y-2">
+          {users?.map((u) => (
+            <div
+              key={u.userId}
+              onClick={() => handleUserClick(u)}
+              className={`relative flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-100 ${
+                u.userId === currentChatId ? "bg-gray-100" : ""
+              }`}
+            >
+              <ProfilePicture u={u} onlineUsers={onlineUsers} />
+              <span className="font-medium truncate">{u.name}</span>
             </div>
-          )}
+          ))}
         </div>
+      </div>
+
+      {/* Chat */}
+      <div className="flex-1 flex flex-col">
+        {chatUser ? (
+          <ChatInterface partnerUser={chatUser} currentUser={userData} />
+        ) : (
+          <div className="flex flex-1 items-center justify-center text-gray-500">
+            Select a user to start chatting
+          </div>
+        )}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export default function BusinessProfile() {
 
   const user = getUserFromStorage();
   const userId =location?.state?.businessId || user?.id ;
-  console.log("fthe front user id",userId) //location from campaignList page in influencer side.
+
 
   useEffect(() => {
     if (!userId) return;
