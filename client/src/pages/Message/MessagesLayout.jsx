@@ -72,7 +72,9 @@ const MessagesLayout = () => {
     <div className="flex h-screen">
       {/* Sidebar */}
       <div className="w-1/4 border-r bg-white p-4">
-        <h2 className="mb-4 text-xl font-bold text-purple-600">Messages</h2>
+        <div className="sticky top-20 z-20 bg-white p-2 ">
+          <h2 className="mb-4 text-xl font-bold text-purple-500">Messages</h2>
+        </div>
         <div className="space-y-2">
           {users?.map((u) => (
             <div
@@ -83,16 +85,16 @@ const MessagesLayout = () => {
               }`}
             >
               <ProfilePicture u={u} onlineUsers={onlineUsers} />
-              <span className="font-medium truncate">{u.name}</span>
+              <span className="truncate font-medium">{u.name}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Chat */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-1 flex-col">
         {chatUser ? (
-          <ChatInterface partnerUser={chatUser} currentUser={userData} />
+          <ChatInterface partnerUser={chatUser} currentUser={userData} onlineUsers={onlineUsers} />
         ) : (
           <div className="flex flex-1 items-center justify-center text-gray-500">
             Select a user to start chatting

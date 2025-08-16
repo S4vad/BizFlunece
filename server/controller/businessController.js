@@ -3,6 +3,7 @@ import FavInfluencer from "../models/FavInfluencers.js";
 import campaignData from "../models/campaignData.js";
 import CompanyProfile from "../models/BusinessProfile.js";
 import CampaignParticipation from "../models/campaignParticipations.js";
+import Message from "../models/messageModel.js";
 
 export async function InfluencerList(req, res) {
   try {
@@ -275,7 +276,7 @@ export const handleParticipationRequest = async (req, res) => {
   try {
     const { participationId, action } = req.body;
     const businessId = req.user.userId;
-    const owner=await CompanyProfile.findOne({userId:businessId})
+    const owner = await CompanyProfile.findOne({ userId: businessId });
     console.log(participationId, action, businessId);
 
     if (!["approve", "reject"].includes(action)) {
@@ -310,12 +311,13 @@ export const handleParticipationRequest = async (req, res) => {
 
     // If approved, you might want to add the influencer to the campaign
     if (action === "approve") {
-      await Campaign.findByIdAndUpdate(
+      await campaignData.findByIdAndUpdate(
         participation.campaignId,
         { $addToSet: { influencers: participation.influencer } },
         { new: true }
       );
     }
+    console.log(participation);
 
     res.status(200).json({
       success: true,
@@ -337,7 +339,7 @@ export const getCampaignParticipations = async (req, res) => {
     const businessId = req.user.userId; // From auth middleware
 
     // Verify the business owns this campaign
-    const campaign = await Campaign.findOne({
+    const campaign = await campaignData.findOne({
       _id: campaignId,
       companyId: businessId,
     });
@@ -369,6 +371,94 @@ export const getCampaignParticipations = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server error while fetching participations",
+    });
+  }
+};
+
+export const getRecentCampaigns = async (req, res) => {
+  try {
+    const { businessId } = req.params;
+
+    const owner = await CompanyProfile.findOne({ userId: businessId });
+    const campiagnActivities = await CampaignParticipation.find({
+      campaignOwner: owner._id,
+    })
+      .populate("influencer", "name image")
+      .populate("campaignId", "title")
+      .sort({ updatedAt: -1 })
+      .limit(2);
+
+    const newInfluencers = await InfluencerProfile.find()
+      .sort({ updatedAt: -1 })
+      .limit(2);
+
+    const recentMessagesRaw = await Message.find({ receiver: businessId })
+      .populate("sender", "name role")
+      .sort({ createdAt: -1 })
+      .limit(2);
+
+    // Enrich with profile image
+    const recentMessages = await Promise.all(
+      recentMessagesRaw.map(async (msg) => {
+        let senderImage = null;
+
+        // Try to fetch from InfluencerProfile
+        const inf = await InfluencerProfile.findOne({ userId: msg.sender._id });
+        if (inf) senderImage = inf.image;
+
+        // If not influencer, try BusinessProfile
+        if (!senderImage) {
+          const biz = await CompanyProfile.findOne({ userId: msg.sender._id });
+          if (biz) senderImage = biz.image;
+        }
+
+        return {
+          ...msg.toObject(),
+          senderName: msg.sender?.name,
+          senderImage,
+        };
+      })
+    );
+
+    const activities = [];
+
+    campiagnActivities.forEach((act) => {
+      activities.push({
+        type: "campaign",
+        action: `Campaign ${act.requestedStatus}`,
+        time: act.updatedAt,
+        influencer: act.influencer?.name,
+        image: act.influencer?.image,
+        campaign: act.campaignId?.title,
+      });
+    });
+
+    newInfluencers.forEach((inf) => {
+      activities.push({
+        type: "influencer",
+        action: `New influencer onboarded: ${inf.name}`,
+        image: inf.image,
+        time: inf.createdAt,
+      });
+    });
+
+    recentMessages.forEach((msg) => {
+      activities.push({
+        type: "message",
+        action: `New message from ${msg.sender?.name}`,
+        time: msg.createdAt,
+        image:msg.senderImage
+      });
+    });
+
+    // Sort all activities by most recent
+    activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+    res.status(200).json({ data: activities, success: true });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
     });
   }
 };

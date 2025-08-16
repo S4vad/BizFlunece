@@ -1,14 +1,14 @@
 // ChatInterface.jsx
 import { useRef, useState, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
-import { SenderMessage } from "../../components/SenderMessage";
-import { ReceiverMessage } from "../../components/ReceiverMesssage";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../store/chatSlice";
 import axios from "axios";
 import { getSocket } from "../../utils/socket";
+import { Smile, Image as ImageIcon, Send } from "lucide-react";
+import defaultimage from "../../../public/image.png";
 
-const ChatInterface = ({ partnerUser, currentUser }) => {
+const ChatInterface = ({ partnerUser, currentUser, onlineUsers }) => {
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.chat.messages);
   const [input, setInput] = useState("");
@@ -40,8 +40,7 @@ const ChatInterface = ({ partnerUser, currentUser }) => {
     if (backImage) formData.append("image", backImage);
 
     try {
-      const res=await axios.post("/send/" + partnerUser.userId, formData);   
-
+      const res = await axios.post("/send/" + partnerUser.userId, formData);
       dispatch(addMessage(res.data));
       socket.emit("sendMessage", res.data);
 
@@ -54,50 +53,118 @@ const ChatInterface = ({ partnerUser, currentUser }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="p-4 border-b font-bold">
-        {partnerUser.firstName} {partnerUser.lastName}
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {showPicker && (
-          <EmojiPicker
-            onEmojiClick={(e) => setInput((prev) => prev + e.emoji)}
+    <div className="flex h-full flex-col bg-gray-50">
+      {/* Fixed Header */}
+     
+      <div className="sticky top-16 z-20 flex items-center gap-3 border-b bg-white p-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <img
+            src={partnerUser.image || defaultimage}
+            alt="avatar"
+            className="h-11 w-11 rounded-full object-cover ring-2 ring-purple-500"
           />
+          <div className="flex flex-col">
+            <h2 className="font-semibold text-gray-900">{partnerUser.name}</h2>
+            {onlineUsers?.includes(partnerUser.userId) ? (
+              <span className="flex items-center gap-1 text-xs text-green-600">
+                <span className="h-2.5 w-2.5 rounded-full bg-green-500"></span>
+                Online
+              </span>
+            ) : (
+              <span className="text-xs text-gray-500">Last seen recently</span>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* Messages Area */}
+      <div className="scrollbar-hide flex-1 space-y-3 overflow-y-auto p-4">
+        {/* Emoji Picker */}
+        {showPicker && (
+          <div className="absolute bottom-20 left-5 z-20">
+            <EmojiPicker
+              onEmojiClick={(e) => setInput((prev) => prev + e.emoji)}
+            />
+          </div>
         )}
 
-        {messages.map((msg, i) =>
-          msg.sender === currentUserId ? (
-            <SenderMessage key={i} image={msg.image} message={msg.message} />
-          ) : (
-            <ReceiverMessage key={i} image={msg.image} message={msg.message} />
-          )
+        {/* Show Profile + Placeholder if no messages */}
+        {messages.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-gray-500">
+            <img
+              src={partnerUser.image || defaultimage}
+              alt="profile"
+              className="mb-3 h-20 w-20 rounded-full object-cover"
+            />
+            <h3 className="text-lg font-semibold">
+              {partnerUser.firstName} {partnerUser.lastName}
+            </h3>
+            <p className="text-sm text-gray-400">
+              Start your first conversation 👋
+            </p>
+          </div>
+        ) : (
+          messages.map((msg, i) => {
+            const isSender = msg.sender === currentUserId;
+            return (
+              <div
+                key={i}
+                className={`flex ${isSender ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-xs rounded-2xl p-3 shadow-sm ${
+                    isSender
+                      ? "rounded-br-none bg-blue-400 text-white *:text-white"
+                      : "rounded-bl-none border bg-white text-gray-800 *:text-gray-800"
+                  }`}
+                >
+                  {msg.image && (
+                    <img
+                      src={msg.image}
+                      alt="attachment"
+                      className="mb-2 h-40 w-40 rounded-lg object-cover"
+                    />
+                  )}
+                  {msg.message && <p>{msg.message}</p>}
+                </div>
+              </div>
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Preview image before sending */}
       {frontImage && (
-        <img
-          src={frontImage}
-          alt=""
-          className="size-40 rounded-lg mx-auto mb-2"
-        />
+        <div className="flex justify-center p-2">
+          <img
+            src={frontImage}
+            alt="preview"
+            className="h-32 w-32 rounded-lg border object-cover"
+          />
+        </div>
       )}
 
+      {/* Input Box */}
       <form
         onSubmit={handleSend}
-        className="p-3 flex items-center gap-2 border-t"
+        className="sticky bottom-0 z-20 flex items-center gap-2 border-t bg-white p-3"
       >
-        <button type="button" onClick={() => setShowPicker(!showPicker)}>
-          😀
+        <button
+          type="button"
+          onClick={() => setShowPicker(!showPicker)}
+          className="text-gray-500"
+        >
+          <Smile size={24} className="hover:stroke-yellow-500" />
         </button>
+
         <input
           type="text"
-          className="flex-1 border rounded p-2"
+          className="flex-1 rounded-full border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Message..."
+          placeholder="Type a message..."
         />
+
         <input
           type="file"
           ref={fileInputRef}
@@ -105,14 +172,19 @@ const ChatInterface = ({ partnerUser, currentUser }) => {
           onChange={handleImageChange}
           accept="image/*"
         />
-        <button type="button" onClick={() => fileInputRef.current.click()}>
-          📷
+        <button
+          type="button"
+          onClick={() => fileInputRef.current.click()}
+          className="text-gray-500"
+        >
+          <ImageIcon size={24} className="hover:stroke-green-500" />
         </button>
+
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="rounded-full bg-blue-500 p-2 hover:bg-blue-600"
         >
-          Send
+          <Send size={20} className="stroke-white" />
         </button>
       </form>
     </div>

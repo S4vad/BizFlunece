@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const campaignSchema=mongoose.Schema( {
   businessId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "business", 
+    ref: "CompanyProfile", 
     required: true,
     index: true, // Indexing for better query performance
   },
