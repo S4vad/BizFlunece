@@ -89,6 +89,8 @@ export async function createCampaign(req, res) {
       location,
       companyName,
       videoDuration,
+      deadline,
+      category
     } = req.body;
 
     const companyProfile = await CompanyProfile.findOne({ userId: businessId });
@@ -116,6 +118,10 @@ export async function createCampaign(req, res) {
       companyName,
       videoDuration,
       companyImage,
+      deadline,
+      category: Array.isArray(category) ? category : JSON.parse(category),
+
+
     });
 
     res.status(200).json({

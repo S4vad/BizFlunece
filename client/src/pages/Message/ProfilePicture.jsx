@@ -1,10 +1,10 @@
-import defaultImage from "../../../public/image.png";
+
 
 const ProfilePicture = ({ u, onlineUsers }) => {
   return (
     <div className="relative flex-shrink-0 size-12 rounded-full overflow-hidden bg-gray-200">
       <img
-        src={u.image || defaultImage}
+        src={u.image || "/image.png"}
         alt="profile image"
         className="w-full h-full object-cover"
       />

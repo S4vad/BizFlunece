@@ -6,7 +6,7 @@ import { addMessage } from "../../store/chatSlice";
 import axios from "axios";
 import { getSocket } from "../../utils/socket";
 import { Smile, Image as ImageIcon, Send } from "lucide-react";
-import defaultimage from "../../../public/image.png";
+
 
 const ChatInterface = ({ partnerUser, currentUser, onlineUsers }) => {
   const dispatch = useDispatch();
@@ -59,7 +59,7 @@ const ChatInterface = ({ partnerUser, currentUser, onlineUsers }) => {
       <div className="sticky top-16 z-20 flex items-center gap-3 border-b bg-white p-4 shadow-sm">
         <div className="flex items-center gap-3">
           <img
-            src={partnerUser.image || defaultimage}
+            src={partnerUser.image || "/image.png"}
             alt="avatar"
             className="h-11 w-11 rounded-full object-cover ring-2 ring-purple-500"
           />
@@ -91,7 +91,7 @@ const ChatInterface = ({ partnerUser, currentUser, onlineUsers }) => {
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-gray-500">
             <img
-              src={partnerUser.image || defaultimage}
+              src={partnerUser.image || "/image.png"}
               alt="profile"
               className="mb-3 h-20 w-20 rounded-full object-cover"
             />

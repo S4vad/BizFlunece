@@ -36,7 +36,7 @@ const campaignSchema=mongoose.Schema( {
     required: true,
   },
   videoDuration: {
-    type: String,
+    type: Number,
     required: true,
   },
   location: {
@@ -53,6 +53,14 @@ const campaignSchema=mongoose.Schema( {
   },
   companyImage:{
     type:String,
+  },
+    deadline:{
+    type:Date,
+    required:true
+  },
+   category: {
+    type: [String],
+    required: true,
   },
   status:{
     type:String,

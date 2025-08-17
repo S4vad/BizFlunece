@@ -6,24 +6,27 @@ import {
   MdCalendarToday,
   MdAccountBalanceWallet,
 } from "react-icons/md";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function InfluencerDashboard() {
-  const campaigns = [
-    {
-      id: 1,
-      name: "Summer Collection",
-      status: "Active",
-      deadline: "2024-07-15",
-      platform: "Instagram",
-    },
-    {
-      id: 2,
-      name: "Product Launch",
-      status: "In Review",
-      deadline: "2024-07-20",
-      platform: "YouTube",
-    },
-  ];
+  const [campaigns, setCampaigns] = useState([]);
+  const [activeCampaigns,setActiveCampaigns]=useState([])
+  useEffect(() => {
+    const fetchUserCampaign = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const userId = user.id;
+        const res = await axios(`/influencer/get-user-campaigns/${userId}`);
+        setCampaigns(res.data.data);
+        const approvedCampaign=campaigns.filter((campaign)=>campaign.adminResponse.status==="approved")
+        setActiveCampaigns(approvedCampaign)
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchUserCampaign();
+  }, []);
 
   const Notifications = [
     {
@@ -65,13 +68,17 @@ export default function InfluencerDashboard() {
       </div>
 
       <div className="mx-8 mb-10 mt-6 rounded-xl bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-lg">Active Campaigns</h2>
-        <CampaignTimeline campaigns={campaigns} />
+        <h2 className="mb-4 text-lg">Active Campaigns </h2>
+        <CampaignTimeline campaigns={activeCampaigns} />
       </div>
 
       <div className="mx-8 mt-6 rounded-xl border-2 border-b-2 bg-white p-6 shadow-md">
         <h2 className="mb-4 text-lg">Notifications</h2>
         <NotificationPanel Notifications={Notifications} />
+      </div>
+       <div className="mx-8 mb-10 mt-6 rounded-xl bg-white p-6 shadow-md">
+        <h2 className="mb-4 text-lg">All Campaigns History</h2>
+        <CampaignTimeline campaigns={campaigns} />
       </div>
     </>
   );

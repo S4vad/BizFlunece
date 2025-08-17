@@ -14,7 +14,8 @@ import {
   isBookmarked,
   getSingleCampaign,
   addCampaignParticipation,
-  getSingleCampaignStatus
+  getSingleCampaignStatus,
+  getUserCampaigns
 } from "../controller/userController.js";
 
 const routes = express.Router();
@@ -24,6 +25,7 @@ routes.get("/influencer/campaignlist", getCampaign);
 routes.get("/influencer/is-bookmarked", isBookmarked);
 routes.get("/influencer/get-single-campaign", getSingleCampaign);
 routes.get('/campaign-participation-status',getSingleCampaignStatus)
+routes.get('/influencer/get-user-campaigns/:userId',getUserCampaigns)
 
 
 routes.post(
