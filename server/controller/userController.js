@@ -400,3 +400,22 @@ export async function getCurrentUser(req, res) {
     console.log("error fetching current user");
   }
 }
+
+export async function getUserCampaigns(req,res) {
+  try {
+    const {userId}=req.params;
+    if(!userId) {
+      res.status(400).json({message:"user is not found!"})
+    }
+    const influencer=await InfluencerProfile.findOne({userId:userId})
+    const campaigns=await CampaignParticipation.find({influencer:influencer._id}).populate("campaignId", "title companyName companyImage").sort({createdAt:-1})
+    
+
+    res.status(200).json({data:campaigns})
+    
+  } catch (error) {
+    res.status(500).json({message:error.message})
+    
+  }
+  
+}
