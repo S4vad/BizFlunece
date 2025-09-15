@@ -1,55 +1,51 @@
 const influencers = [
-  {
-    name: "Vishnu Kaushal",
-    image: "/img/🇪🇦 Rodri.jpeg", // Replace with actual image path
-    link: "https://www.instagram.com/thevishnukaushal/",
-    influencerNiche:"Education"
-  },
-  {
-    name: "Influencer 2",
-    image: "/img/bc478b1f-625c-4ef6-a73e-6bc0af0862c5.jpeg",
-    link: "https://www.instagram.com/example2/",
-    influencerNiche:"Health"
-  },
-  {
-    name: "Influencer 3",
-    image: "/img/Big B bilal Mammootty.jpeg",
-    link: "https://www.youtube.com/channel/example3",
-    influencerNiche:"Banking & Finance"
-  },
-  {
-    name: "Vishnu Kaushal",
-    image: "/img/Dress well.jpeg", // Replace with actual image path
-    link: "https://www.instagram.com/thevishnukaushal/",
-    influencerNiche:"Education"
-  },
-  {
-    name: "Influencer 2",
-    image: "/img/img.jpeg",
-    link: "https://www.instagram.com/example2/", 
-    influencerNiche:"Health"
+  // Fashion & Lifestyle (1–8)
+  ...Array.from({ length: 8 }, (_, i) => ({
+    name: `Influencer ${i + 1}`,
+    image: `/images/Fashion/${i + 1}.jpeg`,
+    link: "#",
+    influencerNiche: "Fashion & Lifestyle",
+  })),
 
-  },
-  {
-    name: "Influencer 3",
-    image: "/img/lamine yamal.jpeg",
-    link: "https://www.youtube.com/channel/example3",
-    influencerNiche:"Education"
-  },
-  {
-    name: "Vishnu Kaushal",
-    image: "/img/jp.jpeg", // Replace with actual image path
-    link: "https://www.instagram.com/thevishnukaushal/",
-    influencerNiche:"Health"
+  // Banking & Finance (9–16)
+  ...Array.from({ length: 8 }, (_, i) => ({
+    name: `Influencer ${i + 9}`,
+    image: `/images/Banking/${i + 9}.jpeg`,
+    link: "#",
+    influencerNiche: "Banking & Finance",
+  })),
 
-  },
-  {
-    name: "Influencer 2",
-    image: "/img/PEDRI.jpeg",
-    link: "https://www.instagram.com/example2/", 
-    influencerNiche:"Health"
+  // Education (17–24)
+  ...Array.from({ length: 8 }, (_, i) => ({
+    name: `Influencer ${i + 17}`,
+    image: `/images/Educator/${i + 17}.jpeg` ,
+    link: "#",
+    influencerNiche: "Education",
+  })),
 
-  }
+  // Food & Beverages (25–32)
+  ...Array.from({ length: 8 }, (_, i) => ({
+    name: `Influencer ${i + 25}`,
+    image: `/images/Food/${i + 25}.jpeg`,
+    link: "#",
+    influencerNiche: "Food & Beverages",
+  })),
+
+  // Health (33–40)
+  ...Array.from({ length: 8 }, (_, i) => ({
+    name: `Influencer ${i + 33}`,
+    image: `/images/Health/${i + 33}.jpg`,
+    link: "#",
+    influencerNiche: "Health",
+  })),
+
+  // B2B & SaaS (41–48)
+  ...Array.from({ length: 8 }, (_, i) => ({
+    name: `Influencer ${i + 41}`,
+    image: `/images/B2b/${i + 41}.jpeg`,
+    link: "#",
+    influencerNiche: "B2B & SaaS",
+  })),
 ];
 
 export default influencers;

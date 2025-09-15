@@ -12,6 +12,7 @@ import axios from "axios";
 export default function InfluencerDashboard() {
   const [campaigns, setCampaigns] = useState([]);
   const [activeCampaigns,setActiveCampaigns]=useState([])
+  const [notifications,setNotifications] = useState([])
   useEffect(() => {
     const fetchUserCampaign = async () => {
       try {
@@ -19,8 +20,6 @@ export default function InfluencerDashboard() {
         const userId = user.id;
         const res = await axios(`/influencer/get-user-campaigns/${userId}`);
         setCampaigns(res.data.data);
-        const approvedCampaign=campaigns.filter((campaign)=>campaign.adminResponse.status==="approved")
-        setActiveCampaigns(approvedCampaign)
       } catch (error) {
         console.log(error.message);
       }
@@ -28,20 +27,27 @@ export default function InfluencerDashboard() {
     fetchUserCampaign();
   }, []);
 
-  const Notifications = [
-    {
-      id: 1,
-      name: "Summer Collection",
-      description: "Activesadf sdfsa asdfasf",
-      days: 1,
-    },
-    {
-      id: 2,
-      name: "Product Launch",
-      description: "In Reviewasdf asdfa asdf",
-      deadline: 2,
-    },
-  ];
+  useEffect(() => {
+  const approvedCampaign = campaigns.filter(
+    (campaign) => campaign.adminResponse.status === "approved"
+  );
+  setActiveCampaigns(approvedCampaign);
+}, [campaigns]); 
+
+
+ useEffect(() => {
+  const getNotifications=async()=>{
+    try {
+       const user = JSON.parse(localStorage.getItem("user"));
+        const userId = user.id;
+      const res=await axios(`/influencer/get-notifications?userId=${userId}`)
+      setNotifications(res.data.data)   
+    } catch (error) {
+      console.log(error.message)      
+    }
+  }
+  getNotifications()
+ }, []);
   return (
     <>
       <div className="mb-10 mt-6 flex justify-evenly gap-6 p-5">
@@ -74,10 +80,10 @@ export default function InfluencerDashboard() {
 
       <div className="mx-8 mt-6 rounded-xl border-2 border-b-2 bg-white p-6 shadow-md">
         <h2 className="mb-4 text-lg">Notifications</h2>
-        <NotificationPanel Notifications={Notifications} />
+        <NotificationPanel notifications={notifications} />
       </div>
        <div className="mx-8 mb-10 mt-6 rounded-xl bg-white p-6 shadow-md">
-        <h2 className="mb-4 text-lg">All Campaigns History</h2>
+        <h2 className="mb-4 text-lg">Campaign Timeline</h2>
         <CampaignTimeline campaigns={campaigns} />
       </div>
     </>

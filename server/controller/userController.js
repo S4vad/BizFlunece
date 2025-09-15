@@ -409,6 +409,7 @@ export async function getUserCampaigns(req,res) {
     }
     const influencer=await InfluencerProfile.findOne({userId:userId})
     const campaigns=await CampaignParticipation.find({influencer:influencer._id}).populate("campaignId", "title companyName companyImage").sort({createdAt:-1})
+    console.log(campaigns)
     
 
     res.status(200).json({data:campaigns})
@@ -418,4 +419,25 @@ export async function getUserCampaigns(req,res) {
     
   }
   
+}
+
+export async function getNotifications(req, res) {
+  try {
+    const { userId } = req.query;
+
+    const influencerProfile = await InfluencerProfile.findOne({ userId });
+    if (!influencerProfile) {
+      return res.status(404).json({ message: "Influencer profile not found" });
+    }
+
+    const influencerCategories = influencerProfile.influencerCategory; 
+
+    const campaigns = await campaignData.find({
+      category: { $in: influencerCategories },  
+      status: "Active"                          
+    });
+    return res.status(200).json({ data: campaigns });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 }

@@ -1,61 +1,115 @@
 
+import { Bell, Clock, CheckCircle, XCircle, AlertCircle, Megaphone } from 'lucide-react';
 
-const CampaignTimeline = ({ campaigns }) => {
-  const getStatus = (status) => {
-    let color;
-
-    switch (status) {
-      case "pending":
-        color = "text-yellow-500";
-        break;
-      case "approved":
-        color = "text-green-500";
-        break;
-      case "rejected":
-        color = "text-red-500";
-        break;
-      default:
-        color = "text-gray-500"; 
-    }
-
-    return color;
-  };
-  return (
-    <ul className="divide-y divide-gray-200">
-      {campaigns.map((campaign) => (
-        <li key={campaign._id} className="flex items-center py-3 hover:bg-gray-100 rounded-md px-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24"
-            width="24"
-            viewBox="0 0 24 24"
-            style={{ fill: "#3B82F6", width: "26px", height: "26px" }}
-          >
-            <path d="M0 0h24v24H0z" fill="none" />
-            <path d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39c.4-.53.8-1.07 1.2-1.6c-.99-.74-2.24-1.68-3.2-2.4c-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6c-.99.74-2.24 1.68-3.2 2.4c.4.53.8 1.07 1.2 1.6c.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z" />
-          </svg>
-          <div className="mx-2">
-            <img
-              src={campaign.campaignId.companyImage}
-              alt="companyImage"
-              className="size-10 rounded-full object-cover"
-            />
-          </div>
-          <div className="ml-6 flex-1">
-            <p className="font-medium">{campaign.campaignId.title}</p>
-            <p className="text-sm text-gray-600">
-              Status: <span className={`text-sm ${getStatus(campaign.adminResponse.status)}`}> {campaign.adminResponse.status}</span>  , Deadline:{" "}
-              {campaign.deadline || null}
-            </p>
-          </div>
-
-          <span className="rounded-2xl bg-[#9c27b0] px-3 py-1.5 text-[0.72rem] text-white">
-            {campaign.campaignId.platforms}
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
+const formatTimeAgo = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - date.getTime());
+  const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+  const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffMinutes < 60) return `${diffMinutes}m`;
+  if (diffHours < 24) return `${diffHours}h`;
+  return `${diffDays}d`;
 };
 
-export default CampaignTimeline;
+// Campaign Timeline Component
+export default function CampaignTimeline({ campaigns }) {
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'approved':
+        return <CheckCircle className="w-3 h-3 text-green-500" />;
+      case 'pending':
+        return <Clock className="w-3 h-3 text-yellow-500" />;
+      case 'rejected':
+        return <XCircle className="w-3 h-3 text-red-500" />;
+      default:
+        return <AlertCircle className="w-3 h-3 text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'approved':
+        return 'bg-green-100 text-green-700 border-green-200';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'rejected':
+        return 'bg-red-100 text-red-700 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  if (!campaigns || campaigns.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <Megaphone className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+        <p className="text-gray-500 text-sm">No campaigns yet</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      {campaigns.map((campaign) => (
+        <div 
+          key={campaign._id} 
+          className="group bg-white border border-gray-200 rounded-lg p-2.5 hover:bg-gray-50 hover:border-gray-300 transition-all duration-150 cursor-pointer"
+        >
+          <div className="flex items-center space-x-2.5">
+            {/* Campaign Icon */}
+            <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <Megaphone className="w-4 h-4 text-blue-600" />
+            </div>
+
+            {/* Company Image */}
+            <img
+              src={campaign.campaignId.companyImage}
+              alt={campaign.campaignId.companyName}
+              className="w-8 h-8 rounded-full object-cover flex-shrink-0 border border-gray-200"
+            />
+
+            {/* Campaign Details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="font-medium text-gray-900 text-sm truncate">
+                  {campaign.campaignId.title}
+                </h3>
+                <span className="text-xs text-gray-400 ml-2">
+                  {formatTimeAgo(campaign.requestedAt)}
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-600">{campaign.campaignId.companyName}</span>
+                  <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium border ${getStatusColor(campaign.adminResponse.status)}`}>
+                    {getStatusIcon(campaign.adminResponse.status)}
+                    {campaign.adminResponse.status}
+                  </span>
+                </div>
+                
+                {/* Status Badge - keeping your purple theme */}
+                <span className="px-2 py-0.5 bg-purple-600 text-white text-xs rounded-full">
+                  Campaign
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Request Type Indicator */}
+          <div className="mt-2 pl-11 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <Bell className="w-3 h-3" />
+              {campaign.requestedStatus === 'requested' ? 'Campaign Request' : 
+               campaign.requestedStatus === 'approved' ? 'Campaign Approved' : 
+               'Campaign Update'}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
