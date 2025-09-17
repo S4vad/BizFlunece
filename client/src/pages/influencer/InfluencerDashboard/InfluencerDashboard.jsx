@@ -8,15 +8,17 @@ import {
 } from "react-icons/md";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 export default function InfluencerDashboard() {
   const [campaigns, setCampaigns] = useState([]);
-  const [activeCampaigns,setActiveCampaigns]=useState([])
-  const [notifications,setNotifications] = useState([])
+  const [activeCampaigns, setActiveCampaigns] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const { user } = useAuth();
+
   useEffect(() => {
     const fetchUserCampaign = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
         const userId = user.id;
         const res = await axios(`/influencer/get-user-campaigns/${userId}`);
         setCampaigns(res.data.data);
@@ -28,26 +30,26 @@ export default function InfluencerDashboard() {
   }, []);
 
   useEffect(() => {
-  const approvedCampaign = campaigns.filter(
-    (campaign) => campaign.adminResponse.status === "approved"
-  );
-  setActiveCampaigns(approvedCampaign);
-}, [campaigns]); 
+    const approvedCampaign = campaigns.filter(
+      (campaign) => campaign.adminResponse.status === "approved",
+    );
+    setActiveCampaigns(approvedCampaign);
+  }, [campaigns]);
 
-
- useEffect(() => {
-  const getNotifications=async()=>{
-    try {
-       const user = JSON.parse(localStorage.getItem("user"));
+  useEffect(() => {
+    const getNotifications = async () => {
+      try {
         const userId = user.id;
-      const res=await axios(`/influencer/get-notifications?userId=${userId}`)
-      setNotifications(res.data.data)   
-    } catch (error) {
-      console.log(error.message)      
-    }
-  }
-  getNotifications()
- }, []);
+        const res = await axios(
+          `/influencer/get-notifications?userId=${userId}`,
+        );
+        setNotifications(res.data.data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    getNotifications();
+  }, []);
   return (
     <>
       <div className="mb-10 mt-6 flex justify-evenly gap-6 p-5">
@@ -82,7 +84,7 @@ export default function InfluencerDashboard() {
         <h2 className="mb-4 text-lg">Notifications</h2>
         <NotificationPanel notifications={notifications} />
       </div>
-       <div className="mx-8 mb-10 mt-6 rounded-xl bg-white p-6 shadow-md">
+      <div className="mx-8 mb-10 mt-6 rounded-xl bg-white p-6 shadow-md">
         <h2 className="mb-4 text-lg">Campaign Timeline</h2>
         <CampaignTimeline campaigns={campaigns} />
       </div>

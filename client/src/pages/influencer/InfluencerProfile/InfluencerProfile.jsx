@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Instagram, Youtube, Twitter, Globe } from "lucide-react";
-import { getUserFromStorage } from "@/utils/LocalStorage";
 import ProfileHeader from "./components/ProfileHeader";
 import ProfileStatus from "./components/ProfileStatus";
 import axios from "axios";
@@ -9,7 +8,7 @@ import { toast } from "react-hot-toast";
 import PlatformItem from "./components/PlatformItem";
 import AddPlatformModal from "./components/AddPlatformModal";
 import { Plus } from "lucide-react";
-
+import { useAuth } from "@/context/AuthContext";
 
 export default function InfluencerProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -26,11 +25,11 @@ export default function InfluencerProfile() {
     influencerCategory: [],
   });
 
-  const user = getUserFromStorage();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user?.id) return;
-  
+
     const fetchProfile = async () => {
       try {
         const { data } = await axios.get(`/profile/${user.id}`);
@@ -47,7 +46,7 @@ export default function InfluencerProfile() {
         console.log("Error fetching profile:", error);
       }
     };
-  
+
     if (user) {
       fetchProfile();
     }
@@ -196,7 +195,6 @@ export default function InfluencerProfile() {
             <Globe size={24} />
           </a>
         </div>
-
       </Card>
     </div>
   );

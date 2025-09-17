@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false, 
     },
     email: {
       type: String,
@@ -16,11 +16,24 @@ const userSchema = mongoose.Schema(
     },
     socialMediaHandle: {
       type: String,
-      default:null
+      default: null,
     },
     isBusiness: {
       type: Boolean,
       required: true,
+    },
+    role: { 
+      type: String, 
+      required: true 
+    },
+    googleId: { 
+      type: String, 
+      unique: true, 
+      sparse: true 
+    },
+    profileImage: { 
+      type: String,
+      default: ""
     },
     isActive: {
       type: Boolean,
@@ -31,6 +44,8 @@ const userSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+userSchema.index({ email: 1, googleId: 1 });
 
 const userModel = mongoose.model("userLogin", userSchema);
 

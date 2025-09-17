@@ -3,11 +3,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import GoogleLoginButton from "@/utils/GoogleAuth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isBusiness, setIsBusiness] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,82 +22,100 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data:", formData);
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
         "/login",
-        { ...formData },
-        { withCredentials: true },
+        { 
+          ...formData,
+          role: isBusiness ? "business" : "influencer" 
+        },
+        { withCredentials: true }
       );
 
+      // Verify that the user role matches the selected tab
+      const userData = response.data.user;
+      if (userData.role !== (isBusiness ? "business" : "influencer")) {
+        toast.error(
+          <span className="font-bold text-red-700">Wrong Account Type</span>,
+          {
+            description: (
+              <span className="text-red-700">
+                This account is registered as a {userData.role}. Please use the correct tab.
+              </span>
+            ),
+            duration: 5000,
+            icon: "❌",
+          }
+        );
+        return;
+      }
+
       setFormData({ email: "", password: "" });
-      const api = isBusiness ? "business" : "influencer";
 
       toast.success(<span className="text-green-400">Login Successful</span>, {
         description: <span className="text-green-400">Welcome back! 🎉</span>,
-        duration: 5000,
+        duration: 3000,
         icon: "✅",
-        action: {
-          label: "cancel",
-          onClick: () => console.log("Toast dismissed"),
-        },
       });
 
-      await login(response.data.user);
-
+      // Use the login function from context
       setTimeout(() => {
-        navigate(`/${api}`);
+        login(userData);
       }, 1000);
+
     } catch (error) {
+      console.error("Login error:", error);
       toast.error(
         <span className="font-bold text-red-700">Login Failed</span>,
         {
           description: (
             <span className="text-red-700">
-              {error.response?.data?.error ||
-                "Failed to submit form. Try again later."}
+              {error.response?.data?.error || error.response?.data?.message ||
+                "Invalid email or password. Please try again."}
             </span>
           ),
           duration: 5000,
-
           icon: "❌",
-          action: {
-            label: "cancel",
-            onClick: () => console.log("Toast dismissed"),
-          },
-        },
+        }
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-sm">
+        <h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
+          Welcome Back
+        </h2>
+        
         <div className="mb-8 flex">
           <button
             onClick={() => setIsBusiness(true)}
-            className={`flex-1 py-2 text-center ${
+            className={`flex-1 py-2 text-center transition-colors ${
               isBusiness
                 ? "border-b-2 border-indigo-600 text-indigo-600"
-                : "text-gray-500"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             Business
           </button>
           <button
             onClick={() => setIsBusiness(false)}
-            className={`flex-1 py-2 text-center ${
+            className={`flex-1 py-2 text-center transition-colors ${
               !isBusiness
                 ? "border-b-2 border-indigo-600 text-indigo-600"
-                : "text-gray-500"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             Influencer
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="mb-4 space-y-4">
           <div>
             <label className="mb-2 block text-gray-700">Email</label>
             <input
@@ -103,10 +123,13 @@ export default function LoginPage() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              placeholder="Enter your email"
               className="w-full rounded-lg border bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               required
+              disabled={isLoading}
             />
           </div>
+          
           <div>
             <label className="mb-2 block text-gray-700">Password</label>
             <input
@@ -114,24 +137,57 @@ export default function LoginPage() {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
+              placeholder="Enter your password"
               className="w-full rounded-lg border bg-white px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               required
+              disabled={isLoading}
             />
+          </div>
+
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center">
+              <input type="checkbox" className="rounded border-gray-300" />
+              <span className="ml-2 text-gray-600">Remember me</span>
+            </label>
+            <button
+              type="button"
+              className="text-indigo-600 hover:text-indigo-800"
+              onClick={() => {/* Add forgot password functionality */}}
+            >
+              Forgot password?
+            </button>
           </div>
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-indigo-600 py-2 text-white hover:bg-indigo-700"
+            disabled={isLoading}
+            className="w-full rounded-lg bg-indigo-600 py-2 text-white hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed"
           >
-            Login
+            {isLoading ? "Signing In..." : "Sign In"}
           </button>
+          
           <div className="text-center dark:text-white">
             Don't have an account?{" "}
-            <a href="/signup" className="text-indigo-600 dark:text-blue-400">
-              Signup
-            </a>
+            <button
+              type="button"
+              onClick={() => navigate("/signup")}
+              className="text-indigo-600 hover:text-indigo-800 dark:text-blue-400"
+            >
+              Sign up
+            </button>
           </div>
         </form>
+        
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-2 text-gray-500">Or continue with</span>
+          </div>
+        </div>
+        
+        <GoogleLoginButton isBusiness={isBusiness} />
       </div>
     </div>
   );

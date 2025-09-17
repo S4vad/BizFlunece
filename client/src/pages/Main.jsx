@@ -7,12 +7,12 @@ import FeatureCard from "../components/FeatureCard";
 import { useState } from "react";
 import Hero from "@/components/Hero";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
-import { getUserFromStorage } from "@/utils/LocalStorage";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LandingPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [hoverButton, setHoverButton] = useState("signup");
-  const user = getUserFromStorage();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-background">
@@ -32,7 +32,7 @@ export default function LandingPage() {
             {!user && (
               <div>
                 <button
-                onClick={()=>navigate('/login')}
+                  onClick={() => navigate("/login")}
                   onMouseEnter={() => setHoverButton("login")}
                   onMouseLeave={() => setHoverButton("signup")}
                   className={`rounded-lg px-4 py-2 transition duration-300 ${
@@ -66,11 +66,11 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <div className="ml-20 flex h-[calc(100vh-64px)] flex-col text-white md:flex-row">
-        <div className="mx-auto mt-20 max-w-7xl px-4 py-10 text-left">
-          <h1 className="mb-6 text-5xl font-bold text-black dark:text-white">
+        <div className="mx-auto mt-20 max-w-3xl px-4 py-10 text-left">
+          <h1 className="mb-6 text-2xl font-bold text-black dark:text-white sm:text-4xl md:text-5xl lg:text-7xl">
             Connect with Perfect Influencers
           </h1>
-          <p className="mb-8 text-2xl text-black dark:text-white md:w-[40rem]">
+          <p className="mb-10 text-2xl text-black dark:text-white md:w-[40rem]">
             AI-powered platform for seamless brand-influencer collaborations
           </p>
           <div className="space-x-4">

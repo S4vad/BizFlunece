@@ -1,16 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
 import { useEffect, useState } from "react";
-import {
-  getUserFromStorage,
-  removeUserFromStorage,
-} from "@/utils/LocalStorage";
+
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GridViewIcon from "@mui/icons-material/GridView";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axios from "axios";
 import { MessageCircleMore } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const [showProfile, setShowProfile] = useState(false);
@@ -18,9 +16,9 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
-  const user = getUserFromStorage();
-  const api = user.isBusiness ? "/business/company_profile" : "/profile";
+  const { user, logout } = useAuth();
 
+  const api = user.isBusiness ? "/business/company_profile" : "/profile";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -39,7 +37,7 @@ export default function Navbar() {
   const handleOutHover = () => setShowProfile(false);
 
   const profileLogout = async () => {
-    await removeUserFromStorage();
+    await logout();
     navigate("/");
   };
 
@@ -94,7 +92,11 @@ export default function Navbar() {
           <div className="relative">
             <button
               className="group flex items-center gap-1 transition dark:text-white"
-              onClick={() => navigate(`/${user.isBusiness?'business':'influencer'}/messages`)}
+              onClick={() =>
+                navigate(
+                  `/${user.isBusiness ? "business" : "influencer"}/messages`,
+                )
+              }
             >
               <MessageCircleMore className="h-5 w-5 stroke-indigo-600 transition group-hover:stroke-indigo-400 dark:group-hover:stroke-indigo-400" />
               <span className="group relative">

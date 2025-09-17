@@ -11,13 +11,14 @@ import { useEffect } from "react";
 import axios from "axios";
 import { getSocket } from "../../utils/socket";
 import ProfilePicture from "./ProfilePicture";
+import { useAuth } from "@/context/AuthContext";
 
 const MessagesLayout = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.chat.users);
   const currentChatId = useSelector((state) => state.chat.currentChatId);
   const onlineUsers = useSelector((state) => state.chat.onlineUsers);
-  const userData = JSON.parse(localStorage.getItem("user"));
+  const { user: userData } = useAuth();
 
   // fetch users
   useEffect(() => {
@@ -72,7 +73,7 @@ const MessagesLayout = () => {
     <div className="flex h-screen">
       {/* Sidebar */}
       <div className="w-1/4 border-r bg-white p-4">
-        <div className="sticky top-20 z-20 bg-white p-2 ">
+        <div className="sticky top-20 z-20 bg-white p-2">
           <h2 className="mb-4 text-xl font-bold text-purple-500">Messages</h2>
         </div>
         <div className="space-y-2">
@@ -94,7 +95,11 @@ const MessagesLayout = () => {
       {/* Chat */}
       <div className="flex flex-1 flex-col">
         {chatUser ? (
-          <ChatInterface partnerUser={chatUser} currentUser={userData} onlineUsers={onlineUsers} />
+          <ChatInterface
+            partnerUser={chatUser}
+            currentUser={userData}
+            onlineUsers={onlineUsers}
+          />
         ) : (
           <div className="flex flex-1 items-center justify-center text-gray-500">
             Select a user to start chatting

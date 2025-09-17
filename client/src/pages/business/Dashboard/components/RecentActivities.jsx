@@ -2,19 +2,20 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { MessageCircle, Users, Briefcase } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RecentActivities() {
   const [recentActivities, setRecentActivities] = useState([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchRecentActivities = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
         const businessId = user?.id;
         if (!businessId) return;
 
         const res = await axios.get(
-          `/business/get-recent-activities/${businessId}`
+          `/business/get-recent-activities/${businessId}`,
         );
         setRecentActivities(res.data.data || []);
       } catch (error) {
@@ -26,7 +27,7 @@ export default function RecentActivities() {
   }, []);
 
   if (recentActivities.length === 0) {
-    return <p className="text-gray-500 py-4">No recent activities</p>;
+    return <p className="py-4 text-gray-500">No recent activities</p>;
   }
 
   const getIcon = (type) => {
@@ -47,7 +48,7 @@ export default function RecentActivities() {
       {recentActivities.map((activity, idx) => (
         <div
           key={activity._id || idx}
-          className="flex items-center gap-4 rounded-xl border border-gray-100 p-3 shadow-sm hover:shadow-md transition bg-white"
+          className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition hover:shadow-md"
         >
           {/* Avatar with overlay icon */}
           <div className="relative flex-shrink-0">
@@ -55,22 +56,22 @@ export default function RecentActivities() {
               <img
                 src={activity.image}
                 alt="avatar"
-                className="w-10 h-10 rounded-full object-cover"
+                className="h-10 w-10 rounded-full object-cover"
               />
             ) : (
-              <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
                 {getIcon(activity.type)}
               </div>
             )}
             {/* Overlay icon */}
-            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow">
+            <div className="absolute -bottom-1 -right-1 rounded-full bg-white p-1 shadow">
               {getIcon(activity.type)}
             </div>
           </div>
 
           {/* Content */}
           <div className="flex flex-col">
-            <p className="text-gray-900 text-sm">
+            <p className="text-sm text-gray-900">
               <span className="font-medium">
                 {activity.action.split(":")[1] || activity.action}
               </span>
@@ -82,7 +83,9 @@ export default function RecentActivities() {
               )}
             </p>
             <p className="text-xs text-gray-500">
-              {formatDistanceToNow(new Date(activity.time), { addSuffix: true })}
+              {formatDistanceToNow(new Date(activity.time), {
+                addSuffix: true,
+              })}
             </p>
           </div>
         </div>

@@ -3,37 +3,58 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
-import googleuser from "../models/googleuser.js";
 import InfluencerProfile from "../models/InfluencerProfile.js";
 import CompanyProfile from "../models/BusinessProfile.js";
 import campaignData from "../models/campaignData.js";
 import CampaignBookmark from "../models/FavCampaign.js";
 import CampaignParticipation from "../models/campaignParticipations.js";
 
-export async function userSignup(req, res) {
-  const { name, email, password, isBusiness } = req.body;
-  const socialMediaHandle = isBusiness ? null : req.body.socialMediaHandle; // Only set for influencers
-
+export async function signup(req, res) {
   try {
+    const { name, email, password, isBusiness, socialMediaHandle, role } =
+      req.body;
+
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "email already in use!" });
+      return res
+        .status(400)
+        .json({ error: "User already exists with this email" });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await userModel.create({
-      name: name,
-      email: email,
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const user = new userModel({
+      name,
+      email,
       password: hashedPassword,
       isBusiness: isBusiness,
-      socialMediaHandle: socialMediaHandle,
+      role: role || (isBusiness ? "business" : "influencer"),
+      socialMediaHandle: !isBusiness ? socialMediaHandle : undefined,
     });
-    
 
-    const role = isBusiness ? "business" : "influencer";
+    await user.save();
 
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Add profile creation logic
     if (!isBusiness) {
       await InfluencerProfile.create({
-        userId: newUser._id,
+        userId: user._id,
         name: name,
         image: "",
         aboutMe: "",
@@ -43,7 +64,7 @@ export async function userSignup(req, res) {
       });
     } else {
       await CompanyProfile.create({
-        userId: newUser._id,
+        userId: user._id,
         name: name,
         image: "",
         aboutCompany: "",
@@ -52,136 +73,239 @@ export async function userSignup(req, res) {
       });
     }
 
-    const token = jwt.sign(
-      { userId: newUser._id },
-      process.env.JWT_SECRET || "defaultsecret123",
-      { expiresIn: "5d" }
-    );
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge:7*24*60*60*1000,
-      secure: process.env.NODE_ENV === "production", // Set to true in production
-      sameSite: "lax",
-    });
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      socialMediaHandle: user.socialMediaHandle,
+    };
 
-    res.status(201).json({
-      message: "User signed up successfully!",
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        isBusiness: newUser.isBusiness,
-        socialMediaHandle: newUser.socialMediaHandle,
-        role: role,
-      },
-      token,
-    });
+    res.status(201).json({ user: userResponse });
   } catch (error) {
-    res.status(500).json({ error: "server error!" });
+    console.error("Signup error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
-export async function googleAuth(req, res) {
-  const client = new OAuth2Client(process.env.VITE_CLIENT_ID);
+export async function login(req, res) {
   try {
-    const { token, user } = req.body;
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.VITE_CLIENT_ID,
-    });
+    const { email, password, role } = req.body;
 
-    const { name, email, sub: googleId } = ticket.getPayload();
-
-    let userExist = await googleuser.findOne({ email });
-    if (userExist) {
-      return res.status(400).json({ error: "Email already in use!" });
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    const role = user.isBusiness ? "business" : "influencer";
+    if (role && user.role !== role) {
+      return res.status(400).json({
+        error: `This account is registered as a ${user.role}. Please use the correct login type.`,
+      });
+    }
 
-    const newUser = new googleuser({
+    // FIXED: Handle Google users who don't have passwords
+    if (!user.password) {
+      return res.status(400).json({ 
+        error: "This account uses Google authentication. Please sign in with Google." 
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: "Invalid Password" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      socialMediaHandle: user.socialMediaHandle,
+    };
+
+    res.json({ user: userResponse });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function verifyToken(req, res) {
+  try {
+    const user = await userModel.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      socialMediaHandle: user.socialMediaHandle,
+    };
+
+    res.json({ user: userResponse });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function logout(req, res) {
+  res.clearCookie("token");
+  res.json({ message: "Logged out successfully" });
+}
+
+
+
+
+export async function googleAuth(req, res) {
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+  try {
+    const { token, user } = req.body;
+    const { isBusiness } = user;
+
+    // Verify the Google token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Check if user exists in your main user model
+    let existingUser = await userModel.findOne({ 
+      $or: [
+        { email: email },
+        { googleId: googleId }
+      ]
+    });
+
+    if (existingUser) {
+      // User exists, update googleId if not set
+      if (!existingUser.googleId) {
+        existingUser.googleId = googleId;
+        await existingUser.save();
+      }
+
+      // Create JWT token
+      const jwtToken = jwt.sign(
+        {
+          id: existingUser._id,
+          email: existingUser.email,
+          role: existingUser.role,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      res.cookie("token", jwtToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      const userResponse = {
+        id: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email,
+        role: existingUser.role,
+        socialMediaHandle: existingUser.socialMediaHandle,
+      };
+
+      return res.status(200).json({ user: userResponse });
+    }
+
+    // Create new user
+    const newUser = new userModel({
       name,
       email,
       googleId,
-      isBusiness: user.isBusiness,
-      role: role,
+      isBusiness,
+      role: isBusiness ? "business" : "influencer",
+      // No password needed for Google users
+      password: null,
     });
+
     await newUser.save();
 
+    // Create profile based on user type
+    if (!isBusiness) {
+      await InfluencerProfile.create({
+        userId: newUser._id,
+        name: name,
+        image: picture || "",
+        aboutMe: "",
+        bio: "",
+        location: "",
+        platforms: [],
+      });
+    } else {
+      await CompanyProfile.create({
+        userId: newUser._id,
+        name: name,
+        image: picture || "",
+        aboutCompany: "",
+        bio: "",
+        location: "",
+      });
+    }
+
+    // Create JWT token
     const jwtToken = jwt.sign(
-      { id: newUser._id, email: newUser.email },
+      {
+        id: newUser._id,
+        email: newUser.email,
+        role: newUser.role,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "5d" }
+      { expiresIn: "7d" }
     );
 
     res.cookie("token", jwtToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "None",
-    });
-
-    res.status(201).json({
-      message: "User signed up successfully!",
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        isBusiness: newUser.isBusiness,
-        role: role,
-      },
-      token: jwtToken,
-    });
-  } catch (error) {
-    res.status(400).json({ error: "Google login failed!" });
-  }
-}
-
-export async function userLogin(req, res) {
-  const { email, password } = req.body;
-
-  try {
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
-    }
-
-    const user = await userModel.findOne({ email });
-
-    if (!user) {
-      return res.status(400).json({ error: "Email is not registered" });
-    }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ error: "Password is not correct" });
-    }
-
-    const role = user.isBusiness ? "business" : "influencer";
-
-    const token = jwt.sign(
-      { userId: user.id, role },
-      process.env.JWT_SECRET || "jwt123",
-      { expiresIn: "5d" }
-    );
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(201).json({
-      message: "user Logined succesfully !",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isBusiness: user.isBusiness,
-        role: role,
-      },
-      token,
-    });
+    const userResponse = {
+      id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+      socialMediaHandle: newUser.socialMediaHandle,
+    };
+
+    res.status(201).json({ user: userResponse });
+
   } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ error: "server error!" });
+    console.error("Google auth error:", error);
+    res.status(500).json({ 
+      error: "Google authentication failed",
+      details: error.message 
+    });
   }
 }
 
@@ -249,7 +373,7 @@ export async function updateImage(req, res) {
 
 export async function getCampaign(req, res) {
   try {
-    const campaigns = await campaignData.find({status:{$ne:"Disabled"}});
+    const campaigns = await campaignData.find({ status: { $ne: "Disabled" } });
     res.status(200).json({ success: true, data: campaigns });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -401,24 +525,24 @@ export async function getCurrentUser(req, res) {
   }
 }
 
-export async function getUserCampaigns(req,res) {
+export async function getUserCampaigns(req, res) {
   try {
-    const {userId}=req.params;
-    if(!userId) {
-      res.status(400).json({message:"user is not found!"})
+    const { userId } = req.params;
+    if (!userId) {
+      res.status(400).json({ message: "user is not found!" });
     }
-    const influencer=await InfluencerProfile.findOne({userId:userId})
-    const campaigns=await CampaignParticipation.find({influencer:influencer._id}).populate("campaignId", "title companyName companyImage").sort({createdAt:-1})
-    console.log(campaigns)
-    
+    const influencer = await InfluencerProfile.findOne({ userId: userId });
+    const campaigns = await CampaignParticipation.find({
+      influencer: influencer._id,
+    })
+      .populate("campaignId", "title companyName companyImage")
+      .sort({ createdAt: -1 });
+    console.log(campaigns);
 
-    res.status(200).json({data:campaigns})
-    
+    res.status(200).json({ data: campaigns });
   } catch (error) {
-    res.status(500).json({message:error.message})
-    
+    res.status(500).json({ message: error.message });
   }
-  
 }
 
 export async function getNotifications(req, res) {
@@ -430,11 +554,11 @@ export async function getNotifications(req, res) {
       return res.status(404).json({ message: "Influencer profile not found" });
     }
 
-    const influencerCategories = influencerProfile.influencerCategory; 
+    const influencerCategories = influencerProfile.influencerCategory;
 
     const campaigns = await campaignData.find({
-      category: { $in: influencerCategories },  
-      status: "Active"                          
+      category: { $in: influencerCategories },
+      status: "Active",
     });
     return res.status(200).json({ data: campaigns });
   } catch (error) {

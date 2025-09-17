@@ -8,12 +8,12 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import Navbar from "@/pages/influencer/Navbar";
 import Loader from "@/components/ui/Loader";
-import { getUserFromStorage } from "@/utils/LocalStorage";
 import CustomBreadcrumb from "@/components/CustomBreadcrumb";
+import { useAuth } from "@/context/AuthContext";
 
 export default function InfluencerDetails() {
   const [influencer, setInfluencer] = useState(null);
-  const user = getUserFromStorage();
+  const { user } = useAuth();
   const { id } = useParams();
 
   useEffect(() => {
@@ -48,7 +48,6 @@ export default function InfluencerDetails() {
           <Card className="p-6">
             <ProfileHeader user={user} profile={influencer} showEdit={false} />
             <ProfileStatus user={user} profile={influencer} />
-
           </Card>
           <div className="mx-auto mt-8 max-w-4xl">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

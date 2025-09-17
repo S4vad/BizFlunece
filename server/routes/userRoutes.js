@@ -2,9 +2,6 @@ import express from "express";
 import { uploadImage } from "../config/cloudinary.js";
 
 import {
-  userSignup,
-  googleAuth,
-  userLogin,
   profileUpdate,
   updateImage,
   getCampaign,
@@ -16,7 +13,7 @@ import {
   addCampaignParticipation,
   getSingleCampaignStatus,
   getUserCampaigns,
-  getNotifications
+  getNotifications,
 } from "../controller/userController.js";
 
 const routes = express.Router();
@@ -25,11 +22,9 @@ routes.get("/profile/:userId", getProfile);
 routes.get("/influencer/campaignlist", getCampaign);
 routes.get("/influencer/is-bookmarked", isBookmarked);
 routes.get("/influencer/get-single-campaign", getSingleCampaign);
-routes.get('/campaign-participation-status',getSingleCampaignStatus)
-routes.get('/influencer/get-user-campaigns/:userId',getUserCampaigns)
-routes.get('/influencer/get-notifications',getNotifications)
-
-
+routes.get("/campaign-participation-status", getSingleCampaignStatus);
+routes.get("/influencer/get-user-campaigns/:userId", getUserCampaigns);
+routes.get("/influencer/get-notifications", getNotifications);
 
 routes.post(
   "/profile/upload/:userId",

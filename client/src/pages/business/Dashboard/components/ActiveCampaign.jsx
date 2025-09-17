@@ -1,10 +1,10 @@
-import { getUserFromStorage } from "@/utils/LocalStorage";
+import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function ActiveCampaign() {
   const [campaigns, setCampaigns] = useState([]);
-  const user = getUserFromStorage();
+    const { user } = useAuth();
 
   useEffect(() => {
     const fecthCampaigns = async () => {

@@ -6,12 +6,12 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { getUserFromStorage } from "@/utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CampaignCard({ item, handleCard }) {
   const [bookmark, setBookmark] = useState(false);
-  const user = getUserFromStorage();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {

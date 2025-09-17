@@ -2,13 +2,13 @@ import CampaignCard from "./components/CampaignCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { getUserFromStorage } from "@/utils/LocalStorage";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CampaignList() {
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [showButton, setShowButton] = useState(true);
-  const user = getUserFromStorage();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchInitialCampaign = async () => {
@@ -127,7 +127,7 @@ export default function CampaignList() {
             )}
 
             {/* left side */}
-    
+
             <div className="mb-6 flex items-center gap-4">
               {selectedCampaign.companyImage && (
                 <img
