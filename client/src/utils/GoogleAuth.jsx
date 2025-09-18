@@ -16,7 +16,7 @@ export default function GoogleLoginButton({ isBusiness }) {
       };
 
       const { data } = await axios.post(
-        "http://localhost:5000/googleAuth",
+        `${import.meta.env.VITE_API_BASE_URL}/googleAuth`,
         payload,
         { withCredentials: true },
       );

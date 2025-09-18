@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import LandingPage from "./pages/Main";
 import SignupPage from "./components/SignUP";
 import UserLogin from "./components/UserLogin";
-import Campaign from "./pages/Business/Campaign";
+import CampaignPage from "./pages/business/Campaign";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/protectedRoute";
 import InfluencerLayout from "./pages/influencer/InfluencerLayout";
 import BusinessLayout from "./pages/business/BusinessLayout";
 import InfluencerDetails from "@/pages/business/InfluencerList/components/InfluencerDetails";
-import MessagesLayout from "./pages/Message/MessagesLayout";
+import MessagesLayout from "@/pages/Message/MessagesLayout";
 import BuisnessProfile from "@/pages/business/BusinessProfile/BuisnessProfile";
 import { initSocket } from "./utils/socket";
 import { useAuth } from "./context/AuthContext";
@@ -91,7 +91,7 @@ function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-        <Route path="/campaign" element={<Campaign />} />
+        <Route path="/campaign" element={<CampaignPage />} />
         <Route path="/influencer-details/:id" element={<InfluencerDetails />} />
      
         {/* Protected Message routes */}

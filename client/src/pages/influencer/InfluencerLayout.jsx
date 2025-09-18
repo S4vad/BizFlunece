@@ -1,4 +1,4 @@
-import UserRoutes from "@/routes/UserRoutes";
+import UserRoutes from "@/routes/userRoutes";
 import Navbar from "@/pages/influencer/Navbar";
 
 const InfluencerLayout = () => {
