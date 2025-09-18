@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import LandingPage from "./pages/Main";
 import SignupPage from "./components/SignUP";
@@ -13,11 +13,13 @@ import MessagesLayout from "./pages/Message/MessagesLayout";
 import BuisnessProfile from "@/pages/business/BusinessProfile/BuisnessProfile";
 import { initSocket } from "./utils/socket";
 import { useAuth } from "./context/AuthContext";
+import ForgotPasswordPage from "./components/ForgotPassword";
+import ResetPasswordPage from "./components/ResetPassword";
 
 // Component to handle socket initialization
 function SocketInitializer() {
   const { user } = useAuth();
-  
+
   useEffect(() => {
     if (user?.id) {
       const socket = initSocket(user.id);
@@ -34,21 +36,91 @@ function SocketInitializer() {
   return null;
 }
 
+function PublicRoute({ children }) {
+  const { user, loading, isAuthenticated } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated && user) {
+    const dashboardPath =
+      user.role === "business"
+        ? "/business/dashboard"
+        : "/influencer/dashboard";
+    return <Navigate to={dashboardPath} replace />;
+  }
+
+  return children;
+}
+
 function AppRoutes() {
   return (
     <>
       <SocketInitializer />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/login" element={<UserLogin />} />
-        
-        {/* Public routes that might need auth context */}
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <LandingPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignupPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <UserLogin />
+            </PublicRoute>
+          }
+        />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+
         <Route path="/campaign" element={<Campaign />} />
         <Route path="/influencer-details/:id" element={<InfluencerDetails />} />
-        <Route path="/conversation/messages" element={<MessagesLayout />} />
-        <Route path="/conversation/messages/:userId" element={<MessagesLayout />} />
-        <Route path="/business/profile" element={<BuisnessProfile />} />
+     
+        {/* Protected Message routes */}
+        <Route
+          path="/conversation/messages"
+          element={
+            <ProtectedRoute>
+              <MessagesLayout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/conversation/messages/:userId"
+          element={
+            <ProtectedRoute>
+              <MessagesLayout />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected Business Profile */}
+        <Route
+          path="/business/profile"
+          element={
+            <ProtectedRoute role="business">
+              <BuisnessProfile />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected Influencer Routes */}
         <Route

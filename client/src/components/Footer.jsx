@@ -5,14 +5,15 @@ import { IoLogoYoutube } from "react-icons/io";
 import { BsLinkedin } from "react-icons/bs";
 import { FaFacebookSquare } from "react-icons/fa";
 import { BsInstagram } from "react-icons/bs";
+
 const Footer = () => {
   return (
     <div className="mt-30 min-h-[350px] w-full overflow-hidden rounded-t-[3rem] bg-[#151515]">
-      <div className="flex-row md:flex space-y-16 md:space-y-0 md:gap-16 md:px-16 pt-16">
-        <div>
+      <div className="flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:gap-8 xl:gap-16 px-4 sm:px-8 lg:px-16 pt-16">
+        <div className="lg:flex-1">
           <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
-          <p className="mt-5 w-80 text-[#FFFFFF91]">
-            We are India’s Largest Influencer Marketing Agency with an
+          <p className="mt-5 max-w-full lg:w-80 text-[#FFFFFF91]">
+            We are India's Largest Influencer Marketing Agency with an
             influencer network in 16 countries including India. We work with
             700+ leading brands to transform their business through Content
             Driven Influencer Solutions across Social Media Platforms.
@@ -21,38 +22,37 @@ const Footer = () => {
             <BsInstagram className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300 hover:bg-[#E4405F]" />
             <FaFacebookSquare className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300 hover:bg-[#1877F2]" />
             <ImGithub className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300 hover:bg-[#6e5494]" />
-
             <IoLogoYoutube className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300 hover:bg-[#FF0000]" />
             <BsLinkedin className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300 hover:bg-[#0077B5]" />
           </div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-8 lg:flex-1">
           <div className="flex">
             <MdWifiCalling3 className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300" />
             <div className="ml-4">
-              <div className="text-[#FFFFFF91]" >Have a question?</div>
-              <div className="text-[#FFFFFF91]" > 8137872257</div>
-            </div>
-          </div>
-          <div className="flex">
-            <FiMail   className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300" />
-            <div className="ml-4">
-              <div className="text-[#FFFFFF91]" >For Business Enquireis</div>
-              <div className="text-[#FFFFFF91]" > Broker@BizFluenze.com</div>
+              <div className="text-[#FFFFFF91]">Have a question?</div>
+              <div className="text-[#FFFFFF91]">8137872257</div>
             </div>
           </div>
           <div className="flex">
             <FiMail className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300" />
             <div className="ml-4">
-              <div className="text-[#FFFFFF91]" >For Job Enquireis</div>
-              <div className="text-[#FFFFFF91]" > BizFluenze@carrier.com</div>
+              <div className="text-[#FFFFFF91]">For Business Enquireis</div>
+              <div className="text-[#FFFFFF91]">Broker@BizFluenze.com</div>
+            </div>
+          </div>
+          <div className="flex">
+            <FiMail className="h-10 w-10 rounded-full bg-[#333] fill-white p-2 transition duration-300" />
+            <div className="ml-4">
+              <div className="text-[#FFFFFF91]">For Job Enquireis</div>
+              <div className="text-[#FFFFFF91]">BizFluenze@carrier.com</div>
             </div>
           </div>
         </div>
 
         {/* Marketing Solutions Section */}
-        <div>
+        <div className="lg:flex-1">
           <h2 className="text-lg font-bold text-white">Marketing Solutions</h2>
           <ul className="mt-2 space-y-2">
             <li className="text-[#FFFFFF91] transform-transition duration-500 hover:scale-105">YouTube Marketing</li>
@@ -65,21 +65,21 @@ const Footer = () => {
         </div>
 
         {/* Office Locations Section */}
-        <div>
+        <div className="lg:flex-1">
           <h2 className="text-lg font-bold text-white">Bengaluru Office</h2>
-          <p className="mt-2 w-72 text-[#FFFFFF91]">
-            2nd floor, Workshaala Neo, 17/R, above Leon’s Grill Burger, Sector
+          <p className="mt-2 max-w-full lg:w-72 text-[#FFFFFF91]">
+            2nd floor, Workshaala Neo, 17/R, above Leon's Grill Burger, Sector
             3, HSR Layout, Bengaluru, Karnataka – 560102
           </p>
           <h2 className="mt-4 text-lg font-bold text-white">Mumbai Office</h2>
-          <p className="mt-2 w-72 text-[#FFFFFF91]">
+          <p className="mt-2 max-w-full lg:w-72 text-[#FFFFFF91]">
             C206, Omkar Ananta, General Arun Kumar Vaidya Marg, Goregaon,
             Mumbai, Maharashtra – 400063
           </p>
         </div>
       </div>
       <div className="mt-10 w-full border-t-[0.5px] border-white"></div>
-      <div className= "mt-8 mb-10 text-[#FFFFFF91] text-center">@ 2025, All Rights Reserved</div>
+      <div className="mt-8 mb-10 text-[#FFFFFF91] text-center px-4">@ 2025, All Rights Reserved ,Made by <a href="http://savad.me" className="text-blue-600 underline">savad</a> with ❤️</div>
     </div>
   );
 };

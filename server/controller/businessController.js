@@ -9,9 +9,6 @@ export async function InfluencerList(req, res) {
   try {
     const influencers = await InfluencerProfile.find();
 
-    if (!influencers.length)
-      return res.status(400).json({ error: "No influencer found" });
-
     res.status(200).json({ success: true, data: influencers });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -90,7 +87,7 @@ export async function createCampaign(req, res) {
       companyName,
       videoDuration,
       deadline,
-      category
+      category,
     } = req.body;
 
     const companyProfile = await CompanyProfile.findOne({ userId: businessId });
@@ -120,8 +117,6 @@ export async function createCampaign(req, res) {
       companyImage,
       deadline,
       category: Array.isArray(category) ? category : JSON.parse(category),
-
-
     });
 
     res.status(200).json({
@@ -453,7 +448,7 @@ export const getRecentCampaigns = async (req, res) => {
         type: "message",
         action: `New message from ${msg.sender?.name}`,
         time: msg.createdAt,
-        image:msg.senderImage
+        image: msg.senderImage,
       });
     });
 

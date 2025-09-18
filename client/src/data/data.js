@@ -2,7 +2,7 @@ export const data = [
   {
     title: "Find, Connect & Grow – Your Influencer Network at Your Fingertips",
     content:
-      "At [Your Platform Name], we empower businesses to take control of their marketing by connecting directly with influencers. No middlemen, no agency fees—just seamless collaboration between brands and content creators. Our smart matchmaking system helps you discover the right influencers based on industry, engagement, and audience insights. Negotiate deals that fit your budget and market your brand affordably. With live chat, you can instantly communicate, discuss campaign strategies, and bring your vision to life."
+      "At BizFluence, we empower businesses to take control of their marketing by connecting directly with influencers. No middlemen, no agency fees—just seamless collaboration between brands and content creators. Our smart matchmaking system helps you discover the right influencers based on industry, engagement, and audience insights. Negotiate deals that fit your budget and market your brand affordably. With live chat, you can instantly communicate, discuss campaign strategies, and bring your vision to life."
       ,image:"DALL·E 2025-02-24 21.14.13 - A modern office setting with young professionals working together. One person is smiling while discussing a campaign strategy. The atmosphere is brigh.webp"   
 
     },

@@ -8,6 +8,7 @@ import { useState } from "react";
 import Hero from "@/components/Hero";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
 import { useAuth } from "@/context/AuthContext";
+import Feature from "@/components/Feature";
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -20,14 +21,7 @@ export default function LandingPage() {
       <nav className="bg-white shadow-sm dark:bg-dark-surface">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <div className="text-3xl font-bold text-indigo-600">BizFluenze</div>
-          <div className="text-md hidden gap-x-12 font-medium text-gray-700 md:flex">
-            <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-dark-text-primary dark:hover:text-indigo-500">
-              About Us
-            </div>
-            <div className="cursor-pointer transition duration-300 hover:text-indigo-600 dark:text-white dark:hover:text-indigo-500">
-              Our Works
-            </div>
-          </div>
+
           <div className="flex items-center space-x-4">
             {!user && (
               <div>
@@ -37,8 +31,8 @@ export default function LandingPage() {
                   onMouseLeave={() => setHoverButton("signup")}
                   className={`rounded-lg px-4 py-2 transition duration-300 ${
                     hoverButton === "login"
-                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                      : "text-gray-600 hover:text-indigo-600"
+                      ? "bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-600"
+                      : "text-gray-600 hover:text-indigo-600 dark:bg-gray-500 dark:text-white"
                   }`}
                 >
                   Login
@@ -50,7 +44,7 @@ export default function LandingPage() {
                   className={`rounded-lg px-4 py-2 transition duration-300 ${
                     hoverButton === "signup"
                       ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                      : "text-gray-600 hover:text-indigo-600"
+                      : "text-gray-600 hover:text-indigo-600 dark:bg-gray-500 dark:text-white"
                   }`}
                 >
                   Sign Up
@@ -65,24 +59,50 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <div className="ml-20 flex h-[calc(100vh-64px)] flex-col text-white md:flex-row">
-        <div className="mx-auto mt-20 max-w-3xl px-4 py-10 text-left">
-          <h1 className="mb-6 text-2xl font-bold text-black dark:text-white sm:text-4xl md:text-5xl lg:text-7xl">
-            Connect with Perfect Influencers
-          </h1>
-          <p className="mb-10 text-2xl text-black dark:text-white md:w-[40rem]">
-            AI-powered platform for seamless brand-influencer collaborations
-          </p>
-          <div className="space-x-4">
-            <button className="transform-transition rounded-lg bg-white px-8 py-3 font-semibold text-indigo-600 duration-500 hover:scale-105 hover:bg-gray-100">
-              Im a Business
-            </button>
-            <button className="transform-transition rounded-lg bg-indigo-500 px-8 py-3 font-semibold text-white duration-500 hover:scale-105 hover:bg-indigo-400">
-              Im an Influencer
-            </button>
+      <div className="flex min-h-[calc(100vh-64px)] flex-col-reverse md:flex-row">
+        <div className="flex flex-1 items-center justify-center px-4 py-8 sm:ml-6 sm:px-6 md:ml-10 md:px-8 md:py-12 lg:px-12 lg:py-16 xl:px-16">
+          <div className="w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+            <h1 className="mb-4 text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl md:mb-6 md:text-5xl lg:text-6xl xl:text-7xl">
+              Connect with the right{" "}
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-purple-400">
+                Influencers
+              </span>
+            </h1>
+            <p className="mb-6 max-w-xl text-base leading-relaxed text-black dark:text-white sm:text-xl md:mb-8 md:text-2xl lg:mb-10 lg:max-w-2xl lg:text-2xl">
+              Where brands meet their perfect influencers
+            </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:space-x-2 sm:space-y-0">
+              <button
+                onClick={() => navigate("/login")}
+                className="transform-transition w-full rounded-lg bg-white px-6 py-3 text-sm font-semibold text-indigo-600 shadow duration-500 hover:scale-105 hover:bg-gray-100 sm:w-auto sm:px-8 sm:text-base"
+              >
+                Im a Business
+              </button>
+              <button
+                onClick={() => navigate("/login")}
+                className="transform-transition w-full rounded-lg bg-indigo-500 px-6 py-3 text-sm font-semibold text-white duration-500 hover:scale-105 hover:bg-indigo-400 sm:w-auto sm:px-8 sm:text-base"
+              >
+                Im an Influencer
+              </button>
+            </div>
+            <div className="flex items-center space-x-6 pt-8">
+              <div className="flex items-center space-x-2">
+                <div className="h-3 w-3 animate-pulse rounded-full bg-green-400"></div>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Live Platform
+                </span>
+              </div>
+              <div className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                Trusted by{" "}
+                <span className="text-indigo-600 dark:text-indigo-400">
+                  500+
+                </span>{" "}
+                brands
+              </div>
+            </div>
           </div>
         </div>
-        <div>
+        <div className="flex flex-1 items-center justify-center">
           <Hero />
         </div>
       </div>
@@ -92,36 +112,22 @@ export default function LandingPage() {
 
       <div className="mt-36 text-center font-[certia,sans-serif] text-5xl font-medium text-black dark:text-white">
         <CountUp
-          className="dark:text-white"
+          className="font-semibold text-blue-600"
           start={1}
-          end={500}
-          duration={4}
+          end={90}
+          duration={7}
           separator=","
+          enableScrollSpy
+          scrollSpyOnce
         />
-        K+ Influencers Across India
+        <span className="font-semibold text-blue-600">K+</span> Influencers
+        Across India
       </div>
 
       <Influencers />
 
       {/* Features Section */}
-      <div className="mx-auto mt-36 max-w-7xl px-4 py-16">
-        <h2 className="mb-12 text-center text-3xl font-bold">Why Choose Us?</h2>
-        <div className="grid gap-8 md:grid-cols-3">
-          {["AI Matching", "Real Analytics", "Secure Payments"].map(
-            (feature) => (
-              <div key={feature} className="rounded-xl bg-white p-6 shadow-sm">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
-                  <span className="text-xl text-indigo-600">★</span>
-                </div>
-                <h3 className="mb-2 text-xl font-semibold">{feature}</h3>
-                <p className="text-gray-600">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                </p>
-              </div>
-            ),
-          )}
-        </div>
-      </div>
+      <Feature />
 
       <Footer />
     </div>

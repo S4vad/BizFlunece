@@ -13,11 +13,11 @@ import {
   getPendingRequests,
   handleParticipationRequest,
   getCampaignParticipations,
-  getRecentCampaigns
+  getRecentCampaigns,
 } from "../controller/businessController.js";
 import { uploadVideo } from "../config/cloudinary.js";
 import { uploadImage } from "../config/cloudinary.js";
-import {  getProfile } from "../controller/userController.js";
+import { getProfile } from "../controller/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 const routes = express.Router();
 
@@ -25,10 +25,10 @@ routes.get("/influencerlist", InfluencerList);
 routes.get("/favoriteInfluencers/:businessId", favoriteInfluencers);
 routes.get("/company_profile/:userId", getCompanyProfile);
 routes.get("/influencer/:userId", getProfile);
-routes.get('/campaigns/:id',getCampaigns)
+routes.get("/campaigns/:id", getCampaigns);
 routes.get("/pending-requests/:businessId", getPendingRequests);
 routes.get("/campaign-participations/:campaignId", getCampaignParticipations);
-routes.get("/get-recent-activities/:businessId",getRecentCampaigns)
+routes.get("/get-recent-activities/:businessId", getRecentCampaigns);
 
 routes.post("/addFav", addFavInfluencers);
 routes.post("/removeFav", removeFavInfluencers);
@@ -38,9 +38,8 @@ routes.post(
   uploadImage.single("image"),
   updateCompanyImage
 );
-routes.post('/campaign-status-update',updateCampaignStatus);
-routes.post("/handle-request",authMiddleware, handleParticipationRequest);
-
+routes.post("/campaign-status-update", updateCampaignStatus);
+routes.post("/handle-request", authMiddleware, handleParticipationRequest);
 
 routes.put("/update-profile/:userId", companyProfileUpdate);
 

@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: false, 
+      required: false,
     },
     email: {
       type: String,
@@ -22,22 +22,30 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       required: true,
     },
-    role: { 
-      type: String, 
-      required: true 
-    },
-    googleId: { 
-      type: String, 
-      unique: true, 
-      sparse: true 
-    },
-    profileImage: { 
+    role: {
       type: String,
-      default: ""
+      required: true,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    profileImage: {
+      type: String,
+      default: "",
     },
     isActive: {
       type: Boolean,
       default: true,
+    },
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpiry: {
+      type: Date,
+      default: null,
     },
   },
   {

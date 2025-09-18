@@ -27,12 +27,12 @@ const Influencers = () => {
   return (
     <>
       {/* Niche selection buttons */}
-      <div className="grid grid-cols-3 items-center space-x-2 space-y-2 py-10 pt-20 md:flex md:justify-center md:space-x-10">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex items-center gap-2 py-10 pt-20 px-4 lg:justify-center lg:space-x-10">
         {influencerNiche.map((niche, index) => (
           <div
             key={index}
             onClick={() => nicheClick(niche)}
-            className={`cursor-pointer rounded-full border dark:text-white dark:hover:border-none dark:border-white border-indigo-600 px-1 py-1 text-center text-sm text-indigo-600 transition-all duration-300 hover:bg-indigo-600 hover:text-white md:px-3 md:py-2 md:text-lg ${
+            className={`cursor-pointer rounded-full border dark:text-white dark:hover:border-none dark:border-white border-indigo-600 px-2 sm:px-3 lg:px-3 py-1 sm:py-2 lg:py-2 text-center text-xs sm:text-sm lg:text-lg text-indigo-600 transition-all duration-300 hover:bg-indigo-600 hover:text-white ${
               selectedNiche === niche
                 ? "bg-indigo-600 text-white dark:border-indigo-800"
                 : "text-indigo-600 hover:text-white darK:border"
@@ -44,7 +44,7 @@ const Influencers = () => {
       </div>
 
       {/* Display selected niche influencers */}
-      <div className="grid grid-cols-3 gap-6 sm:px-16 md:grid-cols-4 md:px-36">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-36">
         <AnimatePresence mode="wait">
           {filteredInfluencers.length > 0 ? (
             filteredInfluencers.map((item, index) => (
@@ -59,7 +59,7 @@ const Influencers = () => {
                 transition={{ duration: 0.1, ease: "easeOut" }}
                 className="block transform overflow-hidden transition-transform"
               >
-                <div className="w-34 h-34 overflow-hidden rounded-xl md:h-64 md:w-64">
+                <div className="w-full aspect-square overflow-hidden rounded-xl">
                   <img
                     className="h-full w-full object-cover transition-transform duration-700 ease-in-out hover:scale-105"
                     src={item.image}
@@ -69,7 +69,7 @@ const Influencers = () => {
               </motion.a>
             ))
           ) : (
-            <p className="col-span-3 text-center text-gray-500 md:col-span-4">
+            <p className="col-span-2 sm:col-span-3 lg:col-span-4 text-center text-gray-500">
               No influencers found.
             </p>
           )}

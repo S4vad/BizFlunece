@@ -1,38 +1,46 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check for existing token on app load
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
     try {
-      const response = await axios.get("/auth/verify", { 
-        withCredentials: true 
+      const response = await axios.get("/auth/verify", {
+        withCredentials: true,
       });
-      
+
       if (response.data.user) {
         setUser(response.data.user);
         setIsAuthenticated(true);
-        
-        // Auto-redirect to dashboard if on landing page
-        const currentPath = window.location.pathname;
-        if (currentPath === "/" || currentPath === "/login" || currentPath === "/signup") {
+
+        // Auto-redirect logic  conditions
+        const currentPath = location.pathname;
+        const publicPaths = ["/", "/login", "/signup", "/forgot-password"];
+        const isPublicPath = publicPaths.some((path) =>
+          currentPath.startsWith(path),
+        );
+
+        if (isPublicPath) {
           navigateBasedOnRole(response.data.user.role);
         }
       }
     } catch (error) {
-      console.log("No valid token found");
+      console.log(
+        "Authentication check failed:",
+        error.response?.data?.message || "No valid token",
+      );
       setUser(null);
       setIsAuthenticated(false);
     } finally {
@@ -54,29 +62,34 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       setIsAuthenticated(false);
-      navigate("/login");
+      navigate("/login", { replace: true });
     }
   };
 
   const navigateBasedOnRole = (role) => {
-    if (role === "influencer") {
-      navigate("/influencer/dashboard");
-    } else if (role === "business") {
-      navigate("/business/dashboard");
-    } else {
-      navigate("/");
+    switch (role) {
+      case "influencer":
+        navigate("/influencer/dashboard", { replace: true });
+        break;
+      case "business":
+        navigate("/business/dashboard", { replace: true });
+        break;
+      default:
+        navigate("/", { replace: true });
     }
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      login, 
-      logout, 
-      loading, 
-      isAuthenticated,
-      checkAuthStatus 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        loading,
+        isAuthenticated,
+        checkAuthStatus,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
