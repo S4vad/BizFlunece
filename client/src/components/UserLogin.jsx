@@ -182,7 +182,7 @@ export default function LoginPage() {
           </button>
 
           <div className="text-center text-sm dark:text-white sm:text-base">
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?
             <button
               type="button"
               onClick={() => navigate("/signup")}

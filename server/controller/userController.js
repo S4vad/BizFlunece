@@ -45,13 +45,14 @@ export async function signup(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
-    res.cookie("token", token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
+    };
+
+    res.cookie("token", token, cookieOptions);
 
     // Add profile creation logic
     if (!isBusiness) {
@@ -128,12 +129,14 @@ export async function login(req, res) {
       { expiresIn: "7d" }
     );
 
-    res.cookie("token", token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
+    res.cookie("token", token, cookieOptions);
 
     const userResponse = {
       id: user._id,
@@ -153,11 +156,10 @@ export async function login(req, res) {
 
 export async function verifyToken(req, res) {
   try {
-    const user = await userModel.findById(req.user.id).select("-password");
+    const user = await userModel.findById(req.currentUser.id).select("-password");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    console.log("back called");
 
     const userResponse = {
       id: user._id,
@@ -390,7 +392,7 @@ export async function googleAuth(req, res) {
         name: existingUser.name,
         email: existingUser.email,
         role: existingUser.role,
-        isBusiness:existingUser.isBusiness,
+        isBusiness: existingUser.isBusiness,
         socialMediaHandle: existingUser.socialMediaHandle,
       };
 
@@ -455,7 +457,7 @@ export async function googleAuth(req, res) {
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
-      isBusiness:newUser.isBusiness,
+      isBusiness: newUser.isBusiness,
       socialMediaHandle: newUser.socialMediaHandle,
     };
 
@@ -523,7 +525,6 @@ export async function updateImage(req, res) {
     if (!updatedProfile) {
       return res.status(404).json({ error: "profile not found" });
     }
-    console.log("the imgea rl is", imageUrl);
     res.json({ success: true, imageUrl });
   } catch (error) {
     console.log("image upload error", error);
@@ -697,7 +698,6 @@ export async function getUserCampaigns(req, res) {
     })
       .populate("campaignId", "title companyName companyImage")
       .sort({ createdAt: -1 });
-    console.log(campaigns);
 
     res.status(200).json({ data: campaigns });
   } catch (error) {

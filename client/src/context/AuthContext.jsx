@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { ClipLoader } from "react-spinners";
+import { initSocket } from "@/utils/socket";
 
 const AuthContext = createContext();
 
@@ -14,7 +16,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     checkAuthStatus();
   }, []);
+  
 
+  //socket intialization
+useEffect(() => {
+  if (user?.id) {
+    initSocket(user.id);     
+  }
+}, [user]);
   const checkAuthStatus = async () => {
     try {
       const response = await axios.get("/auth/verify", {
@@ -79,18 +88,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        loading,
-        isAuthenticated,
-        checkAuthStatus,
-      }}
+      value={{ user, login, logout, loading, isAuthenticated, checkAuthStatus }}
     >
-      {children}
+      {loading ? (
+        <div className="flex h-screen items-center justify-center">
+          <p>
+            <ClipLoader />
+          </p>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

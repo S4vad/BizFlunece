@@ -1,4 +1,3 @@
-// utils/socket.js
 import { io } from "socket.io-client";
 
 let socketInstance = null;
@@ -9,7 +8,20 @@ export const initSocket = (userId) => {
     socketInstance = io(Url, {
       query: { userId },
     });
+
+    socketInstance.on("connect", () => {
+      console.log("✅ Socket connected successfully:", socketInstance.id);
+    });
+
+    socketInstance.on("connect_error", (error) => {
+      console.error("❌ Socket connection error:", error);
+    });
+
+    socketInstance.on("disconnect", (reason) => {
+      console.log("🔌 Socket disconnected:", reason);
+    });
   }
+  
   return socketInstance;
 };
 

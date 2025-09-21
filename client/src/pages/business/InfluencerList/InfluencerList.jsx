@@ -29,7 +29,7 @@ export default function InfluencerList() {
       }
     };
 
-    const fetchFavoriteInfluencers = async () => {
+     const fetchFavoriteInfluencers = async () => {
       try {
         const businessId = user.id;
         const { data } = await axios.get(

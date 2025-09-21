@@ -11,7 +11,6 @@ export default function ActiveCampaign() {
       try {
         const { data } = await axios.get(`/business/campaigns/${user.id}`);
         setCampaigns(data.data);
-        console.log(data.data);
       } catch (error) {
         console.log(error);
       }

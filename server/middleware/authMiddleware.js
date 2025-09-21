@@ -25,8 +25,10 @@ const authMiddleware = async (req, res, next) => {
     //   });
     // }
 
+
     req.user = decoded;
     req.currentUser = decoded;
+
     next();
   } catch (error) {
     console.error("Authentication error:", error);

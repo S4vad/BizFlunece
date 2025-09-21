@@ -1,13 +1,15 @@
-import htttp from "http";
+import http from "http";
 import express from "express";
 import { Server } from "socket.io";
 
 const app = express();
-const server = htttp.createServer(app);
+const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL,
+    credentials:true,
+    methods:["GET","POST"]
   },
 });
 
@@ -17,6 +19,7 @@ export const getReceiverSocketId = (receiver) => {
 };
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
+  console.log("socket userdi",userId)
   if (userId !== undefined) {
     console.log(userId, socket.id);
     userSocketMap[userId] = socket.id;

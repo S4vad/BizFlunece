@@ -187,7 +187,6 @@ export async function updateCompanyImage(req, res) {
         error: "Company profile not found",
       });
     }
-    console.log("the imgea rl is", imageUrl);
     res.json({ success: true, imageUrl });
   } catch (error) {
     console.log("image upload error", error);
@@ -276,9 +275,8 @@ export const getPendingRequests = async (req, res) => {
 export const handleParticipationRequest = async (req, res) => {
   try {
     const { participationId, action } = req.body;
-    const businessId = req.user.userId;
+    const businessId = req.currentUser.id;
     const owner = await CompanyProfile.findOne({ userId: businessId });
-    console.log(participationId, action, businessId);
 
     if (!["approve", "reject"].includes(action)) {
       return res.status(400).json({
@@ -318,7 +316,6 @@ export const handleParticipationRequest = async (req, res) => {
         { new: true }
       );
     }
-    console.log(participation);
 
     res.status(200).json({
       success: true,
@@ -337,7 +334,7 @@ export const handleParticipationRequest = async (req, res) => {
 export const getCampaignParticipations = async (req, res) => {
   try {
     const { campaignId } = req.params;
-    const businessId = req.user.userId; // From auth middleware
+    const businessId = req.currentUser.id; // From auth middleware
 
     // Verify the business owns this campaign
     const campaign = await campaignData.findOne({

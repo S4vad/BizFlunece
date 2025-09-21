@@ -40,9 +40,8 @@ const ChatInterface = ({ partnerUser, currentUser, onlineUsers }) => {
     if (backImage) formData.append("image", backImage);
 
     try {
-      const res = await axios.post("/send/" + partnerUser.userId, formData);
-      dispatch(addMessage(res.data));
-      socket.emit("sendMessage", res.data);
+    await axios.post("/send/" + partnerUser.userId, formData);
+
 
       setInput("");
       setFrontImage(null);

@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect } from "react";
 import LandingPage from "./pages/Main";
 import SignupPage from "./components/SignUP";
 import UserLogin from "./components/UserLogin";
@@ -11,30 +10,11 @@ import BusinessLayout from "./pages/business/BusinessLayout";
 import InfluencerDetails from "@/pages/business/InfluencerList/components/InfluencerDetails";
 import MessagesLayout from "@/pages/Message/MessagesLayout";
 import BuisnessProfile from "@/pages/business/BusinessProfile/BuisnessProfile";
-import { initSocket } from "./utils/socket";
 import { useAuth } from "./context/AuthContext";
 import ForgotPasswordPage from "./components/ForgotPassword";
 import ResetPasswordPage from "./components/ResetPassword";
 
-// Component to handle socket initialization
-function SocketInitializer() {
-  const { user } = useAuth();
 
-  useEffect(() => {
-    if (user?.id) {
-      const socket = initSocket(user.id);
-      socket.on("connect", () => {
-        console.log("Socket connected:", socket.id);
-      });
-
-      return () => {
-        socket.disconnect();
-      };
-    }
-  }, [user]);
-
-  return null;
-}
 
 function PublicRoute({ children }) {
   const { user, loading, isAuthenticated } = useAuth();
@@ -61,7 +41,6 @@ function PublicRoute({ children }) {
 function AppRoutes() {
   return (
     <>
-      <SocketInitializer />
       <Routes>
         <Route
           path="/"

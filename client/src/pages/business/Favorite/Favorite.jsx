@@ -4,42 +4,69 @@ import InfluencerCard from "../InfluencerList/components/InfluencerCard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function Favorite() {
-  const [influencers, setInfluencers] = useState([]);
+  const [favoriteInfluencers, setFavoriteInfluencers] = useState([]); 
   const [clicked, setClicked] = useState(false);
-  const {user} = useAuth();
-
-
+  const { user } = useAuth();
   const navigate = useNavigate();
 
+
   useEffect(() => {
+    if (!user?.id) return;
 
-    const fetchInfluencers = async () => {
-      console.log('ther user is ',user)
-      if (!user || !user.id) return;
-
+    const fetchFavoriteInfluencers = async () => {
       try {
         const { data } = await axios.get(
-          `/business/favoriteInfluencers/${user.id}`,
+          `/business/favoriteInfluencers/${user.id}`
         );
-        console.log("The influencers are", data);
-        setInfluencers(data.data);
+        setFavoriteInfluencers(data.data || []); 
       } catch (error) {
-        console.log("Error fetching influencers:", error);
+        console.log("Error fetching influencers", error.response?.data || error.message);
       }
     };
 
-    fetchInfluencers();
-  }, []);
+    fetchFavoriteInfluencers();
+  }, [user?.id]);
+
+
+  const toggleFavorite = async (influencerId) => {
+    try {
+      const isFavorite = favoriteInfluencers.some((inf) => inf._id === influencerId);
+
+      if (isFavorite) {
+        await axios.post("/business/removeFav", { influencerId, businessId: user.id });
+        setFavoriteInfluencers((prev) =>
+          prev.filter((inf) => inf._id !== influencerId)
+        );
+        toast.success("Removed from favorites");
+      } else {
+        await axios.post("/business/addFav", { influencerId, businessId: user.id });
+
+
+        const newInfluencer = { _id: influencerId };
+        setFavoriteInfluencers((prev) => [...prev, newInfluencer]);
+        toast.success("Added to favorites");
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Failed to update favorites");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      {influencers.length > 0 ? (
+      {favoriteInfluencers.length > 0 ? (
         <div className="w-full max-w-2xl rounded-xl bg-white p-8 shadow-sm">
           <div className="flex flex-col space-y-4">
-            {influencers.map((item, index) => (
-              <InfluencerCard key={index} influencer={item} />
+            {favoriteInfluencers.map((item) => (
+              <InfluencerCard
+                key={item._id}
+                influencer={item}
+                toggleFavorite={toggleFavorite}
+                isFavorite={true} 
+              />
             ))}
           </div>
         </div>

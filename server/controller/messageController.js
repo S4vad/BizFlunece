@@ -8,7 +8,7 @@ import InfluencerProfile from "../models/InfluencerProfile.js";
 // send message
 export const sendMessage = async (req, res) => {
   try {
-    const sender = req.user.userId;
+    const sender = req.currentUser.id;
     const { receiver } = req.params;
     const { message } = req.body;
 
@@ -63,7 +63,7 @@ export const sendMessage = async (req, res) => {
 // get messages
 export const getMessage = async (req, res) => {
   try {
-    const sender = req.user.userId;
+    const sender = req.currentUser.id;
     const { receiver } = req.params;
 
     const conversation = await Conversation.findOne({

@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 
 const InfluencerCard = ({ influencer, isFavorite, toggleFavorite }) => {
   const [isPreview, setIsPreview] = useState(false);
   const navigate = useNavigate();
+  
 
   const handleClick = () => {
     navigate(`/influencer-details/${influencer.userId}`);
   };
+
 
   return (
     <div

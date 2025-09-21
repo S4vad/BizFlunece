@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import Section from "../components/Section";
 import CountUp from "react-countup";
-import Influencers from "../components/Influencers";
 import Footer from "../components/Footer";
 import FeatureCard from "../components/FeatureCard";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import Hero from "@/components/Hero";
 import { ModeToggle } from "@/components/darkmode/ModeToggle";
 import { useAuth } from "@/context/AuthContext";
-import Feature from "@/components/Feature";
+import { ClipLoader } from "react-spinners";
+const Feature = lazy(() => import("@/components/Feature"));
+const Influencers = lazy(() => import("../components/Influencers.jsx"));
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -123,11 +124,26 @@ export default function LandingPage() {
         <span className="font-semibold text-blue-600">K+</span> Influencers
         Across India
       </div>
-
-      <Influencers />
+      <Suspense
+        fallback={
+          <div className="flex h-64 w-full items-center justify-center">
+            <ClipLoader />
+          </div>
+        }
+      >
+        <Influencers />
+      </Suspense>
 
       {/* Features Section */}
-      <Feature />
+      <Suspense
+        fallback={
+          <div className="flex h-64 w-full items-center justify-center">
+            <ClipLoader />
+          </div>
+        }
+      >
+        <Feature />
+      </Suspense>
 
       <Footer />
     </div>
